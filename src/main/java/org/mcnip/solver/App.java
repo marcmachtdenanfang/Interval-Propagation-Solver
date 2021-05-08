@@ -1,4 +1,4 @@
-package org.mc-nip.solver;
+package org.mcnip.solver;
 
 /**
  * Hello world!
