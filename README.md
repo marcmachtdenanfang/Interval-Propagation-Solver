@@ -1,3 +1,5 @@
+[![Build Status](https://www.travis-ci.com/marcmachtdenanfang/Interval-Propagation-Solver.svg?branch=main)](https://www.travis-ci.com/marcmachtdenanfang/Interval-Propagation-Solver)
+
 # Interval-Propagation-Solver
 
 *To build the solver:*
