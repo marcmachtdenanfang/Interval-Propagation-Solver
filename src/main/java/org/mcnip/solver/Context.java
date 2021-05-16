@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.mcnip.solver.Model.Clause;
-import org.mcnip.solver.Model.Constraint;
-import org.mcnip.solver.Model.Interval;
+import org.mcnip.solver.Model.*;
+// import org.mcnip.solver.Model.Clause;
+// import org.mcnip.solver.Model.Constraint;
+// import org.mcnip.solver.Model.Formula;
+// import org.mcnip.solver.Model.Interval;
 import org.mcnip.solver.Parser.AST;
 
 /**
@@ -29,7 +31,7 @@ public class Context {
      */
     private HashMap<String, Interval> varIntervals = new HashMap<>();
 
-    private List<Clause> clauses;
+    private Formula formula;
 
     // Placeholder for actual Parser implementation.
     // private Parser parser = new Parser();

@@ -1,18 +1,18 @@
 package org.mcnip.solver.Parser.BinArithmetic;
 
 import org.mcnip.solver.Parser.AST;
-import org.mcnip.solver.Parser.Constant;
+import org.mcnip.solver.Parser.IntConstant;
 
 public class EXP extends BinOp {
     
     /**
      * 
      * @param node Can be another arithmetic expression or a variable.
-     * @param value Value is a constant value.
+     * @param exponent Exponent is a constant value.
      */
-    public EXP(AST node, Constant value)
+    public EXP(AST node, IntConstant exponent)
     {
-        super(node, value);
+        super(node, exponent);
     }
 
 }
