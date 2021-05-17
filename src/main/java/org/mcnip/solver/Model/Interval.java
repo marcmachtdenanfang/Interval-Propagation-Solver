@@ -11,6 +11,16 @@ public class Interval {
     @Getter @Setter private boolean lowerIsClosed;
     @Getter @Setter private boolean upperIsClosed;
 
+
+    public Interval(String name)
+    {
+        this.varName = name;
+        this.lowerBound = Integer.MIN_VALUE;
+        this.upperBound = Integer.MAX_VALUE;
+        this.lowerIsClosed = false;
+        this.upperIsClosed = false;
+    }
+
     
     public Interval(String name,
                     int lowerBound, 
