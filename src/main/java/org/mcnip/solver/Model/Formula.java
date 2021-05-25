@@ -1,6 +1,5 @@
 package org.mcnip.solver.Model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.mcnip.solver.Contractors.Contractor;

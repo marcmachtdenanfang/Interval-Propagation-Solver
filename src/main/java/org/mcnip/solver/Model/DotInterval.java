@@ -9,4 +9,13 @@ public class DotInterval extends Interval {
         super(name, bound, bound, true, true);
     }
 
+    public DotInterval(String name, double bound)
+    {
+        super(name, bound, bound, true, true);
+    }
+
+    public DotInterval(String name, IPSNumber bound)
+    {
+        super(name, bound, bound, true, true);
+    }
 }
