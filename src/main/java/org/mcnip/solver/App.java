@@ -16,7 +16,7 @@ public class App
 
 
         // Main functionality
-        Context ctx = new Context();
+        //Context ctx = new Context();
 
 
         // while satisfiable do things,
@@ -30,10 +30,10 @@ public class App
         
         ExampleKt.example();
         System.out.println( "Hello World!" );
-        Pair<Integer, Double> p = new Pair(3,4.0, new AddContractor());
-        System.out.println(p.getResult().getClass());
-        System.out.println(3 + p.getResult());
-        int i = p.getResult();
+        //Pair<Integer, Double> p = new Pair(3,4.0, new AddContractor());
+        //System.out.println(p.getResult().getClass());
+        //System.out.println(3 + p.getResult());
+        //int i = p.getResult();
         
 
     }

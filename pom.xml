@@ -33,7 +33,14 @@
       <artifactId>lombok</artifactId>
       <version>1.18.20</version>
       <scope>provided</scope>
-	</dependency>
+	  </dependency>
+    <dependency>
+      <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.10.0</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib</artifactId>

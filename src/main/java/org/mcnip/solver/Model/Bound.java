@@ -19,9 +19,9 @@ public class Bound extends Constraint {
         this.bound = bound;
     }
 
-    public List<String> getVariables()
+    public String[] getVariables()
     {
-        return new ArrayList<String>(){{ add(varName); }};
+        return new String[1];
     }
 
 }

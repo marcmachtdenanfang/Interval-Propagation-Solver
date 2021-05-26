@@ -15,6 +15,10 @@ public abstract class Constraint {
         this.contractor = contractor;
     }
 
-    public abstract List<String> getVariables();
-
+    /**
+     * Order of arguments is important!
+     * @return
+     */
+    public abstract String[] getVariables();
+    
 }

@@ -7,6 +7,7 @@ import org.mcnip.solver.Contractors.Contractor;
 
 import lombok.Getter;
 
+/*
 public class Triplet <T extends Number, U extends Number, V extends Number> extends Constraint
 {
     
@@ -25,6 +26,33 @@ public class Triplet <T extends Number, U extends Number, V extends Number> exte
     public List<String> getVariables()
     {
         return new ArrayList<String>();
+    }
+
+} 
+*/
+
+public class Triplet extends Constraint
+{
+    
+    @Getter private Interval result;
+    @Getter private Interval leftArg;
+    @Getter private Interval rightArg;
+
+    public Triplet(Interval result, Interval leftArg, Interval rightArg, Contractor contractor)
+    {
+        super(contractor);
+        this.result = result;
+        this.leftArg = leftArg;
+        this.rightArg = rightArg;
+    }
+
+    public String[] getVariables()
+    {
+        return new String[] {
+            result.getVarName(), 
+            leftArg.getVarName(),
+            rightArg.getVarName()
+        };
     }
 
 }

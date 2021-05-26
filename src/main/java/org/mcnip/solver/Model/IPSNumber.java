@@ -3,12 +3,24 @@ package org.mcnip.solver.Model;
 import java.math.BigInteger;
 
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 public class IPSNumber {
     
     @Getter private final double     fpValue;
     @Getter private final BigInteger intValue;
     @Getter private final NumberType type;
+
+    public static final IPSNumber ZERO_fp = new IPSNumber(0.0);
+    public static final IPSNumber ONE_fp = new IPSNumber(1.0);
+    public static final IPSNumber TEN_fp = new IPSNumber(10.0);
+    
+    public static final IPSNumber ZERO_int = new IPSNumber(0);
+    public static final IPSNumber ONE_int = new IPSNumber(1);
+    public static final IPSNumber TEN_int = new IPSNumber(10);
+
+
 
     public IPSNumber(double fpValue)
     {
@@ -31,6 +43,9 @@ public class IPSNumber {
         this.fpValue = intValue.doubleValue();
     }
 
+
+
+
     public IPSNumber max(IPSNumber b) // throws Exception
     {
         switch (this.type) 
@@ -44,6 +59,89 @@ public class IPSNumber {
         }
         // throw new Exception("unexpected NumberType enum in Max comparison.");
     }
+
+    /**
+     * This is greater than b.
+     * @param b
+     * @return
+     */
+    public boolean gt(IPSNumber b)
+    {
+        switch (this.type)
+        {
+            case INT:
+                return this.intValue.compareTo(b.getIntValue()) == 1;
+            case REAL:
+                return this.fpValue > b.getFpValue();
+        }
+        return false;
+    }
+
+    /**
+     * this is less than b method.
+     * @param b
+     * @return
+     */
+    public boolean lt(IPSNumber b)
+    {
+        switch (this.type)
+        {
+            case INT:
+                return this.intValue.compareTo(b.getIntValue()) == -1;
+            case REAL:
+                return this.fpValue < b.getFpValue();
+        }
+        return false;
+    }
+
+    /**
+     * This is greater than or equal b.
+     * @param b
+     * @return
+     */
+    public boolean ge(IPSNumber b)
+    {
+        switch (this.type)
+        {
+            case INT:
+                return this.intValue.compareTo(b.getIntValue()) == 1 || this.intValue.compareTo(b.getIntValue()) == 0;
+            case REAL:
+                return this.fpValue >= b.getFpValue();
+        }
+        return false;
+    }
+
+    /**
+     * this is less than or equal b method.
+     * @param b
+     * @return
+     */
+    public boolean le(IPSNumber b)
+    {
+        switch (this.type)
+        {
+            case INT:
+                return this.intValue.compareTo(b.getIntValue()) == -1 || this.intValue.compareTo(b.getIntValue()) == 0;
+            case REAL:
+                return this.fpValue <= b.getFpValue();
+        }
+        return false;
+    }
+
+    public boolean equals(IPSNumber b)
+    {
+        switch (this.type)
+        {
+            case INT:
+                return this.intValue.compareTo(b.getIntValue()) == 0;
+            case REAL:
+                return this.fpValue == b.getFpValue();
+        }
+        return false;
+    }
+
+
+
 
     public IPSNumber min(IPSNumber b) // throws Exception
     {

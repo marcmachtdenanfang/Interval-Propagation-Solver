@@ -1,15 +1,12 @@
 package org.mcnip.solver;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mcnip.solver.Model.*;
-// import org.mcnip.solver.Model.Clause;
-// import org.mcnip.solver.Model.Constraint;
-// import org.mcnip.solver.Model.Formula;
-// import org.mcnip.solver.Model.Interval;
-import org.mcnip.solver.Parser.AST;
+import org.mcnip.solver.SatSolver.Solver;
+
 
 /**
  * This class should provide the core functionality around our solver.
@@ -18,7 +15,11 @@ import org.mcnip.solver.Parser.AST;
  */
 public class Context {
     
-    public Context() {}
+    public Context(Solver solver, Map<String, Interval> varIntervals) 
+    {
+        this.satSolver = solver;
+        this.varIntervals = varIntervals;
+    }
 
     /**
      * Some design choices need to be made.
@@ -29,15 +30,17 @@ public class Context {
      * I would argue to store them separately, because they are not strictly AST elements.
      * Unless they actually are (depending on parser input examples).
      */
-    private HashMap<String, Interval> varIntervals = new HashMap<>();
+    Map<String, Interval> varIntervals;
 
-    private Formula formula;
+    Formula formula;
 
     // Placeholder for actual Parser implementation.
     // private Parser parser = new Parser();
 
     // CDCL should implement the solver interface
-    // private Solver satSolver = new CDCL(clauses);
+    Solver satSolver;
+
+    
 
 
     /**
@@ -46,27 +49,57 @@ public class Context {
     public void update()
     {
         // placeholder, should call an assignment of clauses from cdcl solver
-        List<Constraint> selectedConstraints = new ArrayList<>(); // satSolver.solve(clauses);
+        List<Constraint> selectedConstraints = satSolver.solve(this.formula);
+        
         for(Constraint constraint : selectedConstraints)
         {
+            // Find the constraints variables and put them in a Map.
             HashMap<String, Interval> intervals = new HashMap<>();
             for(String id : constraint.getVariables())
             {
-                intervals.put(id, varIntervals.get(id));
+                intervals.put(id, this.varIntervals.get(id));
             }
-            
-            // c
-            updateIntervals(intervals, constraint);
+
+            Map<String, Interval> tempMap = updateIntervals(intervals, constraint);
+
+            // replace original intervals with the contracted intervals.
+            for(String k : tempMap.keySet())
+            {
+                this.varIntervals.replace(k, tempMap.get(k));
+            }
+
         }
     }
 
-    private void updateIntervals(HashMap<String, Interval> intervals, Constraint clause) {
-        for(String id : clause.getVariables())
+    Map<String, Interval> updateIntervals(Map<String, Interval> intervals, Constraint constraint) {
+        /*
+        // Using this approach we can remove the first argument of the method (Map<String, Interval> intervals)
+        // Disadvantage: this method is reliant on state.
+        // Do we want that? 
+        // Not really => return Map of the intervals, thereby THIS method is not stateful.
+        // Easier to test among other benefits.
+        HashMap<String, Interval> i2 = new HashMap<>();
+        for(String id : constraint.getVariables())
         {
-
-            // AST exp = clause.getArExp();
-            // traverse the arithmetic expression, to see what contractors need to be called.
+            i2.put(id, varIntervals.get(id));
         }
+
+        Map<String, Interval> r = constraint.getContractor().contract(i2, constraint.getVariables());
+
+        for(String id : r.keySet())
+        {
+            varIntervals.replace(id, intervals.get(id), r.get(id));
+        }
+        */
+        
+        Map<String, Interval> r = constraint.getContractor().contract(intervals, constraint.getVariables());
+
+        for(String id : r.keySet())
+        {
+            intervals.replace(id, r.get(id));
+        }
+
+        return r;
     }
 
 }

@@ -1,8 +1,5 @@
 package org.mcnip.solver.Model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mcnip.solver.Contractors.Contractor;
 
 import lombok.Getter;
@@ -14,26 +11,29 @@ import lombok.Getter;
  * Pairs and Triplets are always equalities. 
  * They are never any other relation.
  */
-public class Pair<T extends Number, U extends Number> extends Constraint
+public class Pair extends Constraint
 {
    
-    @Getter private T result;
-    @Getter private U origin;
+    @Getter private Interval result;
+    @Getter private Interval origin;
 
     /**
      * @param result Value or variable that expression results in.
      * @param origin Expression or variable that constrains the result.
      */
-    public Pair(T result, U origin, Contractor contractor)
+    public Pair(Interval result, Interval origin, Contractor contractor)
     {
         super(contractor);
         this.result = result;
         this.origin = origin;
     }
 
-    public List<String> getVariables()
+    public String[] getVariables()
     {
-        return new ArrayList<String>();
+        return new String[] {
+            result.getVarName(), 
+            origin.getVarName(),
+        };
     }
 
     void printSomething()
