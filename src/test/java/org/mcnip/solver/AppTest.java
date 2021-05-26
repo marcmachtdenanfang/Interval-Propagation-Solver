@@ -63,18 +63,18 @@ public class AppTest
         HashMap<String, Interval> intervals = new HashMap<>();
         for(String id : triple.getVariables())
         {
-            intervals.put(id, ctx.varIntervals.get(id));
+            intervals.put(id, in.get(id));
         }
 
-        Map<String, Interval> tempMap = ctx.updateIntervals(ctx.varIntervals, triple);
+        Map<String, Interval> tempMap = ctx.updateIntervals(intervals, triple);
         
-        assertTrue(ctx.varIntervals.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
-        assertTrue(ctx.varIntervals.get("y").getLowerBound().equals(new IPSNumber(9)));
-        assertTrue(ctx.varIntervals.get("z").getLowerBound().equals(IPSNumber.TEN_int));
+        assertTrue(tempMap.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
+        assertTrue(tempMap.get("y").getLowerBound().equals(new IPSNumber(9)));
+        assertTrue(tempMap.get("z").getLowerBound().equals(IPSNumber.TEN_int));
 
-        assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));
-        assertTrue(ctx.varIntervals.get("y").getUpperBound().equals(IPSNumber.TEN_int));
-        assertTrue(ctx.varIntervals.get("z").getUpperBound().equals(IPSNumber.TEN_int));
+        assertTrue(tempMap.get("x").getUpperBound().equals(IPSNumber.ONE_int));
+        assertTrue(tempMap.get("y").getUpperBound().equals(IPSNumber.TEN_int));
+        assertTrue(tempMap.get("z").getUpperBound().equals(IPSNumber.TEN_int));
 
         // check 
 
