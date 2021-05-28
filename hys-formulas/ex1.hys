@@ -1,0 +1,31 @@
+--------------------------------------------------------------------------------
+--
+--  HYSAT sample input file.
+--
+--  Author : Christian Herde
+--
+--  Last Modified : 
+--		Tue Nov 17 16:09:48 CET 2009
+--
+--------------------------------------------------------------------------------
+    
+
+-- Monkey and Coconut Problem, described at
+-- http://mathworld.wolfram.com/MonkeyandCoconutProblem.html
+--
+-- Call: hysat --minimize N monkey_and_coconut_problem.hys
+-- Optimal value: 15621
+
+
+DECL
+    define n = 5;
+    define m = 1;
+    int [0,100000] a1, a2, a3, a4, a5, a, N;
+
+EXPR
+    n * a1 + m = N;
+    n * a2 + m = N + -a1 + -1 * m;
+    n * a3 + m = N + -a1 + -a2 + -2 * m;
+    n * a4 + m = N + -a1 + -a2 + -a3 + -3 * m;
+    n * a5 + m = N + -a1 + -a2 + -a3 + -a4 + -4 * m;
+    n * a  + m = N + -a1 + -a2 + -a3 + -a4 + -a5 + -5 * m;

@@ -4,10 +4,6 @@ typealias UnaryOperations = MutableList<String>
 typealias BinaryOperations = MutableList<Pair<String, String>>
 typealias Bound = Triple<String, String, String>
 
-fun test() {
-  println("abc.")
-}
-
 class Parser(filePath: String) {
 
   val constants = mutableMapOf<String, Number>()
@@ -18,6 +14,7 @@ class Parser(filePath: String) {
   val brackets = mutableListOf<String>()
   val multiplications: BinaryOperations = mutableListOf()
   val additions: BinaryOperations = mutableListOf()
+  val subtractions: BinaryOperations = mutableListOf()
   val absolutes: UnaryOperations = mutableListOf()
   val minimums: BinaryOperations = mutableListOf()
   val maximums: BinaryOperations = mutableListOf()
@@ -30,7 +27,7 @@ class Parser(filePath: String) {
   private val biBraOps = listOf("min", "max", "pow", "nrt")
   private val braOps = unBraOps + biBraOps
   private val relOps = listOf(">=", "<=", "!=", "=", ">", "<")
-  private val opMap = mapOf('^' to "pow", '*' to "mul", '+' to "add")
+  private val opMap = mapOf('^' to "pow", '*' to "mul", '+' to "add", '-' to "sub")
   private val intReg = Regex("\\d+(\\b|$)")
   private val floatReg = Regex("\\d+[.]\\d+(\\b|$)")
   private val varReg = Regex("[_a-zA-Z]+\\w*(\\b|$)")
@@ -133,6 +130,8 @@ class Parser(filePath: String) {
 
       expr = additions.addAllFrom(expr, '+')
 
+      //TODO expr = subtractions.addAllFrom(expr, '-')
+
       expr = bound(expr)
 
       cleanUp(expr)
@@ -187,7 +186,7 @@ class Parser(filePath: String) {
       }
   }
 
-  override fun toString() = "constants:\n$constants\n\nvariables:\n$variables\n\nbooleans:\n$booleans\n\nclauses:\n$clauses\n\nbounds:\n$bounds\n\nbrackets:\n$brackets\n\nmultiplications:\n$multiplications\n\nadditions:\n$additions\n\nabsolutes:\n$absolutes\n\nminimums:\n$minimums\n\nmaximums:\n$maximums\n\nexponents:\n$exponents\n\nsines:\n$sines\n\ncosines:\n$cosines\n\npowers:\n$powers\n\nroots:\n$roots"
+  override fun toString() = "constants:\n$constants\n\nvariables:\n$variables\n\nbooleans:\n$booleans\n\nclauses:\n$clauses\n\nbounds:\n$bounds\n\nbrackets:\n$brackets\n\nmultiplications:\n$multiplications\n\nadditions:\n$additions\n\nsubtractions:\n$subtractions\n\nabsolutes:\n$absolutes\n\nminimums:\n$minimums\n\nmaximums:\n$maximums\n\nexponents:\n$exponents\n\nsines:\n$sines\n\ncosines:\n$cosines\n\npowers:\n$powers\n\nroots:\n$roots"
 
   fun asCNF(): String = "CNF:" +
       constants.toList().joinToString(separator = "") { "\n{${it.first} = ${it.second}}" } +
@@ -197,6 +196,7 @@ class Parser(filePath: String) {
       } + brackets.mapIndexed { idx, it -> "\n{_bra$idx = $it}" }.joinToString("") +
       multiplications.mapIndexed { idx, it -> "\n{_mul$idx = ${it.first} * ${it.second}}" }.joinToString("") +
       additions.mapIndexed { idx, it -> "\n{_add$idx = ${it.first} + ${it.second}}" }.joinToString("") +
+      subtractions.mapIndexed { idx, it -> "\n{_sub$idx = ${it.first} - ${it.second}}" }.joinToString("") +
       absolutes.mapIndexed { idx, it -> "\n{_abs$idx = abs($it)}" }.joinToString("") +
       minimums.mapIndexed { idx, it -> "\n{_min$idx = min(${it.first}, ${it.second})}" }.joinToString("") +
       maximums.mapIndexed { idx, it -> "\n{_max$idx = max(${it.first}, ${it.second})}" }.joinToString("") +

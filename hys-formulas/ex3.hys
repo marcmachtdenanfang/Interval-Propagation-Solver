@@ -1,0 +1,24 @@
+--------------------------------------------------------------------------------
+--
+--  HYSAT sample input file.
+--
+--  Author : Christian Herde
+--
+--  Last Modified : 
+--		Tue Nov 17 16:10:01 CET 2009
+--
+--------------------------------------------------------------------------------
+    
+
+-- Brahmagupta's Problem, described at
+-- http://mathworld.wolfram.com/BrahmaguptasProblem.html
+--
+-- Call: hysat --minimize x brahmaguptas_problem.hys
+-- Optimal value: x = 1151
+
+
+DECL
+    int [1, 10000] x, y;
+
+EXPR
+    x^2 + -92 * y^2 = 1;

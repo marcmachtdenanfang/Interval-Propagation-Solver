@@ -18,7 +18,7 @@ public class ParserTest {
     @Test
     public void KotlinStaticTest()
     {
-        ParserKt.test();
+        ExampleKt.example();
     }
 
     @Test(expected = FileNotFoundException.class)
@@ -28,9 +28,9 @@ public class ParserTest {
     }
 
     @Test
-    public void KotlinFileFoundTest()
-    {
-        Parser p = new Parser("./hys-formulas/bouncing_ball_euler.hys");
+    public void KotlinFileFoundTest() {
+        Parser p = new Parser("./hys-formulas/ex0.hys");
+        System.out.println(p.asCNF());
     }
     
 }
