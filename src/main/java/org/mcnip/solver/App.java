@@ -13,6 +13,10 @@ public class App
     public static void main( String[] args )
     {
         // Parsing
+        if (args.length > 0) {
+            Parser parser = new Parser(args[0]);
+            System.out.println(parser.asCNF());
+        }
 
 
         // Main functionality
@@ -27,9 +31,6 @@ public class App
 
         // if correct result, terminate with solution.
 
-        
-        ExampleKt.example();
-        System.out.println( "Hello World!" );
         //Pair<Integer, Double> p = new Pair(3,4.0, new AddContractor());
         //System.out.println(p.getResult().getClass());
         //System.out.println(3 + p.getResult());

@@ -7,9 +7,9 @@
 mvn package
 
 
-*To run the solver:* (no functionality yet)
+*To run the solver:* (not much functionality yet)
 
-java -cp target/Interval-Propagation-Solver-0.1-ALPHA.jar org.mcnip.solver.App
+java -cp target/Interval-Propagation-Solver-0.1-ALPHA.jar;path-to-download/kotlin-stdlib-1.5.0.jar org.mcnip.solver.App "path-to-hysat-input"
 
 
 We need a mechanism to call an error when a contraction fails.
