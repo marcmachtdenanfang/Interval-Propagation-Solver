@@ -12,15 +12,15 @@ public class Interval {
     @Getter         private String    varName;
     @Getter @Setter private IPSNumber lowerBound;
     @Getter @Setter private IPSNumber upperBound;
-    @Getter @Setter private boolean   lowerIsClosed;
-    @Getter @Setter private boolean   upperIsClosed;
+    @Getter private boolean   lowerIsClosed;
+    @Getter private boolean   upperIsClosed;
 
 
-    public Interval(String name)
+    public Interval(String name, NumberType t)
     {
         this.varName = name;
-        this.lowerBound = null;
-        this.upperBound = null;
+        this.lowerBound = new IPSNumber(Double.NEGATIVE_INFINITY, t);
+        this.upperBound = new IPSNumber(Double.POSITIVE_INFINITY, t);
         this.lowerIsClosed = true;
         this.upperIsClosed = true;
     }
@@ -34,8 +34,8 @@ public class Interval {
         boolean upperIsClosed)
     {
         this.varName = name;
-        this.lowerBound = new IPSNumber(lowerBound);
-        this.upperBound = new IPSNumber(upperBound);
+        this.lowerBound = new IPSNumber(lowerBound, NumberType.INT);
+        this.upperBound = new IPSNumber(upperBound, NumberType.INT);
         this.lowerIsClosed = lowerIsClosed;
         this.upperIsClosed = upperIsClosed;
     }
@@ -62,8 +62,8 @@ public class Interval {
         boolean upperIsClosed)
     {
         this.varName = name;
-        this.lowerBound = new IPSNumber(lowerBound);
-        this.upperBound = new IPSNumber(upperBound);
+        this.lowerBound = new IPSNumber(lowerBound, NumberType.REAL);
+        this.upperBound = new IPSNumber(upperBound, NumberType.REAL);
         this.lowerIsClosed = lowerIsClosed;
         this.upperIsClosed = upperIsClosed;
     }
@@ -76,8 +76,8 @@ public class Interval {
         boolean upperIsClosed)
     {
         this.varName = name;
-        this.lowerBound = new IPSNumber(lowerBound);
-        this.upperBound = new IPSNumber(upperBound);
+        this.lowerBound = new IPSNumber(lowerBound, NumberType.INT);
+        this.upperBound = new IPSNumber(upperBound, NumberType.INT);
         this.lowerIsClosed = lowerIsClosed;
         this.upperIsClosed = upperIsClosed;
     }

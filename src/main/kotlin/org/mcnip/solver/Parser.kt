@@ -4,6 +4,10 @@ typealias UnaryOperations = MutableList<String>
 typealias BinaryOperations = MutableList<Pair<String, String>>
 typealias Bound = Triple<String, String, String>
 
+fun test() {
+  println("abc.")
+}
+
 class Parser(filePath: String) {
 
   val constants = mutableMapOf<String, Number>()

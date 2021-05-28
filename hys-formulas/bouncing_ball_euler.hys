@@ -1,0 +1,109 @@
+--------------------------------------------------------------------------------
+--
+--  HySAT model of a bouncing ball.
+--
+--  Author : Christian Herde
+--
+--  Last Modified :
+--              Tue Nov 29 11:22:05 CET 2005
+--
+--------------------------------------------------------------------------------
+--
+--  We consider the motion of a bouncing ball which is dropped from an
+--  initial hight and which is given a certain initial velocity in horizontal
+--  direction. As the ball falls it is accelerated in vertical direction
+--  by gravity. The moment when the ball contacts the ground is modeled
+--  as a discrete transition ('jump') where the ball loses a certain fraction
+--  of its energy. The task of the solver is to find an initial hight and an
+--  initial velocity so that the ball hits a hole which is located
+--  at a certain distance xh_hole from the starting point. To exclude trivial
+--  solutions - those where the ball does not bounce at all - the initial
+--  hight and velocity are upper bounded by xv_limit and yh_limit.
+--
+--  We assume that the ball is moving in horizontal direction with a constant
+--  velocity which only changes when the ball hits the ground, i.e. dxh/dt = yh
+--  where xh is the horizontal position of the ball and yh is its horizontal
+--  velocity. If time advances by an interval of dt, the successor value of xh
+--  is given by
+--
+--  xh_{t+dt} = xh_t + dt * yh_t
+--
+--  The vertical dynamics of the continuous behaviour of the bouncing ball is
+--  given by dxv/dt = yv and dyv/dt = -g, i.e. by dxv/dyv = yv/-g, where
+--  xv and yv are the vertical position and the vertical velocity of the ball
+--  and g is the acceleration of earth.
+--
+--  The exact successor values when time advances by an interval of dt are
+--  xv_{t+dt} = xv_t + (dt * yv_t - 0.5 * g * dt^2) and
+--  yv_{t+dt} = yv_t - dt * g.
+--
+--  As opposed to this, euler integration yields
+--  xvp_{t+dt} = xv_t + dt * yv_t and
+--  yvp_{t+dt} = yv_t - dt * g.
+--
+--  Thus, euler integration entails the following approximation error:
+--  xv_{t+dt} - xvp_{t+dt} = -0.5 * g * dt^2
+--  yv_{t+dt} - yvp_{t+dt} = 0
+--
+--  As -0.5 * g * dt^2 is a term which does not vary over time we
+--  can subtract it from xvp_{t+dt} which leaves us with an exact linear
+--  model of the continuous behaviour of the bouncing ball.
+--
+--------------------------------------------------------------------------------
+
+
+DECL
+    boole jump;                -- true iff ball bounces
+    int [0, 15] n;             -- bounce counter
+    float [0.0, 10000] t;      -- global time
+    float [-100.0, 100.0] xv;  -- vertical position of the ball
+    float [-100.0, 100.0] yv;  -- vertical velocity of the ball
+    float [-100.0, 100.0] xh;  -- horizontal position of the ball
+    float [-100.0, 100.0] yh;  -- horizontal velocity of the ball
+
+    define dt = 0.2;           -- discrete time adances in steps of size dt
+    define g  = 9.8;           -- gravitational acceleration on earth
+    define lv = 0.3;           -- loss of speed in vertical direction
+    define lh = 0.1;           -- loss of speed in horizontal direction
+    define xv_limit = 15.0;    -- upper bound of the initial hight
+    define vh_limit = 5.0;     -- upper bound of the initial horizontal speed
+    define xh_hole  = 40.0;    -- position of the hole
+
+INIT
+    -- Conditions at the moment when ball is dropped.
+    xv <= xv_limit;
+    yv = 0.0;
+
+    xh = 0.0;
+    yh <= vh_limit;
+
+    n = 0;
+    t = 0.0;
+
+TRANS
+    -- A jump occurs if the heigth of the ball is zero and the velocity
+    -- is directed towards the ground.
+    jump <-> (xv <= 0.0 and yv < 0.0);
+
+
+    -- Continuous part of the dynamics.
+    !jump ->
+        (xv' = xv + dt * yv  - 0.5 * g * dt^2 and
+         yv' = yv - dt * g and
+         xh' = xh + dt * yh and
+         yh' = yh and
+         n' = n and
+         t' = t + dt);
+
+    -- Discrete part of the dynamics.
+    jump ->
+        (xv' = 0.0 and
+         yv' = -(1.0 - lv) * yv and
+         xh' = xh and
+         yh' = (1.0 - lh) * yh and
+         n' = n + 1 and
+         t' = t);
+
+TARGET
+    -- The ball shall hit the hole on ground level.
+    xh = xh_hole and xv = 0.0;

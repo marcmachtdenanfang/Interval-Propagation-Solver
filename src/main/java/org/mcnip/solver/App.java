@@ -29,6 +29,8 @@ public class App
 
         
         ExampleKt.example();
+        ParserKt.test();
+        Parser p = new Parser("abcd");
         System.out.println( "Hello World!" );
         //Pair<Integer, Double> p = new Pair(3,4.0, new AddContractor());
         //System.out.println(p.getResult().getClass());

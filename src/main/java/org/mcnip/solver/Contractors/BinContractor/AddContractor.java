@@ -6,8 +6,9 @@ import java.util.Map;
 import org.mcnip.solver.Contractors.Contractor;
 import org.mcnip.solver.Model.IPSNumber;
 import org.mcnip.solver.Model.Interval;
+import org.mcnip.solver.Model.NumberType;
 
-public class AddContractor implements Contractor{
+public class AddContractor implements Contractor {
 
     public AddContractor() {}
 
@@ -23,20 +24,41 @@ public class AddContractor implements Contractor{
         String leftArg  = names[1];
         String rightArg = names[2];
 
+        if(leftArg.equals(rightArg))
+        {
+            // do res = 2*x; contraction.
+        }
+
+        
         IPSNumber inResLowerBound   = in.get(res).getLowerBound();
         IPSNumber inResUpperBound   = in.get(res).getUpperBound();
         IPSNumber inLeftLowerBound  = in.get(leftArg).getLowerBound();
         IPSNumber inLeftUpperBound  = in.get(leftArg).getUpperBound();
         IPSNumber inRightLowerBound = in.get(rightArg).getLowerBound();
         IPSNumber inRightUpperBound = in.get(rightArg).getUpperBound();
-
         
-
+        // NumberType type = inResLowerBound.getType();
 
         // hande result interval:
         IPSNumber resLowerBound = inResLowerBound.max(inLeftLowerBound.add(inRightLowerBound));
         IPSNumber resUpperBound = inResUpperBound.min(inLeftUpperBound.add(inRightUpperBound));
-        Interval j = new Interval(res, resLowerBound, resUpperBound, true, true);
+        boolean temp = in.get(leftArg).isLowerIsClosed() & in.get(rightArg).isLowerIsClosed();
+        boolean resLowerIsClosed;
+        if(inResLowerBound.ge(inLeftLowerBound.add(inRightLowerBound))) {
+            resLowerIsClosed = in.get(res).isLowerIsClosed() || temp;
+        } else {
+            resLowerIsClosed = temp;
+        }
+
+        boolean temp1 = in.get(leftArg).isUpperIsClosed() & in.get(rightArg).isUpperIsClosed();
+        boolean resUpperIsClosed;
+        if(inResUpperBound.ge(inLeftUpperBound.add(inRightUpperBound))) {
+
+        }
+
+
+
+        Interval j = new Interval(res, resLowerBound, resUpperBound, resLowerIsClosed, true);
         resultIntervals.put(res, j);
 
 
@@ -56,5 +78,27 @@ public class AddContractor implements Contractor{
         return resultIntervals;
     }
 
+
+    /**
+     * 
+     * @param type 0 = min, 1 = max
+     * @param a
+     * @param b
+     * @param aBound
+     * @param bBound
+     * @return true if bound is closed, false if bound is open.
+     */
+    private boolean calculateBound(int type, IPSNumber a, IPSNumber b, boolean aBound, boolean bBound)
+    {
+        switch (type)
+        {
+            case 0:
+
+                return false;
+            default:
+                break;
+        }
+        return false;
+    }
 
 }
