@@ -18,7 +18,6 @@ public class App
             System.out.println(parser.asCNF());
         }
 
-
         // Main functionality
         //Context ctx = new Context();
 
