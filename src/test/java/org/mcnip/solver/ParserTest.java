@@ -28,8 +28,14 @@ public class ParserTest {
     }
 
     @Test
-    public void KotlinFileFoundTest() {
+    public void ex00Test() {
         Parser p = new Parser("./hys-formulas/ex0.hys");
+        System.out.println(p.asCNF());
+    }
+
+    @Test
+    public void ex04Test() {
+        Parser p = new Parser("./hys-formulas/ex4.hys");
         System.out.println(p.asCNF());
     }
     
