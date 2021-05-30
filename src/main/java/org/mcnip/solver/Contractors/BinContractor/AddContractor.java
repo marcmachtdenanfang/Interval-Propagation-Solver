@@ -6,7 +6,6 @@ import java.util.Map;
 import org.mcnip.solver.Contractors.Contractor;
 import org.mcnip.solver.Model.IPSNumber;
 import org.mcnip.solver.Model.Interval;
-import org.mcnip.solver.Model.NumberType;
 
 public class AddContractor implements Contractor {
 

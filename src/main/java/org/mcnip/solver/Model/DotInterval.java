@@ -1,5 +1,7 @@
 package org.mcnip.solver.Model;
 
+import java.math.BigInteger;
+
 public class DotInterval extends Interval {
     
     public DotInterval(String name, int bound)
@@ -18,4 +20,10 @@ public class DotInterval extends Interval {
     {
         super(name, bound, bound, true, true);
     }
+
+    public DotInterval(String name, BigInteger bound)
+    {
+        super(name, bound, bound, true, true);
+    }
+
 }

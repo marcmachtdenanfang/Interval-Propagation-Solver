@@ -1,5 +1,6 @@
 package org.mcnip.solver;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import org.mcnip.solver.Model.DotInterval;
 import org.mcnip.solver.Model.Formula;
 import org.mcnip.solver.Model.IPSNumber;
 import org.mcnip.solver.Model.Interval;
-import org.mcnip.solver.Model.NumberType;
+import org.mcnip.solver.Model.Type;
 import org.mcnip.solver.Model.Triplet;
 import org.mcnip.solver.SatSolver.Solver;
 
@@ -60,7 +61,6 @@ public class AppTest
 
         Context ctx = new Context(mockedSolver, in);
         
-
         // simulate behaviour of ctx.update() method.
         HashMap<String, Interval> intervals = new HashMap<>();
         for(String id : triple.getVariables())
@@ -71,15 +71,18 @@ public class AppTest
         Map<String, Interval> tempMap = ctx.updateIntervals(intervals, triple);
         
         assertTrue(tempMap.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
-        assertTrue(tempMap.get("y").getLowerBound().equals(new IPSNumber(9, NumberType.INT)));
+        assertTrue(tempMap.get("y").getLowerBound().equals(new IPSNumber(9, Type.INT)));
         assertTrue(tempMap.get("z").getLowerBound().equals(IPSNumber.TEN_int));
 
         assertTrue(tempMap.get("x").getUpperBound().equals(IPSNumber.ONE_int));
         assertTrue(tempMap.get("y").getUpperBound().equals(IPSNumber.TEN_int));
         assertTrue(tempMap.get("z").getUpperBound().equals(IPSNumber.TEN_int));
-
-        assertTrue(true);
-
+        
+        // original y should be the same as before.
+        assertFalse(y.getLowerBound().equals(new IPSNumber(9, Type.INT)));
+        assertFalse(intervals.get("y").getLowerBound().equals(new IPSNumber(9, Type.INT)));
+        assertTrue(y.getLowerBound().equals(IPSNumber.ZERO_int));
+        assertTrue(intervals.get("y").getLowerBound().equals(IPSNumber.ZERO_int));
     }
 
     /**
@@ -113,7 +116,7 @@ public class AppTest
 
         // Check results for Correctness.
         assertTrue(ctx.varIntervals.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
-        assertTrue(ctx.varIntervals.get("y").getLowerBound().equals(new IPSNumber(9, NumberType.INT)));
+        assertTrue(ctx.varIntervals.get("y").getLowerBound().equals(new IPSNumber(9, Type.INT)));
         assertTrue(ctx.varIntervals.get("z").getLowerBound().equals(IPSNumber.TEN_int));
 
         assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));

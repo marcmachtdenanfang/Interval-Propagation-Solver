@@ -5,23 +5,31 @@ import java.math.BigInteger;
 import lombok.Getter;
 import lombok.ToString;
 
+
+/**
+ * The wrapper type for numerals in our system.
+ * Wraps both floating-points as well as arbitrary size integers.
+ * We use BigIntegers in order to avoid integer overflows.
+ * Symbolic Infinity can be queried with the IPSNumber's fpValue 
+ * (DOUBLE.POSITIVE_INFINITY or DOUBLE.NEGATIVE_INFINITY).
+ */
 @ToString
 public class IPSNumber {
     
     @Getter private final double     fpValue;
     @Getter private final BigInteger intValue;
-    @Getter private final NumberType type;
+    @Getter private final Type type;
 
-    public static final IPSNumber ZERO_fp = new IPSNumber(0.0, NumberType.REAL);
-    public static final IPSNumber ONE_fp = new IPSNumber(1.0, NumberType.REAL);
-    public static final IPSNumber TEN_fp = new IPSNumber(10.0, NumberType.REAL);
+    public static final IPSNumber ZERO_fp = new IPSNumber(0.0, Type.REAL);
+    public static final IPSNumber ONE_fp = new IPSNumber(1.0, Type.REAL);
+    public static final IPSNumber TEN_fp = new IPSNumber(10.0, Type.REAL);
     
-    public static final IPSNumber ZERO_int = new IPSNumber(0, NumberType.INT);
-    public static final IPSNumber ONE_int = new IPSNumber(1, NumberType.INT);
-    public static final IPSNumber TEN_int = new IPSNumber(10, NumberType.INT);
+    public static final IPSNumber ZERO_int = new IPSNumber(0, Type.INT);
+    public static final IPSNumber ONE_int = new IPSNumber(1, Type.INT);
+    public static final IPSNumber TEN_int = new IPSNumber(10, Type.INT);
 
 
-    public IPSNumber(double value, NumberType t)
+    public IPSNumber(double value, Type t)
     {
         this.type = t; // NumberType.REAL;
         this.fpValue = value;
@@ -32,14 +40,14 @@ public class IPSNumber {
         }
     }
 
-    public IPSNumber(int intValue, NumberType t)
+    public IPSNumber(int intValue, Type t)
     {
         this.type = t; // NumberType.INT;
         this.fpValue = (double) intValue;
         this.intValue = new BigInteger(String.valueOf(intValue));
     }
 
-    public IPSNumber(BigInteger intValue, NumberType t)
+    public IPSNumber(BigInteger intValue, Type t)
     {
         this.type = t; // NumberType.INT;
         this.intValue = intValue;
@@ -54,9 +62,9 @@ public class IPSNumber {
         switch (this.type) 
         {
             case INT:
-                return new IPSNumber(this.intValue.max(b.getIntValue()), NumberType.INT);
+                return new IPSNumber(this.intValue.max(b.getIntValue()), Type.INT);
             case REAL:
-                return new IPSNumber(Double.max(this.fpValue, b.getFpValue()), NumberType.REAL);
+                return new IPSNumber(Double.max(this.fpValue, b.getFpValue()), Type.REAL);
             default:
                 return null; // break;
         }
@@ -151,9 +159,9 @@ public class IPSNumber {
         switch (this.type) 
         {
             case INT:
-                return new IPSNumber(this.intValue.min(b.getIntValue()), NumberType.INT);
+                return new IPSNumber(this.intValue.min(b.getIntValue()), Type.INT);
             case REAL:
-                return new IPSNumber(Double.min(this.fpValue, b.getFpValue()), NumberType.REAL);
+                return new IPSNumber(Double.min(this.fpValue, b.getFpValue()), Type.REAL);
             default:
                 return null; // break;
         }
@@ -174,11 +182,11 @@ public class IPSNumber {
             // For now we assume that arithmetic operations always have equal type.
             case INT:
                 if(this.getIntValue() == null || b.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue + b.getFpValue(), NumberType.INT);
+                    return new IPSNumber(this.fpValue + b.getFpValue(), Type.INT);
                 }
-                return new IPSNumber(this.intValue.add(b.getIntValue()), NumberType.INT);
+                return new IPSNumber(this.intValue.add(b.getIntValue()), Type.INT);
             case REAL:
-                return new IPSNumber(this.fpValue + b.getFpValue(), NumberType.REAL);
+                return new IPSNumber(this.fpValue + b.getFpValue(), Type.REAL);
             default:
                 return null; // break;
         }
@@ -192,11 +200,11 @@ public class IPSNumber {
         {
             case INT:
                 if(this.getIntValue() == null || b.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue - b.getFpValue(), NumberType.INT);
+                    return new IPSNumber(this.fpValue - b.getFpValue(), Type.INT);
                 }
-                return new IPSNumber(this.intValue.subtract(b.getIntValue()), NumberType.INT);
+                return new IPSNumber(this.intValue.subtract(b.getIntValue()), Type.INT);
             case REAL:
-                return new IPSNumber(this.fpValue - b.getFpValue(), NumberType.REAL);
+                return new IPSNumber(this.fpValue - b.getFpValue(), Type.REAL);
             default:
                 return null; // break;
         }
@@ -209,11 +217,11 @@ public class IPSNumber {
         {
             case INT:
                 if(this.getIntValue() == null || b.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue * b.getFpValue(), NumberType.INT);
+                    return new IPSNumber(this.fpValue * b.getFpValue(), Type.INT);
                 }
-                return new IPSNumber(this.intValue.multiply(b.getIntValue()), NumberType.INT);
+                return new IPSNumber(this.intValue.multiply(b.getIntValue()), Type.INT);
             case REAL:
-                return new IPSNumber(this.fpValue * b.getFpValue(), NumberType.REAL);
+                return new IPSNumber(this.fpValue * b.getFpValue(), Type.REAL);
             default:
                 return null; // break;
         }
@@ -228,11 +236,11 @@ public class IPSNumber {
                 // This must certainly be changed in the future.
                 // infinity/infinity == NaN!
                 if(this.getIntValue() == null || b.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue / b.getFpValue(), NumberType.INT);
+                    return new IPSNumber(this.fpValue / b.getFpValue(), Type.INT);
                 }
-                return new IPSNumber(this.intValue.divide(b.getIntValue()), NumberType.INT);
+                return new IPSNumber(this.intValue.divide(b.getIntValue()), Type.INT);
             case REAL:
-                return new IPSNumber(this.fpValue / b.getFpValue(), NumberType.REAL);
+                return new IPSNumber(this.fpValue / b.getFpValue(), Type.REAL);
             default:
                 return null; // break;
         }
@@ -247,11 +255,11 @@ public class IPSNumber {
         {
             case INT:
                 if(this.getIntValue() == null) {
-                    return new IPSNumber(Math.sqrt(this.fpValue), NumberType.INT);
+                    return new IPSNumber(Math.sqrt(this.fpValue), Type.INT);
                 }
-                return new IPSNumber(this.intValue.sqrt(), NumberType.INT);
+                return new IPSNumber(this.intValue.sqrt(), Type.INT);
             case REAL:
-                return new IPSNumber(Math.sqrt(this.fpValue), NumberType.REAL);
+                return new IPSNumber(Math.sqrt(this.fpValue), Type.REAL);
             default:
                 return null; // break;
         }
@@ -264,11 +272,11 @@ public class IPSNumber {
         {
             case INT:
                 if(this.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue, NumberType.INT);
+                    return new IPSNumber(this.fpValue, Type.INT);
                 }
-                return new IPSNumber(this.intValue.pow(constant), NumberType.INT);
+                return new IPSNumber(this.intValue.pow(constant), Type.INT);
             case REAL:
-                return new IPSNumber(Math.pow(this.fpValue, constant), NumberType.REAL);
+                return new IPSNumber(Math.pow(this.fpValue, constant), Type.REAL);
             default:
                 return null; // break;
         }
@@ -281,11 +289,11 @@ public class IPSNumber {
         {
             case INT:
                 if(this.getIntValue() == null) {
-                    return new IPSNumber(-1*this.fpValue, NumberType.INT);
+                    return new IPSNumber(-1*this.fpValue, Type.INT);
                 }
-                return new IPSNumber(this.intValue.negate(), NumberType.INT);
+                return new IPSNumber(this.intValue.negate(), Type.INT);
             case REAL:
-                return new IPSNumber(-1*this.fpValue, NumberType.REAL);
+                return new IPSNumber(-1*this.fpValue, Type.REAL);
             default:
                 return null; // break;
         }

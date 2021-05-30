@@ -1,13 +1,9 @@
 package org.mcnip.solver.Model;
 
 import org.mcnip.solver.Contractors.Contractor;
-
 import lombok.Getter;
 
-
 /**
- * Needs to be reworked, to accomodate variables as result/origin.
- * 
  * Pairs and Triplets are always equalities. 
  * They are never any other relation.
  */

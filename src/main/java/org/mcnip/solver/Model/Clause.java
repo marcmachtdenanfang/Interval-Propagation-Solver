@@ -14,4 +14,5 @@ public class Clause {
         this.variables = variables;
         this.constraints = constraints;
     }
+    
 }

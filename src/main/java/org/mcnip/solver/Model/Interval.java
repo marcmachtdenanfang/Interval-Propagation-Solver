@@ -12,11 +12,11 @@ public class Interval {
     @Getter         private String    varName;
     @Getter @Setter private IPSNumber lowerBound;
     @Getter @Setter private IPSNumber upperBound;
-    @Getter private boolean   lowerIsClosed;
-    @Getter private boolean   upperIsClosed;
+    @Getter         private boolean   lowerIsClosed;
+    @Getter         private boolean   upperIsClosed;
 
 
-    public Interval(String name, NumberType t)
+    public Interval(String name, Type t)
     {
         this.varName = name;
         this.lowerBound = new IPSNumber(Double.NEGATIVE_INFINITY, t);
@@ -34,8 +34,8 @@ public class Interval {
         boolean upperIsClosed)
     {
         this.varName = name;
-        this.lowerBound = new IPSNumber(lowerBound, NumberType.INT);
-        this.upperBound = new IPSNumber(upperBound, NumberType.INT);
+        this.lowerBound = new IPSNumber(lowerBound, Type.INT);
+        this.upperBound = new IPSNumber(upperBound, Type.INT);
         this.lowerIsClosed = lowerIsClosed;
         this.upperIsClosed = upperIsClosed;
     }
@@ -62,8 +62,8 @@ public class Interval {
         boolean upperIsClosed)
     {
         this.varName = name;
-        this.lowerBound = new IPSNumber(lowerBound, NumberType.REAL);
-        this.upperBound = new IPSNumber(upperBound, NumberType.REAL);
+        this.lowerBound = new IPSNumber(lowerBound, Type.REAL);
+        this.upperBound = new IPSNumber(upperBound, Type.REAL);
         this.lowerIsClosed = lowerIsClosed;
         this.upperIsClosed = upperIsClosed;
     }
@@ -76,8 +76,8 @@ public class Interval {
         boolean upperIsClosed)
     {
         this.varName = name;
-        this.lowerBound = new IPSNumber(lowerBound, NumberType.INT);
-        this.upperBound = new IPSNumber(upperBound, NumberType.INT);
+        this.lowerBound = new IPSNumber(lowerBound, Type.INT);
+        this.upperBound = new IPSNumber(upperBound, Type.INT);
         this.lowerIsClosed = lowerIsClosed;
         this.upperIsClosed = upperIsClosed;
     }

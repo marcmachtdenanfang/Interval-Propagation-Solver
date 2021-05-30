@@ -1,8 +1,11 @@
 package org.mcnip.solver;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.mcnip.solver.Model.*;
 import org.mcnip.solver.SatSolver.Solver;
@@ -32,28 +35,57 @@ public class Context {
      */
     Map<String, Interval> varIntervals;
 
-    Formula formula;
-
     // Placeholder for actual Parser implementation.
     // private Parser parser = new Parser();
-
+    
     // CDCL should implement the solver interface
     Solver satSolver;
-
     
-
+    // Proof state as in 4.2, page 219:
+    /**
+     * In the paper we have:
+     *  atom     = bound | equation, 
+     *  equation = triplet | pair
+     * 
+     * However we need to find insert "markers" as backtracking points
+     * into out list of asserted atoms.
+     * Therefore programatically we define:
+     * atom       = constraint | marker
+     * constraint = bound | triplet | pair
+     * 
+     * The marker symbol that denotes the backtracking point 
+     * is an instance of "Marker.class" (IMPORTANT).
+     * This solution is better than Nullpointers.
+     * 
+     * For now we use a Deque, as it supports both stack and list operations.
+     * Since the data structure "M" (assertedAtoms) is stacklike we can just use this.
+     */
+    Deque<Atom> assertedAtoms = new ArrayDeque<>();
+    
+    /**
+     * since we are supposed to store all bounds and intervals, we can just store bounds as intervals as well.
+     * => x > 3 => Interval(x, new IPSNumber(DOUBLE.NEGATIVE_INFINITY, INT), new IPSNumber(3, INT), true, false)
+     * 
+     * Maybe we can find a better solution for that?
+     * However this works and it is a suitable solution!
+     */
+    Stack<List<Interval>> intervalAssignmentStack = new Stack<>();
 
     /**
-     * Implements the update_\rho function from the paper.
+     * Currently active formula. Can be extended by our Sat Solver, 
+     * usually conflict clauses will be added by Sat Solver.
      */
+    Formula formula;
+
     public void update()
     {
         // placeholder, should call an assignment of clauses from cdcl solver
+        // use mockito to handle this in testing.
         List<Constraint> selectedConstraints = satSolver.solve(this.formula);
         
         for(Constraint constraint : selectedConstraints)
         {
-            // Find the constraints variables and put them in a Map.
+            // Find the constraint variables' intervals and put them in a Map.
             HashMap<String, Interval> intervals = new HashMap<>();
             for(String id : constraint.getVariables())
             {
@@ -63,43 +95,25 @@ public class Context {
             Map<String, Interval> tempMap = updateIntervals(intervals, constraint);
 
             // replace original intervals with the contracted intervals.
+            // Not actually intended behaviour!
+            // Update later for actual control flow using intervalAssignmentStack.
             for(String k : tempMap.keySet())
             {
                 this.varIntervals.replace(k, tempMap.get(k));
             }
-
         }
     }
 
+    /**
+     * Implements the update_\rho function from the paper.
+     * Consult the test cases in AppTest.java for more details.
+     *
+     * @param intervals
+     * @param constraint
+     * @return Contracted intervals, find them with their name.
+     */
     Map<String, Interval> updateIntervals(Map<String, Interval> intervals, Constraint constraint) {
-        /*
-        // Using this approach we can remove the first argument of the method (Map<String, Interval> intervals)
-        // Disadvantage: this method is reliant on state.
-        // Do we want that? 
-        // Not really => return Map of the intervals, thereby THIS method is not stateful.
-        // Easier to test among other benefits.
-        HashMap<String, Interval> i2 = new HashMap<>();
-        for(String id : constraint.getVariables())
-        {
-            i2.put(id, varIntervals.get(id));
-        }
-
-        Map<String, Interval> r = constraint.getContractor().contract(i2, constraint.getVariables());
-
-        for(String id : r.keySet())
-        {
-            varIntervals.replace(id, intervals.get(id), r.get(id));
-        }
-        */
-        
-        Map<String, Interval> r = constraint.getContractor().contract(intervals, constraint.getVariables());
-
-        for(String id : r.keySet())
-        {
-            intervals.replace(id, r.get(id));
-        }
-
-        return r;
+        return constraint.getContractor().contract(intervals, constraint.getVariables());
     }
 
 }
