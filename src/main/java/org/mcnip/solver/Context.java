@@ -56,7 +56,8 @@ public class Context {
      * constraint = bound | triplet | pair
      * 
      * The marker symbol that denotes the backtracking point 
-     * is an instance of "Marker.class" (IMPORTANT).
+     * is an instance of "Marker.class" (IMPORTANT). 
+     * Implementation of Marker class is just below this Context class.
      * i.e. current element = e 
      * if(e instanceof Marker){ doStuff(); }
      * 
@@ -110,6 +111,9 @@ public class Context {
     }
 
     /**
+     * NOTE:
+     * Currently only AddContractor is implemented.
+     * 
      * Implements the update_\rho function from the paper.
      * Consult the test cases in AppTest.java for more details.
      *
