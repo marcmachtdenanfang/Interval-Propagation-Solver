@@ -7,7 +7,7 @@ import lombok.Getter;
 public class Bound extends Constraint {
     
     @Getter private String varName;
-    @Getter private DotInterval bound;
+    @Getter private Interval bound;
 
     /**
      * Bounds for our variables.
@@ -16,10 +16,10 @@ public class Bound extends Constraint {
      * during contraction as we can just avoid calling contraction on boolean bounds.
      * 
      * @param varName Name of the variable.
-     * @param bound A rational number, represnted via a DotInterval.
+     * @param bound A rational number, represnted via a DotInterval or Interval.
      * @param contractor The relation (<, <=, =, >, >=).
      */
-    public Bound(String varName, DotInterval bound, Contractor contractor)
+    public Bound(String varName, Interval bound, Contractor contractor)
     {
         super(contractor);
         this.varName = varName;

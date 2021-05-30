@@ -10,6 +10,8 @@ import java.util.Stack;
 import org.mcnip.solver.Model.*;
 import org.mcnip.solver.SatSolver.Solver;
 
+import lombok.NoArgsConstructor;
+
 
 /**
  * This class should provide the core functionality around our solver.
@@ -55,6 +57,9 @@ public class Context {
      * 
      * The marker symbol that denotes the backtracking point 
      * is an instance of "Marker.class" (IMPORTANT).
+     * i.e. current element = e 
+     * if(e instanceof Marker){ doStuff(); }
+     * 
      * This solution is better than Nullpointers.
      * 
      * For now we use a Deque, as it supports both stack and list operations.
@@ -117,3 +122,6 @@ public class Context {
     }
 
 }
+
+@NoArgsConstructor
+class Marker implements Atom {}
