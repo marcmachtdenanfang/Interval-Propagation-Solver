@@ -3,5 +3,5 @@ DECL
     int [-8, 25] y;
 
 EXPR
-    x = cos(y) or y = sin(x);
-    x < 0 or x*x = -3*y;
+    ((x = cos(y)) or (y = sin(x)));
+    (x < 0 or x*x = -3*y);
