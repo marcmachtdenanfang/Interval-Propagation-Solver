@@ -36,14 +36,15 @@ public class AddContractor implements Contractor {
         IPSNumber inRightLowerBound = in.get(rightArg).getLowerBound();
         IPSNumber inRightUpperBound = in.get(rightArg).getUpperBound();
         
-        // NumberType type = inResLowerBound.getType();
 
         // hande result interval:
         IPSNumber resLowerBound = inResLowerBound.max(inLeftLowerBound.add(inRightLowerBound));
         IPSNumber resUpperBound = inResUpperBound.min(inLeftUpperBound.add(inRightUpperBound));
         boolean temp = in.get(leftArg).isLowerIsClosed() & in.get(rightArg).isLowerIsClosed();
         boolean resLowerIsClosed;
-        if(inResLowerBound.ge(inLeftLowerBound.add(inRightLowerBound))) {
+        if(inResLowerBound.gt(inLeftLowerBound.add(inRightLowerBound))) {
+            resLowerIsClosed = in.get(res).isLowerIsClosed();
+        } else if(inResLowerBound.equals(inLeftLowerBound.add(inRightLowerBound))) {
             resLowerIsClosed = in.get(res).isLowerIsClosed() || temp;
         } else {
             resLowerIsClosed = temp;
@@ -51,53 +52,74 @@ public class AddContractor implements Contractor {
 
         boolean temp1 = in.get(leftArg).isUpperIsClosed() & in.get(rightArg).isUpperIsClosed();
         boolean resUpperIsClosed;
-        if(inResUpperBound.ge(inLeftUpperBound.add(inRightUpperBound))) {
-
+        if(inResUpperBound.lt(inLeftUpperBound.add(inRightUpperBound))) {
+            resUpperIsClosed = in.get(res).isUpperIsClosed();
+        } else if(inResUpperBound.equals(inLeftUpperBound.add(inRightUpperBound))) {
+            resUpperIsClosed = in.get(res).isUpperIsClosed() || temp1;
+        } else {
+            resUpperIsClosed = temp1;
         }
 
-
-
-        Interval j = new Interval(res, resLowerBound, resUpperBound, resLowerIsClosed, true);
+        Interval j = new Interval(res, resLowerBound, resUpperBound, resLowerIsClosed, resUpperIsClosed);
         resultIntervals.put(res, j);
 
 
         // handle leftArg interval:
         IPSNumber leftArgLowerBound = inLeftLowerBound.max(inResLowerBound.sub(inRightUpperBound));
         IPSNumber leftArgUpperBound = inLeftUpperBound.min(inResUpperBound.sub(inRightLowerBound));
-        Interval j1 = new Interval(leftArg, leftArgLowerBound, leftArgUpperBound, true, true);
+        
+        boolean temp2 = in.get(res).isLowerIsClosed() & in.get(rightArg).isUpperIsClosed();
+        boolean leftLowerIsClosed;
+        if(inLeftLowerBound.gt(inResLowerBound.sub(inRightUpperBound))) {
+            leftLowerIsClosed = in.get(leftArg).isLowerIsClosed();
+        } else if(inLeftLowerBound.equals(inResLowerBound.sub(inRightUpperBound))) {
+            leftLowerIsClosed = in.get(leftArg).isLowerIsClosed() || temp2;
+        } else {
+            leftLowerIsClosed = temp2;
+        }
+
+        boolean temp3 = in.get(res).isUpperIsClosed() & in.get(rightArg).isLowerIsClosed();
+        boolean leftUpperIsClosed;
+        if(inLeftUpperBound.lt(inResUpperBound.sub(inRightLowerBound))) {
+            leftUpperIsClosed = in.get(leftArg).isLowerIsClosed();
+        } else if(inLeftUpperBound.equals(inResUpperBound.sub(inRightLowerBound))) {
+            leftUpperIsClosed = in.get(leftArg).isLowerIsClosed() || temp3;
+        } else {
+            leftUpperIsClosed = temp3;
+        }
+        
+        Interval j1 = new Interval(leftArg, leftArgLowerBound, leftArgUpperBound, leftLowerIsClosed, leftUpperIsClosed);
         resultIntervals.put(leftArg, j1);
 
 
         // handle rightArg interval:
         IPSNumber rightArgLowerBound = inRightLowerBound.max(inResLowerBound.sub(inLeftUpperBound));
         IPSNumber rightArgUpperBound = inRightUpperBound.min(inResUpperBound.sub(inLeftLowerBound));
-        Interval j2 = new Interval(rightArg, rightArgLowerBound, rightArgUpperBound, true, true);
+
+        boolean temp4 = in.get(res).isLowerIsClosed() & in.get(leftArg).isUpperIsClosed();
+        boolean rightLowerIsClosed;
+        if(inRightLowerBound.gt(inResLowerBound.sub(inLeftUpperBound))) {
+            rightLowerIsClosed = in.get(rightArg).isLowerIsClosed();
+        } else if(inRightLowerBound.equals(inResLowerBound.sub(inLeftUpperBound))) {
+            rightLowerIsClosed = in.get(rightArg).isLowerIsClosed() || temp4;
+        } else {
+            rightLowerIsClosed = temp4;
+        }
+
+        boolean temp5 = in.get(res).isUpperIsClosed() & in.get(rightArg).isLowerIsClosed();
+        boolean rightUpperIsClosed;
+        if(inRightUpperBound.lt(inResUpperBound.sub(inLeftLowerBound))) {
+            rightUpperIsClosed = in.get(rightArg).isLowerIsClosed();
+        } else if(inRightUpperBound.equals(inResUpperBound.sub(inLeftLowerBound))) {
+            rightUpperIsClosed = in.get(rightArg).isLowerIsClosed() || temp5;
+        } else {
+            rightUpperIsClosed = temp5;
+        }
+
+        Interval j2 = new Interval(rightArg, rightArgLowerBound, rightArgUpperBound, rightLowerIsClosed, rightUpperIsClosed);
         resultIntervals.put(rightArg, j2);
 
         return resultIntervals;
-    }
-
-
-    /**
-     * 
-     * @param type 0 = min, 1 = max
-     * @param a
-     * @param b
-     * @param aBound
-     * @param bBound
-     * @return true if bound is closed, false if bound is open.
-     */
-    private boolean calculateBound(int type, IPSNumber a, IPSNumber b, boolean aBound, boolean bBound)
-    {
-        switch (type)
-        {
-            case 0:
-
-                return false;
-            default:
-                break;
-        }
-        return false;
     }
 
 }

@@ -3,10 +3,11 @@ package org.mcnip.solver.Model;
 
 import org.mcnip.solver.Contractors.Contractor;
 import lombok.Getter;
+import lombok.Setter;
 
 public abstract class Constraint implements Atom {
     
-    @Getter private Contractor contractor;
+    @Getter @Setter private Contractor contractor;
 
     public Constraint(Contractor contractor)
     {
