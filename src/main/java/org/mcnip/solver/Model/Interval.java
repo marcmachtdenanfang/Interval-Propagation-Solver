@@ -25,6 +25,25 @@ public class Interval {
         this.upperIsClosed = true;
     }
 
+    /**
+     * Constructor for boolean Intervals.
+     * @param name Name of variable
+     * @param posPolarity Polarity of boolean variable is positive (true) or negative (false).
+     */
+    public Interval(String name, boolean posPolarity)
+    {
+        this.varName = name;
+        if(posPolarity) {
+            this.lowerBound = new IPSNumber(1, Type.BOOL);
+            this.upperBound = new IPSNumber(Double.POSITIVE_INFINITY, Type.BOOL);
+        } else {
+            this.lowerBound = new IPSNumber(Double.NEGATIVE_INFINITY, Type.BOOL);
+            this.upperBound = new IPSNumber(0, Type.BOOL);
+        }
+        this.lowerIsClosed = true;
+        this.upperIsClosed = true;
+    }
+
     
     public Interval(
         String name,
