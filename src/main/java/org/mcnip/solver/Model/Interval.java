@@ -4,9 +4,8 @@ import java.math.BigInteger;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-@ToString
+
 public class Interval {
 
     @Getter         private String    varName;
@@ -15,6 +14,13 @@ public class Interval {
     @Getter         private boolean   lowerIsClosed;
     @Getter         private boolean   upperIsClosed;
 
+    @Override
+    public String toString()
+    {
+        String lowerBracket = lowerIsClosed ? "[" : "(" ;
+        String upperBracket = upperIsClosed ? "]" : ")" ;
+        return varName + " = " + lowerBracket + lowerBound.toString() + ", " + upperBound.toString() + upperBracket;
+    }
 
     public Interval(String name, Type t)
     {
