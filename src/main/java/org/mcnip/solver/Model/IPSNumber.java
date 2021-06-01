@@ -28,6 +28,14 @@ public class IPSNumber {
     public static final IPSNumber ONE_int = new IPSNumber(1, Type.INT);
     public static final IPSNumber TEN_int = new IPSNumber(10, Type.INT);
 
+    @Override
+    public String toString()
+    {
+        if(intValue == null || type == Type.REAL){
+            return "" + fpValue;
+        }
+        return intValue.toString();
+    }
 
     public IPSNumber(double value, Type t)
     {

@@ -122,6 +122,9 @@ public class AppTest
         assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));
         assertTrue(ctx.varIntervals.get("y").getUpperBound().equals(IPSNumber.TEN_int));
         assertTrue(ctx.varIntervals.get("z").getUpperBound().equals(IPSNumber.TEN_int));
+        System.out.println(ctx.varIntervals.get("x"));
+        System.out.println(ctx.varIntervals.get("y"));
+        System.out.println(ctx.varIntervals.get("z"));
     }
 
 }
