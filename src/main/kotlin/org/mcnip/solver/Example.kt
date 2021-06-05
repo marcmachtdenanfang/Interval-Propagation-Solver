@@ -8,4 +8,5 @@ fun main(args: Array<String>) {
   val parser = Parser(args[0])
   println("${parser.asCNF()}\n\n")
   println(parser)
+  println(parser.formula)
 }

@@ -12,11 +12,13 @@ public class App
 {
     public static void main( String[] args )
     {
+        if (args.length == 0) return;
+
         // Parsing
-        if (args.length > 0) {
-            Parser parser = new Parser(args[0]);
-            System.out.println(parser.asCNF());
-        }
+        Parser parser = new Parser(args[0]);
+        System.out.println(parser.asCNF());
+
+
 
         // Main functionality
         //Context ctx = new Context();

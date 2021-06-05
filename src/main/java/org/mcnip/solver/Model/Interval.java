@@ -8,11 +8,11 @@ import lombok.Setter;
 
 public class Interval {
 
-    @Getter         private String    varName;
-    @Getter @Setter private IPSNumber lowerBound;
-    @Getter @Setter private IPSNumber upperBound;
-    @Getter         private boolean   lowerIsClosed;
-    @Getter         private boolean   upperIsClosed;
+    private final String varName;
+    @Setter private IPSNumber lowerBound;
+    @Setter private IPSNumber upperBound;
+    @Getter private boolean   lowerIsClosed = true;
+    @Getter private boolean   upperIsClosed = true;
 
     @Override
     public String toString()
@@ -27,8 +27,6 @@ public class Interval {
         this.varName = name;
         this.lowerBound = new IPSNumber(Double.NEGATIVE_INFINITY, t);
         this.upperBound = new IPSNumber(Double.POSITIVE_INFINITY, t);
-        this.lowerIsClosed = true;
-        this.upperIsClosed = true;
     }
 
     /**
@@ -46,8 +44,6 @@ public class Interval {
             this.lowerBound = new IPSNumber(Double.NEGATIVE_INFINITY, Type.BOOL);
             this.upperBound = new IPSNumber(0, Type.BOOL);
         }
-        this.lowerIsClosed = true;
-        this.upperIsClosed = true;
     }
 
     
@@ -106,6 +102,26 @@ public class Interval {
         this.lowerIsClosed = lowerIsClosed;
         this.upperIsClosed = upperIsClosed;
     }
-    
 
+    public Interval(
+        String name,
+        IPSNumber lowerBound,
+        IPSNumber upperBound)
+    {
+        this.varName = name;
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+    }
+
+    public String getVarName() {
+        return varName;
+    }
+
+    public IPSNumber getLowerBound() {
+        return lowerBound;
+    }
+
+    public IPSNumber getUpperBound() {
+        return upperBound;
+    }
 }

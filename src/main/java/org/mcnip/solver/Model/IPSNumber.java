@@ -18,7 +18,7 @@ public class IPSNumber {
     
     @Getter private final double     fpValue;
     @Getter private final BigInteger intValue;
-    @Getter private final Type type;
+    private final Type type;
 
     public static final IPSNumber ZERO_fp = new IPSNumber(0.0, Type.REAL);
     public static final IPSNumber ONE_fp = new IPSNumber(1.0, Type.REAL);
@@ -62,8 +62,16 @@ public class IPSNumber {
         this.fpValue = intValue.doubleValue();
     }
 
+    public IPSNumber(String strValue)
+    {
+        this.type = strValue.contains(".") ? Type.REAL : Type.INT;
+        this.intValue = new BigInteger(strValue.replaceFirst("\\..*$",""));
+        this.fpValue = Double.parseDouble(strValue);
+    }
 
-
+    public Type getType() {
+        return type;
+    }
 
     public IPSNumber max(IPSNumber b) // throws Exception
     {
