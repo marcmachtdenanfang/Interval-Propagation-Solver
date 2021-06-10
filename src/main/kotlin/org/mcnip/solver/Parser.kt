@@ -71,16 +71,16 @@ class Parser(filePath: String) {
 
   init {
     constants.forEach {
-      intervals[it.key] = DotInterval(it.key, IPSNumber(it.value))
+      intervals[it.key] = DotInterval(it.key, it.value)
     }
     variables.forEach {
-      intervals[it.key] = Interval(it.key, IPSNumber(it.value.first), IPSNumber(it.value.second))
+      intervals[it.key] = Interval(it.key, it.value.first, it.value.second)
     }
     boundList.forEach { (relType, leftArg, rightArg) ->
       bounds += Bound(leftArg, getInterval(rightArg), when (relType) {
         relOps[0] -> GreaterEqualsContractor()
         relOps[1] -> LessEqualsContractor()
-        //relOps[2] -> NotEqualsContractor()
+        relOps[2] -> NotEqualsContractor()
         relOps[3] -> EqualsContractor()
         relOps[4] -> GreaterContractor()
         else -> LessContractor()
@@ -263,19 +263,19 @@ class Parser(filePath: String) {
   private fun BinaryOperations.operateBi(str: String, contractor: Contractor) = forEachIndexed { idx, (left, right) ->
     val leftArg = getInterval(left)
     val rightArg = getInterval(right)
-    val result = Interval("_$str$idx", leftArg.getLowerBound().getType()?:rightArg.getLowerBound().getType())
-    clauses += Clause(setOf(result.getVarName(), leftArg.getVarName(), rightArg.getVarName()), listOf(Triplet(result, leftArg, rightArg, contractor)))
+    val result = Interval("_$str$idx", leftArg.lowerBound.type?:rightArg.lowerBound.type)
+    clauses += Clause(setOf(result.varName, leftArg.varName, rightArg.varName), listOf(Triplet(result, leftArg, rightArg, contractor)))
   }
 
   private fun UnaryOperations.operateUn(str: String, contractor: Contractor) = forEachIndexed { idx, name ->
     val arg = getInterval(name)
-    val result = Interval("_$str$idx", arg.getLowerBound().getType())
-    clauses += Clause(setOf(result.getVarName(), arg.getVarName()), listOf(Pair(result, arg, contractor)))
+    val result = Interval("_$str$idx", arg.lowerBound.type)
+    clauses += Clause(setOf(result.varName, arg.varName), listOf(Pair(result, arg, contractor)))
   }
 
   private fun getInterval(str: String) =
       if (str.removePrefix("-")[0].isDigit())
-        DotInterval(str, IPSNumber(str))
+        DotInterval(str, str)
       else
         intervals.getOrPut(str, { Interval(str, null) })
 

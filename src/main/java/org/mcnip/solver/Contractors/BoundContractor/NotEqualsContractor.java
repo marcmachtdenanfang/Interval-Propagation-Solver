@@ -8,11 +8,11 @@ import org.mcnip.solver.Model.Interval;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class LessEqualsContractor implements Contractor {
+public class NotEqualsContractor implements Contractor {
 
     public Map<String, Interval> contract(Map<String, Interval> in, String[] names)
     {
-        return org.mcnip.solver.BoundContractions.lessEquals(in, names);
+        return org.mcnip.solver.BoundContractions.notEquals(in, names);
     }
 
 }

@@ -13,12 +13,12 @@ public class DotInterval extends Interval {
 
     public DotInterval(String name, double bound)
     {
-        super(name, bound, bound, true, true);
+        super(name, Math.nextDown(bound), Math.nextUp(bound), true, true);
     }
 
     public DotInterval(String name, IPSNumber bound)
     {
-        super(name, bound, bound, true, true);
+        super(name, bound, bound);
     }
 
     public DotInterval(String name, BigInteger bound)
@@ -26,4 +26,7 @@ public class DotInterval extends Interval {
         super(name, bound, bound, true, true);
     }
 
+    public DotInterval(String name, String bound) {
+        super(name, bound, bound);
+    }
 }

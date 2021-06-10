@@ -2,8 +2,8 @@ package org.mcnip.solver.Model;
 
 import java.math.BigInteger;
 
-import lombok.Getter;
 import lombok.ToString;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -14,10 +14,10 @@ import lombok.ToString;
  * (DOUBLE.POSITIVE_INFINITY or DOUBLE.NEGATIVE_INFINITY).
  */
 @ToString
-public class IPSNumber {
+public class IPSNumber implements Comparable<IPSNumber> {
     
-    @Getter private final double     fpValue;
-    @Getter private final BigInteger intValue;
+    private final double     fpValue;
+    private final BigInteger intValue;
     private final Type type;
 
     public static final IPSNumber ZERO_fp = new IPSNumber(0.0, Type.REAL);
@@ -35,6 +35,11 @@ public class IPSNumber {
             return "" + fpValue;
         }
         return intValue.toString();
+    }
+
+    @Override
+    public int compareTo(@NotNull IPSNumber number) {
+        return (type != Type.INT) ? Double.compare(fpValue, number.fpValue) : intValue.compareTo(number.intValue);
     }
 
     public IPSNumber(double value, Type t)
@@ -62,11 +67,31 @@ public class IPSNumber {
         this.fpValue = intValue.doubleValue();
     }
 
-    public IPSNumber(String strValue)
+    public IPSNumber(String strValue, Boolean roundUpOrDown)
     {
         this.type = strValue.contains(".") ? Type.REAL : Type.INT;
         this.intValue = new BigInteger(strValue.replaceFirst("\\..*$",""));
-        this.fpValue = Double.parseDouble(strValue);
+        this.fpValue = roundUpOrDown ? Math.nextUp(Double.parseDouble(strValue)) : Math.nextDown(Double.parseDouble(strValue));
+    }
+
+    public IPSNumber(Number value, Type t) {
+        this.type = t;
+        if (value instanceof BigInteger) {
+            this.intValue = (BigInteger) value;
+            this.fpValue = value.doubleValue();
+        }
+        else {
+            this.intValue = new BigInteger(String.valueOf((int) value));
+            this.fpValue = (double) value;
+        }
+    }
+
+    public Double getFpValue() {
+        return fpValue;
+    }
+
+    public BigInteger getIntValue() {
+        return intValue;
     }
 
     public Type getType() {
@@ -310,6 +335,40 @@ public class IPSNumber {
                 return new IPSNumber(this.intValue.negate(), Type.INT);
             case REAL:
                 return new IPSNumber(-1*this.fpValue, Type.REAL);
+            default:
+                return null; // break;
+        }
+        // throw new Exception("unexpected NumberType enum in Negation.");
+    }
+
+    public IPSNumber inc() // throws Exception
+    {
+        switch(this.type)
+        {
+            case INT:
+                if(this.getIntValue() == null) {
+                    return new IPSNumber(this.fpValue + 1, Type.INT);
+                }
+                return new IPSNumber(this.intValue.add(new BigInteger(String.valueOf(1))), Type.INT);
+            case REAL:
+                return new IPSNumber(Math.nextUp(this.fpValue), Type.REAL);
+            default:
+                return null; // break;
+        }
+        // throw new Exception("unexpected NumberType enum in Negation.");
+    }
+
+    public IPSNumber dec() // throws Exception
+    {
+        switch(this.type)
+        {
+            case INT:
+                if(this.getIntValue() == null) {
+                    return new IPSNumber(this.fpValue - 1, Type.INT);
+                }
+                return new IPSNumber(this.intValue.subtract(new BigInteger(String.valueOf(1))), Type.INT);
+            case REAL:
+                return new IPSNumber(Math.nextDown(this.fpValue), Type.REAL);
             default:
                 return null; // break;
         }

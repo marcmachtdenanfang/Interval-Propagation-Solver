@@ -17,6 +17,7 @@ public class App
         // Parsing
         Parser parser = new Parser(args[0]);
         System.out.println(parser.asCNF());
+        parser.getFormula();
 
 
 
