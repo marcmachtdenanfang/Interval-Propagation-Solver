@@ -233,7 +233,10 @@ class Parser(filePath: String) {
       val fstMatch = atomEndReg.find(expr.substring(0, relMatch.range.first))!!
       val sndMatch = atomReg.find(expr, relMatch.range.last)!!
       expr = "${expr.substring(0, fstMatch.range.first)}_bnd${boundList.size}${expr.substring(sndMatch.range.last + 1)}"
-      boundList += BoundTriple(relMatch.value, fstMatch.value.trimEnd(), sndMatch.value)
+      val fstVal = fstMatch.value.trimEnd()
+      (if (varReg.matches(fstVal)) fstVal to sndMatch.value else sndMatch.value to fstVal).let { (left, right) ->
+        boundList += BoundTriple(relMatch.value, left, right)
+      }
     }
     return expr
   }

@@ -82,6 +82,17 @@ public class Interval {
     }
 
     public Interval(
+        Interval result,
+        IPSNumber altLowerBound,
+        IPSNumber altUpperBound,
+        Boolean doPadding)
+    {
+        this.varName = result.varName;
+        this.lowerBound = result.lowerBound.max(doPadding ? altLowerBound.padDown() : altLowerBound);
+        this.upperBound = result.upperBound.min(doPadding ? altUpperBound.padUp() : altUpperBound);
+    }
+
+    public Interval(
         String name,
         double lowerBound,
         double upperBound,

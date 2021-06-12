@@ -235,6 +235,10 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     }
 
+    public IPSNumber plus(@NotNull IPSNumber number) {
+        return this.add(number);
+    }
+
     public IPSNumber sub(IPSNumber b) // throws Exception
     {
         switch (this.type) 
@@ -251,7 +255,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
         }
         // throw new Exception("unexpected NumberType enum in Subtraction.");
     }
-    
+
+    public IPSNumber minus(@NotNull IPSNumber number) {
+        return this.sub(number);
+    }
+
     public IPSNumber mul(IPSNumber b) // throws Exception
     {
         switch (this.type) 
@@ -373,6 +381,31 @@ public class IPSNumber implements Comparable<IPSNumber> {
                 return null; // break;
         }
         // throw new Exception("unexpected NumberType enum in Negation.");
+    }
+
+    private IPSNumber floatRound(Boolean roundUpOrDown)
+    {
+        switch(this.type)
+        {
+            case INT:
+                if(this.getIntValue() == null) {
+                    return new IPSNumber(this.fpValue, Type.INT);
+                }
+                return new IPSNumber(this.intValue, Type.INT);
+            case REAL:
+                return new IPSNumber(roundUpOrDown ? Math.nextUp(this.fpValue) : Math.nextDown(this.fpValue), Type.REAL);
+            default:
+                return null; // break;
+        }
+        // throw new Exception("unexpected NumberType enum in Negation.");
+    }
+
+    public IPSNumber padUp() {
+        return this.floatRound(true);
+    }
+
+    public IPSNumber padDown() {
+        return this.floatRound(false);
     }
 
 }

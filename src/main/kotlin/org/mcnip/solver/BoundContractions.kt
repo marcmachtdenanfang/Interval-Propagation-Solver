@@ -9,11 +9,11 @@ class BoundContractions(intervals: Map<String, Interval>, names: Array<String>) 
   val limiter = names[1]
   val baseInterval = intervals.getValue(base)
   val limiterInterval = intervals.getValue(limiter)
-  val type: Type = baseInterval.lowerBound.type
   val baseLowerBound: IPSNumber = baseInterval.lowerBound
   val baseUpperBound: IPSNumber = baseInterval.upperBound
   val limiterLowerBound: IPSNumber = limiterInterval.lowerBound
   val limiterUpperBound: IPSNumber = limiterInterval.upperBound
+  val type: Type = baseLowerBound.type
 
   companion object {
     @JvmStatic
@@ -94,4 +94,5 @@ class BoundContractions(intervals: Map<String, Interval>, names: Array<String>) 
       })
     }
   }
+
 }
