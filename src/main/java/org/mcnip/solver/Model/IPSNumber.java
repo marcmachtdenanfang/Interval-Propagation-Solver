@@ -315,6 +315,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
         // throw new Exception("unexpected NumberType enum in Squareroot.");
     }
 
+    public IPSNumber nrt(IPSNumber b) // throws Exception
+    {
+        return new IPSNumber(Math.pow(this.fpValue, 1.0 / b.fpValue), this.type);
+    }
+
     public IPSNumber exp(int constant) // throws Exception
     {
         switch(this.type)
@@ -326,6 +331,23 @@ public class IPSNumber implements Comparable<IPSNumber> {
                 return new IPSNumber(this.intValue.pow(constant), Type.INT);
             case REAL:
                 return new IPSNumber(Math.pow(this.fpValue, constant), Type.REAL);
+            default:
+                return null; // break;
+        }
+        // throw new Exception("unexpected NumberType enum in Exponentiation.");
+    }
+
+    public IPSNumber pow(IPSNumber b) // throws Exception
+    {
+        switch(this.type)
+        {
+            case INT:
+                if(this.getIntValue() == null || b.getIntValue() == null) {
+                    return new IPSNumber(new BigInteger(String.valueOf(this.fpValue)).pow((int) Math.round(b.getFpValue())), Type.INT);
+                }
+                return new IPSNumber(this.intValue.pow(b.intValue.intValue()), Type.INT);
+            case REAL:
+                return new IPSNumber(Math.pow(this.fpValue, b.fpValue), Type.REAL);
             default:
                 return null; // break;
         }
@@ -406,6 +428,10 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     public IPSNumber padDown() {
         return this.floatRound(false);
+    }
+
+    public Boolean isZeroOrInfinite() {
+        return this.fpValue == (double) 0 || this.getFpValue().isInfinite();
     }
 
 }

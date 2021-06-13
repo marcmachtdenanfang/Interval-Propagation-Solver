@@ -22,6 +22,7 @@ class Parser(filePath: String) {
   private val brackets = mutableListOf<String>()
   private val negations: UnaryOperations = mutableListOf()
   private val multiplications: BinaryOperations = mutableListOf()
+  private val divisions: BinaryOperations = mutableListOf()
   private val additions: BinaryOperations = mutableListOf()
   private val subtractions: BinaryOperations = mutableListOf()
   private val absolutes: UnaryOperations = mutableListOf()
@@ -39,7 +40,7 @@ class Parser(filePath: String) {
   private val biBraOps = listOf("min", "max", "pow", "nrt")
   private val braOps = unBraOps + biBraOps
   private val relOps = listOf(">=", "<=", "!=", "=", ">", "<")
-  private val opMap = mapOf('^' to "pow", '*' to "mul", '+' to "add", '~' to "sub")
+  private val opMap = mapOf('^' to "pow", '*' to "mul", '/' to "div", '+' to "add", '~' to "sub")
   private val intReg = Regex("\\d+(\\b|$)")
   private val floatReg = Regex("\\d+[.]\\d+(\\b|$)")
   private val varReg = Regex("[_a-zA-Z]+\\w*(\\b|$)")
@@ -107,16 +108,17 @@ class Parser(filePath: String) {
     }
     negations.operateUn("neg", NegContractor())
     multiplications.operateBi("mul", MulContractor())
+    divisions.operateBi("div", DivContractor())
     additions.operateBi("add", AddContractor())
     subtractions.operateBi("sub", SubContractor())
     absolutes.operateUn("abs", AbsContractor())
-    //minimums.operateBi("min", MinContractor())
-    //maximums.operateBi("max", MaxContractor())
+    minimums.operateBi("min", MinContractor())
+    maximums.operateBi("max", MaxContractor())
     exponents.operateUn("exp", ExpContractor())
     sines.operateUn("sin", SinContractor())
     cosines.operateUn("cos", CosContractor())
-    //powers.operateBi("pow", PowContractor())
-    //roots.operateBi("nrt", NrtContractor())
+    powers.operateBi("pow", PowContractor())
+    roots.operateBi("nrt", NrtContractor())
     formula = Formula(clauses)
   }
 
@@ -201,6 +203,8 @@ class Parser(filePath: String) {
 
       expr = multiplications.addAllFrom(expr, '*')
 
+      expr = divisions.addAllFrom(expr, '/')
+
       expr = additions.addAllFrom(expr, '+')
 
       expr = subtractions.addAllFrom(expr, '~')
@@ -234,7 +238,7 @@ class Parser(filePath: String) {
       val sndMatch = atomReg.find(expr, relMatch.range.last)!!
       expr = "${expr.substring(0, fstMatch.range.first)}_bnd${boundList.size}${expr.substring(sndMatch.range.last + 1)}"
       val fstVal = fstMatch.value.trimEnd()
-      (if (varReg.matches(fstVal)) fstVal to sndMatch.value else sndMatch.value to fstVal).let { (left, right) ->
+      (if (varReg matches fstVal) fstVal to sndMatch.value else sndMatch.value to fstVal).let { (left, right) ->
         boundList += BoundTriple(relMatch.value, left, right)
       }
     }
@@ -282,7 +286,7 @@ class Parser(filePath: String) {
       else
         intervals.getOrPut(str, { Interval(str, null) })
 
-  override fun toString() = "constants:\n$constants\n\nvariables:\n$variables\n\nbooleans:\n$booleans\n\nclauses:\n$clauseList\n\nbounds:\n$boundList\n\nbrackets:\n$brackets\n\nnegations:\n$negations\n\nmultiplications:\n$multiplications\n\nadditions:\n$additions\n\nsubtractions:\n$subtractions\n\nabsolutes:\n$absolutes\n\nminimums:\n$minimums\n\nmaximums:\n$maximums\n\nexponents:\n$exponents\n\nsines:\n$sines\n\ncosines:\n$cosines\n\npowers:\n$powers\n\nroots:\n$roots"
+  override fun toString() = "constants:\n$constants\n\nvariables:\n$variables\n\nbooleans:\n$booleans\n\nclauses:\n$clauseList\n\nbounds:\n$boundList\n\nbrackets:\n$brackets\n\nnegations:\n$negations\n\nmultiplications:\n$multiplications\n\ndivisions:\n$divisions\n\nadditions:\n$additions\n\nsubtractions:\n$subtractions\n\nabsolutes:\n$absolutes\n\nminimums:\n$minimums\n\nmaximums:\n$maximums\n\nexponents:\n$exponents\n\nsines:\n$sines\n\ncosines:\n$cosines\n\npowers:\n$powers\n\nroots:\n$roots"
 
   fun asCNF(): String = ("CNF: " +
       constants.toList().joinToString(separator = "") { "${it.first} = ${it.second} and " } +
@@ -302,6 +306,7 @@ class Parser(filePath: String) {
         str
       } } + negations.mapIndexed { idx, it -> "_neg$idx = -$it and " }.joinToString("") +
       multiplications.mapIndexed { idx, it -> "_mul$idx = ${it.first} * ${it.second} and " }.joinToString("") +
+      divisions.mapIndexed { idx, it -> "_div$idx = ${it.first} / ${it.second} and " }.joinToString("") +
       additions.mapIndexed { idx, it -> "_add$idx = ${it.first} + ${it.second} and " }.joinToString("") +
       subtractions.mapIndexed { idx, it -> "_sub$idx = ${it.first} - ${it.second} and " }.joinToString("") +
       absolutes.mapIndexed { idx, it -> "_abs$idx = abs($it) and " }.joinToString("") +

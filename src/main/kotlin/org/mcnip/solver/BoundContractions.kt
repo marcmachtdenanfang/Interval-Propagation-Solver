@@ -5,20 +5,20 @@ import org.mcnip.solver.Model.Interval
 import org.mcnip.solver.Model.Type
 
 class BoundContractions(intervals: Map<String, Interval>, names: Array<String>) {
-  val base = names[0]
-  val limiter = names[1]
-  val baseInterval = intervals.getValue(base)
-  val limiterInterval = intervals.getValue(limiter)
-  val baseLowerBound: IPSNumber = baseInterval.lowerBound
-  val baseUpperBound: IPSNumber = baseInterval.upperBound
-  val limiterLowerBound: IPSNumber = limiterInterval.lowerBound
-  val limiterUpperBound: IPSNumber = limiterInterval.upperBound
-  val type: Type = baseLowerBound.type
+  private val base = names[0]
+  private val limiter = names[1]
+  private val baseInterval = intervals.getValue(base)
+  private val limiterInterval = intervals.getValue(limiter)
+  private val baseLowerBound: IPSNumber = baseInterval.lowerBound
+  private val baseUpperBound: IPSNumber = baseInterval.upperBound
+  private val limiterLowerBound: IPSNumber = limiterInterval.lowerBound
+  private val limiterUpperBound: IPSNumber = limiterInterval.upperBound
+  private val type: Type = baseLowerBound.type
 
   companion object {
     @JvmStatic
     fun equals(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      mutableMapOf(limiter to limiterInterval, base to when {
+      mapOf(limiter to limiterInterval, base to when {
         limiterLowerBound <= baseLowerBound && baseUpperBound <= limiterUpperBound ->
           baseInterval
         baseLowerBound < limiterLowerBound && limiterUpperBound < baseUpperBound ->
@@ -34,7 +34,7 @@ class BoundContractions(intervals: Map<String, Interval>, names: Array<String>) 
 
     @JvmStatic
     fun greater(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      mutableMapOf(limiter to limiterInterval, base to when {
+      mapOf(limiter to limiterInterval, base to when {
         limiterUpperBound < baseLowerBound ->
           baseInterval
         baseUpperBound <= limiterUpperBound ->
@@ -46,7 +46,7 @@ class BoundContractions(intervals: Map<String, Interval>, names: Array<String>) 
 
     @JvmStatic
     fun greaterEquals(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      mutableMapOf(limiter to limiterInterval, base to when {
+      mapOf(limiter to limiterInterval, base to when {
         limiterUpperBound <= baseLowerBound ->
           baseInterval
         baseUpperBound < limiterUpperBound ->
@@ -58,7 +58,7 @@ class BoundContractions(intervals: Map<String, Interval>, names: Array<String>) 
 
     @JvmStatic
     fun less(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      mutableMapOf(limiter to limiterInterval, base to when {
+      mapOf(limiter to limiterInterval, base to when {
         baseUpperBound < limiterLowerBound ->
           baseInterval
         limiterLowerBound <= baseLowerBound ->
@@ -70,7 +70,7 @@ class BoundContractions(intervals: Map<String, Interval>, names: Array<String>) 
 
     @JvmStatic
     fun lessEquals(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      mutableMapOf(limiter to limiterInterval, base to when {
+      mapOf(limiter to limiterInterval, base to when {
         baseUpperBound <= limiterLowerBound ->
           baseInterval
         limiterLowerBound < baseLowerBound ->
@@ -82,7 +82,7 @@ class BoundContractions(intervals: Map<String, Interval>, names: Array<String>) 
 
     @JvmStatic
     fun notEquals(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      mutableMapOf(limiter to limiterInterval, base to when {
+      mapOf(limiter to limiterInterval, base to when {
         limiterUpperBound < baseLowerBound || baseUpperBound < limiterLowerBound || (baseLowerBound < limiterLowerBound && limiterUpperBound < baseUpperBound) ->
           baseInterval
         limiterLowerBound <= baseLowerBound && baseUpperBound <= limiterUpperBound ->
