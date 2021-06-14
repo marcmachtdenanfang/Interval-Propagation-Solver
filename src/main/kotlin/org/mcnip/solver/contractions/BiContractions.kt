@@ -1,6 +1,8 @@
-package org.mcnip.solver
+package org.mcnip.solver.contractions
 
 import org.mcnip.solver.Model.IPSNumber
+import org.mcnip.solver.Model.IPSNumber.NEG_INF
+import org.mcnip.solver.Model.IPSNumber.POS_INF
 import org.mcnip.solver.Model.Interval
 
 class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
@@ -54,12 +56,16 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
 
     @JvmStatic
     fun min(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      mapOf(result to Interval(resInterval, fstLowerBound.min(sndLowerBound), fstUpperBound.min(sndUpperBound), false), fstArg to fstInterval, sndArg to sndInterval)
+      mapOf(result to Interval(resInterval, fstLowerBound.min(sndLowerBound), fstUpperBound.min(sndUpperBound), false),
+          fstArg to Interval(fstInterval, resLowerBound, POS_INF, false),
+          sndArg to Interval(sndInterval, resLowerBound, POS_INF, false))
     }
 
     @JvmStatic
     fun max(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      mapOf(result to Interval(resInterval, fstLowerBound.max(sndLowerBound), fstUpperBound.max(sndUpperBound), false), fstArg to fstInterval, sndArg to sndInterval)
+      mapOf(result to Interval(resInterval, fstLowerBound.max(sndLowerBound), fstUpperBound.max(sndUpperBound), false),
+          fstArg to Interval(fstInterval, NEG_INF, resUpperBound, false),
+          sndArg to Interval(sndInterval, NEG_INF, resUpperBound, false))
     }
   }
 

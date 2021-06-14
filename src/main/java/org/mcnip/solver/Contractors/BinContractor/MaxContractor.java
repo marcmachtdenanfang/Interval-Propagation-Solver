@@ -11,7 +11,7 @@ public class MaxContractor implements Contractor {
 
   public Map<String, Interval> contract(Map<String, Interval> in, String[] names)
   {
-    return org.mcnip.solver.BiContractions.max(in, names);
+    return org.mcnip.solver.contractions.BiContractions.max(in, names);
   }
 
 }

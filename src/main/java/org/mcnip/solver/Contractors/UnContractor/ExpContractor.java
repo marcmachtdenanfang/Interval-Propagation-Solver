@@ -1,6 +1,5 @@
 package org.mcnip.solver.Contractors.UnContractor;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.mcnip.solver.Contractors.Contractor;
@@ -12,7 +11,7 @@ public class ExpContractor implements Contractor {
 
     public Map<String, Interval> contract(Map<String, Interval> in, String[] names)
     {
-        return new HashMap<>();
+        return org.mcnip.solver.contractions.UnContractions.exp(in, names);
     }
     
 }

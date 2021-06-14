@@ -12,7 +12,7 @@ public class GreaterEqualsContractor implements Contractor {
 
     public Map<String, Interval> contract(Map<String, Interval> in, String[] names)
     {
-        return org.mcnip.solver.BoundContractions.greaterEquals(in, names);
+        return org.mcnip.solver.contractions.BoundContractions.greaterEquals(in, names);
     }
 
 }

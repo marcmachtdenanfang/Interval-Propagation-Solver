@@ -12,7 +12,7 @@ public class LessContractor implements Contractor {
 
     public Map<String, Interval> contract(Map<String, Interval> in, String[] names)
     {
-        return org.mcnip.solver.BoundContractions.less(in, names);
+        return org.mcnip.solver.contractions.BoundContractions.less(in, names);
     }
 
 }

@@ -11,7 +11,7 @@ public class NrtContractor implements Contractor {
 
   public Map<String, Interval> contract(Map<String, Interval> in, String[] names)
   {
-    return org.mcnip.solver.BiContractions.nrt(in, names);
+    return org.mcnip.solver.contractions.BiContractions.nrt(in, names);
   }
 
 }
