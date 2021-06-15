@@ -1,0 +1,12 @@
+-- 2.1.1 example
+-- Optimal value: c = 5
+-- edited
+
+DECL
+  -- The  range  of  each  variable has to be  bounded.
+  int [1, 100] a, b, c;
+
+EXPR
+  -- Constraint to be  solved.
+  a*a + b*b = c*c or a*a = abs(c);
+  abs(b) = a or b = abs(a);

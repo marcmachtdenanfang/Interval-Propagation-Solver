@@ -2,20 +2,28 @@
 
 # Interval-Propagation-Solver
 
+## TODO
+ - replace maven with gradle.
+
 *To build the solver:*
 
 mvn package
 
-
 *To run the solver:* (not much functionality yet)
 
-Right now "mvn package" creates a fat jar, so you can use the next command to run the solver.
+Right now `mvn package` creates a fat jar, so you can use the next command to run the solver.
 
-java -cp target/Interval-Propagation-Solver-0.1-ALPHA.jar org.mcnip.solver.App "path-to-hysat-input"
+    java -cp target/Interval-Propagation-Solver-0.1-ALPHA-jar-with-dependencies.jar org.mcnip.solver.App -i hys-formulas/ex0.hys
 
 
-java -cp target/Interval-Propagation-Solver-0.1-ALPHA.jar;path-to-download/kotlin-stdlib-1.5.0.jar org.mcnip.solver.App "path-to-hysat-input"
+A slim jar is also generated:
 
+    java -cp target/Interval-Propagation-Solver-0.1-ALPHA.jar:/path/to/kotlin-stdlib-1.5.0.jar:/path/to/ org.mcnip.solver.App -i /path/to/hysat/input_file.hys
+
+A javadoc documentation can be generated with:
+    
+    mvn javadoc:javadoc
+We still need to find a way to incorporate documentation for our kotlin source files (Maybe just let kotlin source files implement a Jav)
 
 We need a mechanism to call an error when a contraction fails.
 Then we know, that some of these clauses lead to a conflict.

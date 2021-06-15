@@ -14,7 +14,7 @@ public class Interval {
     @Override
     public String toString()
     {
-        return varName + " = [" + lowerBound.toString() + ", " + upperBound.toString() + "]";
+        return varName + " := [" + lowerBound.toString() + ", " + upperBound.toString() + "]";
     }
 
     public Interval(String name, Type t)

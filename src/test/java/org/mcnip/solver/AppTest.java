@@ -11,6 +11,9 @@ import org.junit.Test;
 
 import org.mcnip.solver.Contractors.Contractor;
 import org.mcnip.solver.Contractors.BinContractor.AddContractor;
+import org.mcnip.solver.Contractors.BoundContractor.GreaterEqualsContractor;
+import org.mcnip.solver.Contractors.BoundContractor.LessEqualsContractor;
+import org.mcnip.solver.Model.Bound;
 import org.mcnip.solver.Model.Constraint;
 import org.mcnip.solver.Model.DotInterval;
 import org.mcnip.solver.Model.Formula;
@@ -59,7 +62,7 @@ public class AppTest
 
         Solver mockedSolver = Mockito.mock(Solver.class);
 
-        Context ctx = new Context(mockedSolver, in);
+        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
         
         // simulate behaviour of ctx.update() method.
         HashMap<String, Interval> intervals = new HashMap<>();
@@ -109,7 +112,7 @@ public class AppTest
         Solver mockedSolver = Mockito.mock(Solver.class);
         when(mockedSolver.solve(any())).thenReturn(list);
 
-        Context ctx = new Context(mockedSolver, in);
+        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
 
         // Method that actually gets tested.
         ctx.update();
@@ -125,6 +128,190 @@ public class AppTest
         System.out.println(ctx.varIntervals.get("x"));
         System.out.println(ctx.varIntervals.get("y"));
         System.out.println(ctx.varIntervals.get("z"));
+    }
+
+    @Test
+    public void addContractionTest2UpdateMethod()
+    {
+        // Setup.
+        Interval x = new Interval("x", -20, 1, true, true);
+        Interval y = new Interval("y", 0, 10, true, true);
+        Interval z = new DotInterval("z", 100);
+        
+        HashMap<String, Interval> in = new HashMap<>();
+        in.put(x.getVarName(), x);
+        in.put(y.getVarName(), y);
+        in.put(z.getVarName(), z);
+        
+        Contractor addContractor = new AddContractor(); 
+        Constraint triple = new Triplet(z,x,y,addContractor);
+
+        // Mocking the "solver.solve(formula)" method call.
+        List<Constraint> list = List.of(triple);
+        Solver mockedSolver = Mockito.mock(Solver.class);
+        when(mockedSolver.solve(any())).thenReturn(list);
+
+        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
+
+        // Method that actually gets tested.
+        ctx.update();
+        System.out.println(ctx.varIntervals.get("x"));
+        System.out.println(ctx.varIntervals.get("y"));
+        System.out.println(ctx.varIntervals.get("z"));
+
+        // Check results for Correctness.
+        assertTrue(ctx.varIntervals.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
+        assertTrue(ctx.varIntervals.get("y").getLowerBound().equals(new IPSNumber(9, Type.INT)));
+        assertTrue(ctx.varIntervals.get("z").getLowerBound().equals(IPSNumber.TEN_int));
+
+        assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));
+        assertTrue(ctx.varIntervals.get("y").getUpperBound().equals(IPSNumber.TEN_int));
+        assertTrue(ctx.varIntervals.get("z").getUpperBound().equals(IPSNumber.TEN_int));
+    }
+
+    @Test
+    public void addContractionTest3UpdateMethod()
+    {
+        // Setup.
+        Interval x = new Interval("x", 10, 10, true, true);
+        Interval y = new Interval("y", 10, 10, true, true);
+        Interval z = new DotInterval("z", 10);
+        
+        HashMap<String, Interval> in = new HashMap<>();
+        in.put(x.getVarName(), x);
+        in.put(y.getVarName(), y);
+        in.put(z.getVarName(), z);
+        
+        Contractor addContractor = new AddContractor(); 
+        Constraint triple = new Triplet(z,x,y,addContractor);
+
+        // Mocking the "solver.solve(formula)" method call.
+        List<Constraint> list = List.of(triple);
+        Solver mockedSolver = Mockito.mock(Solver.class);
+        when(mockedSolver.solve(any())).thenReturn(list);
+
+        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
+
+        // Method that actually gets tested.
+        ctx.update();
+        System.out.println(ctx.varIntervals.get("x"));
+        System.out.println(ctx.varIntervals.get("y"));
+        System.out.println(ctx.varIntervals.get("z"));
+
+        // Check results for Correctness.
+        assertTrue(ctx.varIntervals.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
+        assertTrue(ctx.varIntervals.get("y").getLowerBound().equals(new IPSNumber(9, Type.INT)));
+        assertTrue(ctx.varIntervals.get("z").getLowerBound().equals(IPSNumber.TEN_int));
+
+        assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));
+        assertTrue(ctx.varIntervals.get("y").getUpperBound().equals(IPSNumber.TEN_int));
+        assertTrue(ctx.varIntervals.get("z").getUpperBound().equals(IPSNumber.TEN_int));
+    }
+
+    @Test
+    public void addContractionTest4UpdateMethod()
+    {
+        // Setup.
+        Interval x = new Interval("x", Type.INT);
+        Interval y = new Interval("y", Type.INT);
+        Interval z = new DotInterval("z", 10);
+        
+        HashMap<String, Interval> in = new HashMap<>();
+        in.put(x.getVarName(), x);
+        in.put(y.getVarName(), y);
+        in.put(z.getVarName(), z);
+        
+        Contractor addContractor = new AddContractor(); 
+        Constraint triple = new Triplet(z,x,y,addContractor);
+
+        // Mocking the "solver.solve(formula)" method call.
+        List<Constraint> list = List.of(triple);
+        Solver mockedSolver = Mockito.mock(Solver.class);
+        when(mockedSolver.solve(any())).thenReturn(list);
+
+        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
+
+        // Method that actually gets tested.
+        ctx.update();
+        System.out.println(ctx.varIntervals.get("x"));
+        System.out.println(ctx.varIntervals.get("y"));
+        System.out.println(ctx.varIntervals.get("z"));
+
+        // Check results for Correctness.
+        assertTrue(ctx.varIntervals.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
+        assertTrue(ctx.varIntervals.get("y").getLowerBound().equals(new IPSNumber(9, Type.INT)));
+        assertTrue(ctx.varIntervals.get("z").getLowerBound().equals(IPSNumber.TEN_int));
+
+        assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));
+        assertTrue(ctx.varIntervals.get("y").getUpperBound().equals(IPSNumber.TEN_int));
+        assertTrue(ctx.varIntervals.get("z").getUpperBound().equals(IPSNumber.TEN_int));
+    }
+
+    @Test
+    public void addContractionTest5UpdateMethod()
+    {
+        // Setup.
+        Interval x = new Interval("x", Type.INT);
+        Interval z = new DotInterval("z", 10);
+        
+        HashMap<String, Interval> in = new HashMap<>();
+        in.put(x.getVarName(), x);
+        in.put(x.getVarName(), x);
+        in.put(z.getVarName(), z);
+        
+        Contractor addContractor = new AddContractor(); 
+        Constraint triple = new Triplet(z,x,x,addContractor);
+
+        // Mocking the "solver.solve(formula)" method call.
+        List<Constraint> list = List.of(triple);
+        Solver mockedSolver = Mockito.mock(Solver.class);
+        when(mockedSolver.solve(any())).thenReturn(list);
+
+        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
+
+        // Method that actually gets tested.
+        ctx.update();
+        System.out.println(ctx.varIntervals.get("x"));
+        System.out.println(ctx.varIntervals.get("z"));
+
+        // Check results for Correctness.
+        assertTrue(ctx.varIntervals.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
+        assertTrue(ctx.varIntervals.get("z").getLowerBound().equals(IPSNumber.TEN_int));
+
+        assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));
+        assertTrue(ctx.varIntervals.get("z").getUpperBound().equals(IPSNumber.TEN_int));
+    }
+
+    @Test
+    public void extractBoundsTest()
+    {
+        Interval x = new Interval("x", new IPSNumber(-20, Type.INT), IPSNumber.ONE_int);
+        Context ctx = new Context(Mockito.mock(IParser.class), new HashMap<>(), Mockito.mock(Solver.class));
+
+        Map<String, Interval> map = new HashMap<>();
+        map.put(x.getVarName(), x);
+        List<Bound> newBounds = ctx.extractBounds(map);
+
+        for(Bound b : newBounds)
+        {
+            if(b.getContractor() instanceof GreaterEqualsContractor)
+            {
+                assert(b.getVarName().equals(x.getVarName()));
+                assert(b.getBound().getLowerBound().equals(b.getBound().getUpperBound()));
+                assert(b.getBound().getLowerBound().equals(new IPSNumber(-20, Type.INT)));
+            } else if(b.getContractor() instanceof LessEqualsContractor)
+            {
+                assert(b.getVarName().equals(x.getVarName()));
+                assert(b.getBound().getLowerBound().equals(b.getBound().getUpperBound()));
+                assert(b.getBound().getLowerBound().equals(new IPSNumber(1, Type.INT)));
+            } else
+            {
+                // expected behaviour is one of the two above.
+                assert(false);
+            }
+        }
+
+        newBounds.forEach(System.out::println);
     }
 
 }

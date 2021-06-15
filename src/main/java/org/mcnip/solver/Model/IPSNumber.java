@@ -2,6 +2,7 @@ package org.mcnip.solver.Model;
 
 import java.math.BigInteger;
 
+import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
  * Symbolic Infinity can be queried with the IPSNumber's fpValue 
  * (DOUBLE.POSITIVE_INFINITY or DOUBLE.NEGATIVE_INFINITY).
  */
-@ToString
 public class IPSNumber implements Comparable<IPSNumber> {
     
     private final double     fpValue;
@@ -41,7 +41,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     @Override
     public int compareTo(@NotNull IPSNumber number) {
-        return (type != Type.INT) ? Double.compare(fpValue, number.fpValue) : intValue.compareTo(number.intValue);
+        return (this.type != Type.INT || this.intValue == null || number.getIntValue() == null) ? Double.compare(fpValue, number.fpValue) : intValue.compareTo(number.intValue);
     }
 
     public IPSNumber(double value, Type t)
@@ -105,6 +105,9 @@ public class IPSNumber implements Comparable<IPSNumber> {
         switch (this.type) 
         {
             case INT:
+                if(this.intValue == null || b.getIntValue() == null) {
+                    return new IPSNumber(Double.max(this.fpValue, b.getFpValue()), Type.INT);
+                }
                 return new IPSNumber(this.intValue.max(b.getIntValue()), Type.INT);
             case REAL:
                 return new IPSNumber(Double.max(this.fpValue, b.getFpValue()), Type.REAL);
@@ -202,6 +205,9 @@ public class IPSNumber implements Comparable<IPSNumber> {
         switch (this.type) 
         {
             case INT:
+                if(this.intValue == null || b.getIntValue() == null) {
+                    return new IPSNumber(Double.min(this.fpValue, b.getFpValue()), Type.INT);
+                }
                 return new IPSNumber(this.intValue.min(b.getIntValue()), Type.INT);
             case REAL:
                 return new IPSNumber(Double.min(this.fpValue, b.getFpValue()), Type.REAL);

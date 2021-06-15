@@ -27,4 +27,10 @@ public class Triplet extends Constraint
         };
     }
 
+    @Override
+    public String toString()
+    {
+        return result + " = " + leftArg + " " + this.getContractor().getClass().getSimpleName() + " " + rightArg;
+    }
+
 }

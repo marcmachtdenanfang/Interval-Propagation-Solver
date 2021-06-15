@@ -59,6 +59,14 @@
     </pluginManagement>
     <plugins>
       <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <show>private</show>
+          <nohelp>true</nohelp>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-maven-plugin</artifactId>
         <version>${kotlin.version}</version>
@@ -180,7 +188,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-    <kotlin.compiler.incremental>false</kotlin.compiler.incremental>
+    <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
   </properties>
 </project>
 

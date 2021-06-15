@@ -32,9 +32,10 @@ public class Pair extends Constraint
         };
     }
 
-    void printSomething()
+    @Override
+    public String toString()
     {
-        System.out.println(this.result.getClass());
-        System.out.println(this.origin.getClass());
+        return result + " = " + this.getContractor().getClass().getSimpleName() + " " + origin;
     }
+
 }
