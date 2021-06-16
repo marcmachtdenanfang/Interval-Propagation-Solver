@@ -5,8 +5,9 @@
 DECL
   -- The  range  of  each  variable has to be  bounded.
   int [1, 100] a, b, c;
+  bool d;
 
 EXPR
   -- Constraint to be  solved.
-  a*a + b*b = c*c or a*a = abs(c);
-  abs(b) = a or b = abs(a);
+  a*a + b*b = c*c or a*a = abs(c) or d;
+  abs(b) = a or b = abs(a) or !d;

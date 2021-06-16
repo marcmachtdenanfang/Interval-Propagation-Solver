@@ -15,6 +15,8 @@ import org.mcnip.solver.Contractors.Contractor;
 import org.mcnip.solver.Contractors.BinContractor.AddContractor;
 import org.mcnip.solver.Model.Formula;
 import org.mcnip.solver.Model.Bound;
+import org.mcnip.solver.Model.Bool;
+import org.mcnip.solver.Model.Constraint;
 import org.mcnip.solver.Model.Clause;
 import org.mcnip.solver.Model.Interval;
 import org.mcnip.solver.Model.Pair;
@@ -128,7 +130,7 @@ public class App
         options.addOption(print);
         cmd = null;
 
-        if(hasHelp) {
+        if(hasHelp || args.length == 0) {
             formatter.printHelp("Help", options);
             System.exit(0);
         }

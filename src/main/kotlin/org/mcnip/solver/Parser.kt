@@ -97,7 +97,7 @@ class Parser(filePath: String) : IParser {
           else -> lit
         }
         if (str.startsWith("_bnd"))
-          boundList[str.drop(4).toInt()]
+          bounds[str.drop(4).toInt()]
         else
           (if (str[0] != '!')
             Bool(str)
@@ -105,7 +105,7 @@ class Parser(filePath: String) : IParser {
             str = str.drop(1)
             Bool(str, false)
           }).also { variables += str }
-      }//.let { clauses += Clause(variables, it) }
+      }.let { clauses.add(Clause(variables, it)) }
     }
     negations.operateUn("neg", NegContractor())
     multiplications.operateBi("mul", MulContractor())

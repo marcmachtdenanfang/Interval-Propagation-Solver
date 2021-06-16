@@ -47,5 +47,11 @@ public class Bool extends Constraint {
         String[] t = {this.name};
         return t;
     }
+
+    @Override
+    public String toString()
+    {
+        return (polarity ? name : "!" + name);
+    }
     
 }

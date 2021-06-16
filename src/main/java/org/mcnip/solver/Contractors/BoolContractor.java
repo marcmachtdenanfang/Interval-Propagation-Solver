@@ -12,11 +12,12 @@ public class BoolContractor implements Contractor {
 
     public boolean boolContract(Bool original, Bool other)
     {
-        return original.getName().equals(other.getName());
+        return original.getName().equals(other.getName()) && (original.isPolarity() == other.isPolarity());
     }
 
     /**
      * This is a bit hacky!
+     * This function should not be called, is however necessary, due to this being a Contractor!
      */
     public Map<String, Interval> contract(Map<String, Interval> inputIntervals, String[] names) 
     {
