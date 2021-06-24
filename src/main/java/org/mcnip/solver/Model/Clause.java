@@ -5,12 +5,10 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import lombok.Getter;
-
 public class Clause {
 
-    @Getter private Set<String> variables;
-    @Getter private List<Constraint> constraints;
+    private Set<String> variables;
+    private List<Constraint> constraints;
 
     public Clause(Set<String> variables, List<Constraint> constraints)
     {
@@ -24,5 +22,13 @@ public class Clause {
         return ""+this.constraints.stream().collect(Collectors.toList());
         //return "variables: " + this.variables.stream().collect(Collectors.joining(","));
     }
-    
+
+    public Set<String> getVariables() {
+        return variables;
+    }
+
+    public List<Constraint> getConstraints() {
+        return constraints;
+    }
+
 }

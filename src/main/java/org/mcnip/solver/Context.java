@@ -124,17 +124,21 @@ public class Context {
      */
     Formula formula;
 
-    public void findUnitClauses()
+    public void assertUnitClauses()
     {
+        //Step 2 from the paper
+        HelpFunctionsKt.findUnits(formula.getClauses(), intervalAssignmentStack.peek()).forEach(unit -> assertedAtoms.push(unit));
+        /*
         for(Clause c : formula.getClauses())
         {
             if(c.getConstraints().size() == 1)
             {
                 assertedAtoms.push(c.getConstraints().get(0));
             } else {
-                // check whether there is a conflict of 
+                // check whether there is a conflict of
             }
         }
+        */
     }
 
     public void update()
@@ -165,9 +169,6 @@ public class Context {
     }
 
     /**
-     * NOTE:
-     * Currently only AddContractor is implemented.
-     * 
      * Implements the update_\rho function from the paper.
      * Consult the test cases in AppTest.java for more details.
      *
@@ -175,7 +176,7 @@ public class Context {
      * @param constraint A Constraint (i.e. Bound or Pair or Triple).
      * @return Contracted intervals, find them with their name.
      */
-    Map<String, Interval> updateIntervals(Map<String, Interval> intervals, Constraint constraint) {
+    public static Map<String, Interval> updateIntervals(Map<String, Interval> intervals, Constraint constraint) {
         return constraint.getContractor().contract(intervals, constraint.getVariables());
     }
 

@@ -15,12 +15,6 @@ public class ParserTest {
         assertTrue(true);
     }
 
-    @Test
-    public void KotlinStaticTest()
-    {
-        ExampleKt.example();
-    }
-
     @Test(expected = FileNotFoundException.class)
     public void KotlinFileNotFoundTest()
     {

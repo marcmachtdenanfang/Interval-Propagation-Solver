@@ -105,7 +105,7 @@ class Parser(filePath: String) : IParser {
             str = str.drop(1)
             Bool(str, false)
           }).also { variables += str }
-      }.let { clauses.add(Clause(variables, it)) }
+      }.let { clauses += Clause(variables, it) }
     }
     negations.operateUn("neg", NegContractor())
     multiplications.operateBi("mul", MulContractor())
@@ -323,11 +323,8 @@ class Parser(filePath: String) : IParser {
    * For implementing the IParser interface, since it is written in Java.
    * Necessary due to: https://youtrack.jetbrains.com/issue/KT-6653
    */
-  override fun getFormula(): Formula = formula
-  override fun getIntervals(): Map<String, Interval> = intervals
-  override fun getBounds(): List<Bound> = bounds
-  
-
-
+  override fun getFormula() = formula
+  override fun getIntervals() = intervals
+  override fun getBounds() = bounds
 
 }
