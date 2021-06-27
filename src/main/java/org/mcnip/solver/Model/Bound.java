@@ -2,12 +2,10 @@ package org.mcnip.solver.Model;
 
 import org.mcnip.solver.Contractors.Contractor;
 
-import lombok.Getter;
-
 public class Bound extends Constraint {
-    
-    @Getter private String varName;
-    @Getter private Interval bound;
+
+    private String varName;
+    private Interval bound;
 
     /**
      * Bounds for our variables.
@@ -35,5 +33,13 @@ public class Bound extends Constraint {
     public String toString()
     {
         return "Bound: " + varName + " "+ this.getContractor().getClass().getSimpleName() + " " + bound;
+    }
+
+    public String getVarName() {
+        return varName;
+    }
+
+    public Interval getBound() {
+        return bound;
     }
 }
