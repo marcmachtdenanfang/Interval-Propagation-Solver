@@ -1,7 +1,6 @@
 package org.mcnip.solver.Model;
 
 import org.mcnip.solver.Contractors.Contractor;
-import lombok.Getter;
 
 /**
  * Pairs and Triplets are always equalities. 
@@ -10,8 +9,8 @@ import lombok.Getter;
 public class Pair extends Constraint
 {
    
-    @Getter private Interval result;
-    @Getter private Interval origin;
+    private Interval result;
+    private Interval origin;
 
     /**
      * @param result Value or variable that expression results in.
@@ -38,4 +37,11 @@ public class Pair extends Constraint
         return result + " = " + this.getContractor().getClass().getSimpleName() + " " + origin;
     }
 
+    public Interval getResult() {
+        return result;
+    }
+
+    public Interval getOrigin() {
+        return origin;
+    }
 }

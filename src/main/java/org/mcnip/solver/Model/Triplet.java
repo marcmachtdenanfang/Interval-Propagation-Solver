@@ -1,14 +1,13 @@
 package org.mcnip.solver.Model;
 
 import org.mcnip.solver.Contractors.Contractor;
-import lombok.Getter;
 
 public class Triplet extends Constraint
 {
     
-    @Getter private Interval result;
-    @Getter private Interval leftArg;
-    @Getter private Interval rightArg;
+    private Interval result;
+    private Interval leftArg;
+    private Interval rightArg;
 
     public Triplet(Interval result, Interval leftArg, Interval rightArg, Contractor contractor)
     {
@@ -33,4 +32,15 @@ public class Triplet extends Constraint
         return result + " = " + leftArg + " " + this.getContractor().getClass().getSimpleName() + " " + rightArg;
     }
 
+    public Interval getResult() {
+        return result;
+    }
+
+    public Interval getLeftArg() {
+        return leftArg;
+    }
+
+    public Interval getRightArg() {
+        return rightArg;
+    }
 }

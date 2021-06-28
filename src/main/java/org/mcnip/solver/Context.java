@@ -7,8 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import kotlin.Pair;
 import org.mcnip.solver.Contractors.BoundContractor.GreaterEqualsContractor;
 import org.mcnip.solver.Contractors.BoundContractor.LessEqualsContractor;
 import org.mcnip.solver.Model.*;
@@ -141,6 +144,13 @@ public class Context {
         HelpFunctionsKt.findUnits(formula.getClauses(), intervalAssignmentStack.peek()).forEach(assertedAtoms::push);
     }
 
+    public void narrowContractions()
+    {
+        Pair<Map<String, Interval>, List<Bound>> narrowed = HelpFunctionsKt.narrowContractor(assertedAtoms.stream().takeWhile(Marker.class::isInstance).collect(Collectors.toList()), intervalAssignmentStack.pop());
+        intervalAssignmentStack.push(narrowed.getFirst());
+        assertedAtoms.addAll(narrowed.getSecond());
+    }
+
     public void update()
     {
         // placeholder, should call an assignment of clauses from cdcl solver
@@ -185,7 +195,7 @@ public class Context {
      * @param intervals Map of varNames and corresponding Intervals.
      * @return List of Bound constraints corresponding to input Intervals.
      */
-    List<Bound> extractBounds(Map<String, Interval> intervals)
+    public static List<Bound> extractBounds(Map<String, Interval> intervals)
     {
         List<Bound> res = new ArrayList<>();
         for(Interval i : intervals.values())
