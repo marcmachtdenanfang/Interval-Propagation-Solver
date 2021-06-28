@@ -15,18 +15,10 @@ public interface IParser {
     // public String asCNF();
 
     /**
-     * @return a Formula object of the Pairs and Triples generated 
+     * @return a Formula object of the Bounds, Pairs, Triplets and Bools generated
      * from the original input formula.
      */
     public Formula getFormula();
-
-    
-    /**
-     * 
-     * @return List of all the bound constraints, that are not 
-     *         part of variable declarations.
-     */
-    public List<Bound> getBounds();
 
     /**
      * 

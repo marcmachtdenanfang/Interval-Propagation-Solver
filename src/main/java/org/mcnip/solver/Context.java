@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
  */
 public class Context {
     
-    
     public Context(IParser parser, Map<String, Interval> varIntervals, Solver solver) 
     {
         this.satSolver = solver;
@@ -32,7 +31,6 @@ public class Context {
         this.parser = parser;
         
         // init context state:
-        List<Bound> bounds = parser.getBounds();
         this.formula = parser.getFormula();
         intervalAssignmentStack.push(parser.getIntervals());
         // assertedAtoms stays empty in the beginning.
@@ -62,8 +60,8 @@ public class Context {
      */
     private IParser parser;
 
-    // Proof state as in 4.2, page 219:
     /**
+     * Proof state as in 4.2, page 219:
      * Corresponds to {@code M} as in the paper.
      * <p>
      * In the paper we have:
@@ -81,8 +79,8 @@ public class Context {
      * Therefore programatically we define:
      * 
      * <pre>
-     * atom       = constraint | bool | marker
-     * constraint = bound | triplet | pair
+     * atom       = {@link org.mcnip.solver.Model.Constraint} | marker
+     * constraint = {@link org.mcnip.solver.Model.Bool} | {@link org.mcnip.solver.Model.Bound} | {@link org.mcnip.solver.Model.Triplet} | {@link org.mcnip.solver.Model.Pair}
      * </pre>
      * 
      * The marker symbol that denotes the backtracking point 
@@ -124,21 +122,23 @@ public class Context {
      */
     Formula formula;
 
+    /**
+     * According to the paper, auxiliary variables introduced by rewriting code into 
+     * three-adress form are allowed to have empty or faulty intervals.
+     * The reason is: we might compute intervals for these variables, but it is possible we never use them.
+     * Therefore they introduce an inverted omega to denote thhis extra provision.
+     * <p>
+     * We maintain a deque of currently asserted "faulty" variables.
+     * <p> Similarly to {@link org.mcnip.solver.Context#assertedAtoms} 
+     * we insert a {@link org.mcnip.solver.Marker} into the deque as a backtracking point.
+     * Here however, they need to be literal markers i.e. "|".
+     */
+    Deque<String> omega = new ArrayDeque<>();
+
     public void assertUnitClauses()
     {
         //Step 2 from the paper
-        HelpFunctionsKt.findUnits(formula.getClauses(), intervalAssignmentStack.peek()).forEach(unit -> assertedAtoms.push(unit));
-        /*
-        for(Clause c : formula.getClauses())
-        {
-            if(c.getConstraints().size() == 1)
-            {
-                assertedAtoms.push(c.getConstraints().get(0));
-            } else {
-                // check whether there is a conflict of
-            }
-        }
-        */
+        HelpFunctionsKt.findUnits(formula.getClauses(), intervalAssignmentStack.peek()).forEach(assertedAtoms::push);
     }
 
     public void update()
@@ -169,7 +169,7 @@ public class Context {
     }
 
     /**
-     * Implements the update_\rho function from the paper.
+     * Implements the update_rho function from the paper.
      * Consult the test cases in AppTest.java for more details.
      *
      * @param intervals A Map of variables and their associated Intervals.
@@ -198,6 +198,30 @@ public class Context {
                     new LessEqualsContractor()));
         }
         return res;
+    }
+
+    /*
+     * If any single one interval of these is empty, this constraint is not valid to
+     * make any changes to our current data structure. Therefore we first check whether
+     * there is an invalid result.
+     * If there is an invalid result we have to check whether it's a problem variable,
+     * or a auxiliary variable.
+     * @param in 
+     * @return
+     */
+    boolean checkForEmptyInterval(Map<String, Interval> in)
+    {
+        return in.values().stream().anyMatch(v -> v.isEmpty());
+    }
+
+    /**
+     * adds a {@link org.mcnip.solver.Marker} onto the assertedAtoms stack.
+     * also adds a marker ("|") onto the omega stack.
+     */
+    void addMarker()
+    {
+        assertedAtoms.push(new Marker());
+        omega.push("|");
     }
 
 }

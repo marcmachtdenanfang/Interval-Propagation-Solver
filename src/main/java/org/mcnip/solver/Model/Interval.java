@@ -137,4 +137,15 @@ public class Interval {
     public IPSNumber getUpperBound() {
         return upperBound;
     }
+
+    /**
+     * Internal representation for empty Interval is
+     * lowerBound > upperBound.
+     *
+     * @return true if interval is empty.
+     */
+    public boolean isEmpty()
+    {
+        return this.lowerBound.gt(this.upperBound);
+    }
 }

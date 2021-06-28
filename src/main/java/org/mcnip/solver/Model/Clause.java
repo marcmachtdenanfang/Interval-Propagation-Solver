@@ -31,4 +31,8 @@ public class Clause {
         return constraints;
     }
 
+    public Constraint getConstraint(int n)
+    {
+        return this.constraints.get(n);
+    }
 }

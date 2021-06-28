@@ -70,9 +70,6 @@ public class App
             List<Clause> clauses = f.getClauses();
             clauses.forEach(clause -> System.out.println(clause));
 
-            System.out.println(ANSI_GREEN + "-- Bounds: " + ANSI_RESET);
-            List<Bound> bounds = parser.getBounds();
-            bounds.forEach(bound -> System.out.println(bound));
         }
 
         //

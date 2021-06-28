@@ -325,6 +325,5 @@ class Parser(filePath: String) : IParser {
    */
   override fun getFormula() = formula
   override fun getIntervals() = intervals
-  override fun getBounds() = bounds
 
 }
