@@ -30,7 +30,7 @@ public class Context {
     public Context(IParser parser, Map<String, Interval> varIntervals, Solver solver) 
     {
         this.satSolver = solver;
-        this.varIntervals = varIntervals; // do not remove this yet! Needed until tests are adapted.
+        this.varIntervals = new HashMap<String,Interval>(); // do not remove this yet! Needed until tests are adapted.
         this.parser = parser;
         
         // init context state:
@@ -39,6 +39,17 @@ public class Context {
         // assertedAtoms stays empty in the beginning.
     }
     
+    public Context(IParser parser, Solver solver) 
+    {
+        this.satSolver = solver;
+        this.parser = parser;
+        
+        // init context state:
+        this.formula = parser.getFormula();
+        intervalAssignmentStack.push(parser.getIntervals());
+        // assertedAtoms stays empty in the beginning.
+    }
+
     /**
      * Actually varIntervals is not necessary. We use varAssignmentStack instead.
      * Some design choices need to be made.
@@ -118,6 +129,14 @@ public class Context {
      * However this works and it is a suitable solution!
      */
     Stack<Map<String, Interval>> intervalAssignmentStack = new Stack<>();
+    
+    /**
+     * Similarly to {@link org.mcnip.solver.Context#intervalAssignmentStack} 
+     * we need an easy way to store the currently assigned {@link org.mcnip.solver.Model.Bool}.
+     * <p>
+     * Since we opted to make them Constraints rather than intervals, we use this data structure.
+     */
+    Stack<Map<String, Bool>> boolAssignmentStack = new Stack<>();
 
     /**
      * Currently active formula. Can be extended by our Sat Solver, 
@@ -132,18 +151,56 @@ public class Context {
      * Therefore they introduce an inverted omega to denote thhis extra provision.
      * <p>
      * We maintain a deque of currently asserted "faulty" variables.
-     * <p> Similarly to {@link org.mcnip.solver.Context#assertedAtoms} 
+     * <p> 
+     * Similarly to {@link org.mcnip.solver.Context#assertedAtoms} 
      * we insert a {@link org.mcnip.solver.Marker} into the deque as a backtracking point.
      * Here however, they need to be literal markers i.e. "|".
      */
     Deque<String> omega = new ArrayDeque<>();
 
-    public void assertUnitClauses()
+    /**
+     * Compute the possible options when one or more variables of the constraint are omega.
+     * @param c, a constraint.
+     * @return 1 if computation can continue. 
+     * 0 if unsatisfiable (result is a problem variable, and one of the arguments is omega).
+     * -1 if result is or becomes omega.
+     */
+    int omegaContinue(Constraint c)
     {
-        //Step 2 from the paper
-        HelpFunctionsKt.findUnits(formula.getClauses(), intervalAssignmentStack.peek()).forEach(assertedAtoms::push);
+        boolean ret = false;
+        String[] names = c.getVariables();
+        for(String x : names) {
+            if(omega.contains(x)) ret = true;
+        }
+        if(ret == false || c instanceof Bool) return 1;
+
+        if(c instanceof Triplet) {
+            if( (omega.contains(names[1]) || omega.contains(names[2])) && !(names[0].charAt(0) == '_') ) {
+                return 0;
+            }
+        } else if(c instanceof org.mcnip.solver.Model.Pair) {
+            if( omega.contains(names[1]) && !(names[0].charAt(0) == '_') ) {
+                return 0;
+            }
+        } else if(c instanceof Bound) {
+            if(omega.contains(names[1]) && !(names[0].charAt(0) == '_') ) {
+                return 0;
+            }
+        }
+        return -1;
     }
 
+    /**
+     * Step 2 from the paper
+     */
+    public void assertUnitClauses()
+    {
+        HelpFunctionsKt.findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms).forEach(assertedAtoms::push);
+    }
+
+    /**
+     * Step 3 from the paper
+     */
     public void narrowContractions()
     {
         Pair<Map<String, Interval>, List<Bound>> narrowed = HelpFunctionsKt.narrowContractor(assertedAtoms.stream().takeWhile(Marker.class::isInstance).collect(Collectors.toList()), intervalAssignmentStack.pop());
@@ -234,7 +291,40 @@ public class Context {
         omega.push("|");
     }
 
+    /**
+     * Use this method to backtrack over our assertionStacks and omegas.
+     */
+    void backtrack()
+    {
+        Atom a;
+        while(true) {
+            a = assertedAtoms.pop();
+            if(a instanceof Marker) break;
+        }
+        String s;
+        while(true) {
+            s = omega.pop();
+            if(s.equals("|")) break;
+        }
+        return;
+    }
+
+
+    boolean strongSatisfiability()
+    {
+        boolean ret = false;
+        for(Clause c : this.formula.getClauses())
+        {
+            // one of Constraints in c is in assertedAtoms
+        }
+        // if atom is an equation x = yopz or x = op y then x is 
+        
+
+        return ret;
+    }
+
 }
+
 
 @NoArgsConstructor
 class Marker implements Atom {}

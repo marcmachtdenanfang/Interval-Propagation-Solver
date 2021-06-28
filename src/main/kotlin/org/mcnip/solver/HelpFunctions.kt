@@ -9,13 +9,22 @@ private fun <K> Map<K, Interval>.containsEmptyInterval() = values.fold(false) { 
 private infix fun <V> String.from(map: Map<String, V>) = this to map.getValue(this)
 private infix fun List<String>.from(assignment: Map<String, Interval>) = map { it to assignment.getValue(it) }.toMap()
 
-fun findUnits(clauses: List<Clause>, map: Map<String, Interval>): List<Constraint> {
+fun findUnits(clauses: List<Clause>, map: Map<String, Interval>, assertedAtoms: Collection<Atom>): List<Constraint> {
   val units = mutableListOf<Constraint>()
   var maybeUnit = mapOf<String, Interval>() to clauses[0].constraints[0]
   clauses.forEach { clause ->
     when (clause.constraints.map { constraint ->
-      maybeUnit = updateIntervals(map.filter { it.key in constraint.variables }, constraint) to constraint
-      maybeUnit.first.map { it.value.isEmpty() }.reduce { acc, bool -> acc || bool }
+      if(constraint is Bool) {
+        /*var temp: bool = false
+        var contractor = constraint.getContractor()
+        for(a in assertedAtoms) {
+          if(a is Bool && a.getVariables()[0].equals(constraint.getVariables()[0])) temp = contractor.boolContract(constraint, a)
+          if(temp)
+        }*/ true
+      } else {
+        maybeUnit = updateIntervals(map.filter { it.key in constraint.variables }, constraint) to constraint
+        maybeUnit.first.map { it.value.isEmpty() }.reduce { acc, bool -> acc || bool }
+      }
     }.filter { !it }.size) {
       //0 -> signaling UNSAT should already be possible here
       1 -> units += maybeUnit.second

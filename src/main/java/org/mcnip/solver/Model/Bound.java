@@ -26,7 +26,7 @@ public class Bound extends Constraint {
 
     public String[] getVariables()
     {
-        return new String[]{this.varName};
+        return new String[]{ this.varName, this.bound.getVarName() };
     }
 
     @Override

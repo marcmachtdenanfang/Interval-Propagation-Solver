@@ -20,6 +20,7 @@ public class Formula {
     /**
      * Make sure that Bools are at the beginning of Clauses,
      * as they are more easily propagated.
+     * @param clauses List of {@link org.mcnip.solver.Model.Clause}.
      */
     private List<Clause> preprocessFormula(List<Clause> clauses)
     {

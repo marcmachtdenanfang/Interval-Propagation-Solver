@@ -12,7 +12,8 @@ public class BoolContractor implements Contractor {
 
     public boolean boolContract(Bool original, Bool other)
     {
-        return original.getName().equals(other.getName()) && (original.isPolarity() == other.isPolarity());
+        // For now we should assume, that we only call this function on booleans with equal polarity.
+        return /*original.getName().equals(other.getName()) &&*/ (original.isPolarity() == other.isPolarity());
     }
 
     /**

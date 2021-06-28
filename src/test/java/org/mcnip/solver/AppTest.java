@@ -314,4 +314,80 @@ public class AppTest
         newBounds.forEach(System.out::println);
     }
 
+    @Test
+    public void mulContractionTest1UpdateMethod()
+    {
+        // Setup.
+        Interval x = new Interval("x", 1, 1, true, true);
+        Interval y = new Interval("y", 2, 2, true, true);
+        Interval z = new Interval("z",-100, 100,true,true);
+
+        HashMap<String, Interval> in = new HashMap<>();
+        in.put(x.getVarName(), x);
+        in.put(y.getVarName(), y);
+        in.put(z.getVarName(), z);
+
+        Contractor c = new MulContractor();
+        Constraint triple = new Triplet(z,x,y,c);
+
+        // Mocking the "solver.solve(formula)" method call.
+        List<Constraint> list = List.of(triple);
+        Solver mockedSolver = Mockito.mock(Solver.class);
+        when(mockedSolver.solve(any())).thenReturn(list);
+
+        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
+
+        // Method that actually gets tested.
+        var res = ctx.updateIntervals(in, triple);
+        var x1 = res.get("x");
+        var y1 = res.get("y");
+        var z1 = res.get("z");
+        System.out.println(x1);
+        System.out.println(y1);
+        System.out.println(z1);
+
+        assertTrue(x1.getLowerBound().equals(IPSNumber.ONE_int));
+        assertTrue(y1.getLowerBound().equals(new IPSNumber(2, Type.INT)));
+        assertTrue(z1.getLowerBound().equals(new IPSNumber(2, Type.INT)));
+
+        assertTrue(x1.getUpperBound().equals(IPSNumber.ONE_int));
+        assertTrue(y1.getUpperBound().equals(new IPSNumber(2, Type.INT)));
+        assertTrue(z1.getUpperBound().equals(new IPSNumber(2, Type.INT)));
+    }
+
+    @Test
+    public void addContractionTestWeird01()
+    {
+        // Setup.
+        Interval x = new Interval("x", -20, 1, true, true);
+        Interval y = new Interval("y", 0, 10, true, true);
+        Interval z = new DotInterval("z", 100);
+
+        HashMap<String, Interval> in = new HashMap<>();
+        in.put(x.getVarName(), x);
+        in.put(y.getVarName(), y);
+        in.put(z.getVarName(), z);
+
+        Contractor addContractor = new AddContractor();
+        Constraint triple = new Triplet(z,x,y,addContractor);
+
+        // Mocking the "solver.solve(formula)" method call.
+        List<Constraint> list = List.of(triple);
+        Solver mockedSolver = Mockito.mock(Solver.class);
+        when(mockedSolver.solve(any())).thenReturn(list);
+
+        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
+
+        // Method that actually gets tested.
+        var res = ctx.updateIntervals(in, triple);
+        var x1 = res.get("x");
+        var y1 = res.get("y");
+        var z1 = res.get("z");
+        System.out.println("huhu");
+        System.out.println(x1);
+        System.out.println(y1);
+        System.out.println(z1);
+
+        assertTrue("at least one of them should be empty.", x1.isEmpty() || y1.isEmpty() || z1.isEmpty());
+    }
 }

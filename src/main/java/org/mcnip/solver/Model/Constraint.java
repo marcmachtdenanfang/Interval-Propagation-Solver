@@ -2,12 +2,11 @@ package org.mcnip.solver.Model;
 
 
 import org.mcnip.solver.Contractors.Contractor;
-import lombok.Getter;
-import lombok.Setter;
+
 
 public abstract class Constraint implements Atom {
     
-    @Getter @Setter private Contractor contractor;
+    private Contractor contractor;
 
     public Constraint(Contractor contractor)
     {
@@ -19,5 +18,10 @@ public abstract class Constraint implements Atom {
      * @return
      */
     public abstract String[] getVariables();
+
+    public Contractor getContractor()
+    {
+        return this.contractor;
+    }
     
 }

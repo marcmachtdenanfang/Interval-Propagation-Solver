@@ -18,7 +18,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
     
     private final double     fpValue;
     private final BigInteger intValue;
-    private final Type type;
+    private Type type;
 
     public static final IPSNumber ZERO = new IPSNumber(0.0, Type.REAL);
     public static final IPSNumber ONE = new IPSNumber(1.0, Type.REAL);
@@ -46,7 +46,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     public IPSNumber(double value, Type t)
     {
-        this.type = t; // NumberType.REAL;
+        this.type = Type.INT;
         this.fpValue = value;
         if(value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY) {
             this.intValue = null;
@@ -57,14 +57,14 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     public IPSNumber(int intValue, Type t)
     {
-        this.type = t; // NumberType.INT;
+        this.type = t;
         this.fpValue = (double) intValue;
         this.intValue = new BigInteger(String.valueOf(intValue));
     }
 
     public IPSNumber(BigInteger intValue, Type t)
     {
-        this.type = t; // NumberType.INT;
+        this.type = t;
         this.intValue = intValue;
         this.fpValue = intValue.doubleValue();
     }

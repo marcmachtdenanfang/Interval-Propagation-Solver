@@ -1,5 +1,6 @@
 package org.mcnip.solver;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import org.mcnip.solver.Model.Constraint;
 import org.mcnip.solver.Model.Clause;
 import org.mcnip.solver.Model.Interval;
 import org.mcnip.solver.Model.Pair;
+import org.mcnip.solver.SatSolver.Solver;
 
 
 
@@ -72,9 +74,15 @@ public class App
 
         }
 
-        //
+        
         // Main functionality
-        //Context ctx = new Context();
+        Context ctx = new Context(parser, new Solver(){
+            public List<Constraint> solve(Formula clauses){ return new ArrayList<Constraint>(); }
+        });
+        ctx.assertUnitClauses();
+
+        System.out.println(ctx.assertedAtoms);
+
 
 
         // while satisfiable do things,

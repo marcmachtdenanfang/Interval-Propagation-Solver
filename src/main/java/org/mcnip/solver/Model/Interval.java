@@ -2,6 +2,8 @@ package org.mcnip.solver.Model;
 
 import java.math.BigInteger;
 
+import org.jetbrains.annotations.NotNull;
+
 import lombok.Setter;
 
 
