@@ -127,6 +127,8 @@ public class IPSNumber implements Comparable<IPSNumber> {
         switch (this.type)
         {
             case INT:
+                if(this.intValue == null || b.getIntValue() == null)
+                    return this.fpValue > b.getFpValue();
                 return this.intValue.compareTo(b.getIntValue()) == 1;
             case REAL:
                 return this.fpValue > b.getFpValue();
@@ -144,6 +146,8 @@ public class IPSNumber implements Comparable<IPSNumber> {
         switch (this.type)
         {
             case INT:
+                if(this.intValue == null || b.getIntValue() == null)
+                    return this.fpValue < b.getFpValue();
                 return this.intValue.compareTo(b.getIntValue()) == -1;
             case REAL:
                 return this.fpValue < b.getFpValue();
@@ -161,6 +165,8 @@ public class IPSNumber implements Comparable<IPSNumber> {
         switch (this.type)
         {
             case INT:
+                if(this.intValue == null || b.getIntValue() == null)
+                    return this.fpValue >= b.getFpValue();
                 return (this.intValue.compareTo(b.getIntValue()) == 1) || (this.intValue.compareTo(b.getIntValue()) == 0);
             case REAL:
                 return this.fpValue >= b.getFpValue();
@@ -178,6 +184,8 @@ public class IPSNumber implements Comparable<IPSNumber> {
         switch (this.type)
         {
             case INT:
+                if(this.intValue == null || b.getIntValue() == null)
+                    return this.fpValue <= b.getFpValue();
                 return this.intValue.compareTo(b.getIntValue()) == -1 || this.intValue.compareTo(b.getIntValue()) == 0;
             case REAL:
                 return this.fpValue <= b.getFpValue();
@@ -190,6 +198,8 @@ public class IPSNumber implements Comparable<IPSNumber> {
         switch (this.type)
         {
             case INT:
+                if(this.intValue == null || b.getIntValue() == null)
+                    return this.fpValue == b.getFpValue();
                 return this.intValue.compareTo(b.getIntValue()) == 0;
             case REAL:
                 return this.fpValue == b.getFpValue();

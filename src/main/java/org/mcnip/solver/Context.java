@@ -278,7 +278,16 @@ public class Context {
      */
     boolean checkForEmptyInterval(Map<String, Interval> in)
     {
-        return in.values().stream().anyMatch(v -> v.isEmpty());
+
+        boolean ret = false;
+        for(Interval i : in.values())
+        {
+            if(i.isEmpty()){
+                ret = true;
+                break;
+            }
+        }
+        return ret;
     }
 
     /**

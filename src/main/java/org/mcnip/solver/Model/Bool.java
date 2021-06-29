@@ -59,4 +59,5 @@ public class Bool extends Constraint {
     public boolean isPolarity() {
         return polarity;
     }
+    
 }

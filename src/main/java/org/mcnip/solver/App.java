@@ -16,6 +16,7 @@ import org.mcnip.solver.Contractors.Contractor;
 import org.mcnip.solver.Contractors.BinContractor.AddContractor;
 import org.mcnip.solver.Model.Formula;
 import org.mcnip.solver.Model.Bound;
+import org.mcnip.solver.Model.Atom;
 import org.mcnip.solver.Model.Bool;
 import org.mcnip.solver.Model.Constraint;
 import org.mcnip.solver.Model.Clause;
@@ -81,8 +82,16 @@ public class App
         });
         ctx.assertUnitClauses();
 
-        System.out.println(ctx.assertedAtoms);
+        System.out.println("asserted unit clauses");
+        for(Atom a : ctx.assertedAtoms){
+            System.out.println(a);
+        }
 
+        ctx.narrowContractions();
+        System.out.println("narrowed assignments");
+        ctx.intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+        System.out.println("asserted atoms");
+        ctx.assertedAtoms.forEach(a -> System.out.println(a));
 
 
         // while satisfiable do things,

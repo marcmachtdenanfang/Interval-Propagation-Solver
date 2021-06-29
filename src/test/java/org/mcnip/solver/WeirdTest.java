@@ -73,40 +73,6 @@ public class WeirdTest {
         assertTrue(z1.getVarName().equals("z"));
     }
 
-    @Test
-    public void mulContractionTest2UpdateMethod()
-    {
-        // Setup.
-        Interval x = new Interval("x", 1, 1, true, true);
-        Interval y = new Interval("y", 2, 2, true, true);
-        Interval z = new Interval("z", 3, 100,true,true);
 
-        HashMap<String, Interval> in = new HashMap<>();
-        in.put(x.getVarName(), x);
-        in.put(y.getVarName(), y);
-        in.put(z.getVarName(), z);
-
-        Contractor c = new MulContractor();
-        Constraint triple = new Triplet(z,x,y,c);
-
-        // Mocking the "solver.solve(formula)" method call.
-        List<Constraint> list = List.of(triple);
-        Solver mockedSolver = Mockito.mock(Solver.class);
-        when(mockedSolver.solve(any())).thenReturn(list);
-
-        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
-
-        // Method that actually gets tested.
-        var res = ctx.updateIntervals(in, triple);
-        var x1 = res.get("x");
-        var y1 = res.get("y");
-        var z1 = res.get("z");
-        System.out.println("mulContractionTest2UpdateMethod");
-        System.out.println(x1);
-        System.out.println(y1);
-        System.out.println(z1);
-
-        assertTrue(ctx.checkForEmptyInterval(in));
-    }
 
 }
