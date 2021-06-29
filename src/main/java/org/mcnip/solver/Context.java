@@ -195,7 +195,7 @@ public class Context {
      */
     public void assertUnitClauses()
     {
-        HelpFunctionsKt.findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms).forEach(assertedAtoms::push);
+        HelpFunctionsKt.findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream().takeWhile(Marker.class::isInstance).collect(Collectors.toList())).forEach(assertedAtoms::push);
     }
 
     /**
@@ -203,7 +203,7 @@ public class Context {
      */
     public void narrowContractions()
     {
-        Pair<Map<String, Interval>, List<Bound>> narrowed = HelpFunctionsKt.narrowContractor(assertedAtoms.stream().takeWhile(Marker.class::isInstance).collect(Collectors.toList()), intervalAssignmentStack.pop());
+        Pair<Map<String, Interval>, List<Bound>> narrowed = HelpFunctionsKt.narrowContractors(assertedAtoms.stream().takeWhile(Marker.class::isInstance).collect(Collectors.toList()), intervalAssignmentStack.pop());
         intervalAssignmentStack.push(narrowed.getFirst());
         assertedAtoms.addAll(narrowed.getSecond());
     }

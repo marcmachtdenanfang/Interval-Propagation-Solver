@@ -2,8 +2,6 @@ package org.mcnip.solver.Model;
 
 import org.mcnip.solver.Contractors.BoolContractor;
 
-import lombok.Getter;
-
 /*
 public class Bool implements Atom {
     
@@ -26,8 +24,8 @@ public class Bool implements Atom {
 
 public class Bool extends Constraint {
     
-    @Getter private final String name;
-    @Getter private boolean polarity = true;
+    private final String name;
+    private boolean polarity = true;
 
     public Bool(String name, boolean polarity)
     {
@@ -53,5 +51,12 @@ public class Bool extends Constraint {
     {
         return (polarity ? name : "!" + name);
     }
-    
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isPolarity() {
+        return polarity;
+    }
 }

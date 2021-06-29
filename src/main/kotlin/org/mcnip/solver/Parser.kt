@@ -272,13 +272,18 @@ class Parser(filePath: String) : IParser {
     val leftArg = getInterval(left)
     val rightArg = getInterval(right)
     val result = Interval("_$str$idx", leftArg.lowerBound.type?:rightArg.lowerBound.type)
-    clauses += Clause(setOf(result.varName, leftArg.varName, rightArg.varName), listOf(Triplet(result, leftArg, rightArg, contractor)))
+    addIntervalAndClause(result, setOf(result.varName, leftArg.varName, rightArg.varName), Triplet(result, leftArg, rightArg, contractor))
   }
 
   private fun UnaryOperations.operateUn(str: String, contractor: Contractor) = forEachIndexed { idx, name ->
     val arg = getInterval(name)
     val result = Interval("_$str$idx", arg.lowerBound.type)
-    clauses += Clause(setOf(result.varName, arg.varName), listOf(Pair(result, arg, contractor)))
+    addIntervalAndClause(result, setOf(result.varName, arg.varName), Pair(result, arg, contractor))
+  }
+
+  private fun addIntervalAndClause(result: Interval, set: Set<String>, constraint: Constraint) {
+    intervals[result.varName] = result
+    clauses += Clause(set, listOf(constraint))
   }
 
   private fun getInterval(str: String) =
