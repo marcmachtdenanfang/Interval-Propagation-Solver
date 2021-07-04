@@ -82,15 +82,15 @@ public class App
         });
         ctx.assertUnitClauses();
 
-        System.out.println("asserted unit clauses");
+        System.out.println(ANSI_GREEN + "--- asserted unit clauses" + ANSI_RESET);
         for(Atom a : ctx.assertedAtoms){
             System.out.println(a);
         }
 
         ctx.narrowContractions();
-        System.out.println("narrowed assignments");
+        System.out.println(ANSI_GREEN + "--- narrowed assignments" + ANSI_RESET);
         ctx.intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
-        System.out.println("asserted atoms");
+        System.out.println(ANSI_GREEN + "--- asserted atoms" + ANSI_RESET);
         ctx.assertedAtoms.forEach(a -> System.out.println(a));
 
 

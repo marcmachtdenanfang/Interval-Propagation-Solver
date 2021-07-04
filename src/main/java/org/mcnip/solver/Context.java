@@ -208,6 +208,7 @@ public class Context {
         assertedAtoms.addAll(narrowed.getSecond());
     }
 
+    /*
     public void update()
     {
         // placeholder, should call an assignment of clauses from cdcl solver
@@ -233,7 +234,7 @@ public class Context {
                 this.varIntervals.replace(k, tempMap.get(k));
             }
         }
-    }
+    }*/
 
     /**
      * Implements the update_rho function from the paper.

@@ -89,48 +89,6 @@ public class AppTest
         assertTrue(intervals.get("y").getLowerBound().equals(IPSNumber.ZERO_int));
     }
 
-    /**
-     * Should pass.
-     */
-    @Test
-    public void addContractionTest1UpdateMethod()
-    {
-        // Setup.
-        Interval x = new Interval("x", -20, 1, true, true);
-        Interval y = new Interval("y", 0, 10, true, true);
-        Interval z = new DotInterval("z", 10);
-        
-        HashMap<String, Interval> in = new HashMap<>();
-        in.put(x.getVarName(), x);
-        in.put(y.getVarName(), y);
-        in.put(z.getVarName(), z);
-        
-        Contractor addContractor = new AddContractor(); 
-        Constraint triple = new Triplet(z,x,y,addContractor);
-
-        // Mocking the "solver.solve(formula)" method call.
-        List<Constraint> list = List.of(triple);
-        Solver mockedSolver = Mockito.mock(Solver.class);
-        when(mockedSolver.solve(any())).thenReturn(list);
-
-        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
-
-        // Method that actually gets tested.
-        ctx.update();
-
-        // Check results for Correctness.
-        assertTrue(ctx.varIntervals.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
-        assertTrue(ctx.varIntervals.get("y").getLowerBound().equals(new IPSNumber(9, Type.INT)));
-        assertTrue(ctx.varIntervals.get("z").getLowerBound().equals(IPSNumber.TEN_int));
-
-        assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));
-        assertTrue(ctx.varIntervals.get("y").getUpperBound().equals(IPSNumber.TEN_int));
-        assertTrue(ctx.varIntervals.get("z").getUpperBound().equals(IPSNumber.TEN_int));
-        System.out.println(ctx.varIntervals.get("x"));
-        System.out.println(ctx.varIntervals.get("y"));
-        System.out.println(ctx.varIntervals.get("z"));
-    }
-
     @Test
     public void addContractionTest2UpdateMethod()
     {
@@ -147,27 +105,13 @@ public class AppTest
         Contractor addContractor = new AddContractor(); 
         Constraint triple = new Triplet(z,x,y,addContractor);
 
-        // Mocking the "solver.solve(formula)" method call.
-        List<Constraint> list = List.of(triple);
-        Solver mockedSolver = Mockito.mock(Solver.class);
-        when(mockedSolver.solve(any())).thenReturn(list);
-
-        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
+        Context ctx = new Context(Mockito.mock(IParser.class), in, Mockito.mock(Solver.class));
 
         // Method that actually gets tested.
-        ctx.update();
-        System.out.println(ctx.varIntervals.get("x"));
-        System.out.println(ctx.varIntervals.get("y"));
-        System.out.println(ctx.varIntervals.get("z"));
+        Map<String, Interval> tempMap = ctx.updateIntervals(in, triple);        
 
         // Check results for Correctness.
-        assertTrue(ctx.varIntervals.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
-        assertTrue(ctx.varIntervals.get("y").getLowerBound().equals(new IPSNumber(9, Type.INT)));
-        assertTrue(ctx.varIntervals.get("z").getLowerBound().equals(IPSNumber.TEN_int));
-
-        assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));
-        assertTrue(ctx.varIntervals.get("y").getUpperBound().equals(IPSNumber.TEN_int));
-        assertTrue(ctx.varIntervals.get("z").getUpperBound().equals(IPSNumber.TEN_int));
+        assertTrue(ctx.checkForEmptyInterval(tempMap));
     }
 
     @Test
@@ -186,27 +130,13 @@ public class AppTest
         Contractor addContractor = new AddContractor(); 
         Constraint triple = new Triplet(z,x,y,addContractor);
 
-        // Mocking the "solver.solve(formula)" method call.
-        List<Constraint> list = List.of(triple);
-        Solver mockedSolver = Mockito.mock(Solver.class);
-        when(mockedSolver.solve(any())).thenReturn(list);
-
-        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
+        Context ctx = new Context(Mockito.mock(IParser.class), in, Mockito.mock(Solver.class));
 
         // Method that actually gets tested.
-        ctx.update();
-        System.out.println(ctx.varIntervals.get("x"));
-        System.out.println(ctx.varIntervals.get("y"));
-        System.out.println(ctx.varIntervals.get("z"));
+        Map<String, Interval> tempMap = ctx.updateIntervals(in, triple);        
 
-        // Check results for Correctness.
-        assertTrue(ctx.varIntervals.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
-        assertTrue(ctx.varIntervals.get("y").getLowerBound().equals(new IPSNumber(9, Type.INT)));
-        assertTrue(ctx.varIntervals.get("z").getLowerBound().equals(IPSNumber.TEN_int));
-
-        assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));
-        assertTrue(ctx.varIntervals.get("y").getUpperBound().equals(IPSNumber.TEN_int));
-        assertTrue(ctx.varIntervals.get("z").getUpperBound().equals(IPSNumber.TEN_int));
+        // Check results for Correctness.        
+        assertTrue(ctx.checkForEmptyInterval(tempMap));
     }
 
     @Test
@@ -226,28 +156,30 @@ public class AppTest
         Constraint triple = new Triplet(z,x,y,addContractor);
 
         // Mocking the "solver.solve(formula)" method call.
-        List<Constraint> list = List.of(triple);
-        Solver mockedSolver = Mockito.mock(Solver.class);
-        when(mockedSolver.solve(any())).thenReturn(list);
 
-        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
+        Context ctx = new Context(Mockito.mock(IParser.class), in, Mockito.mock(Solver.class));
 
         // Method that actually gets tested.
-        ctx.update();
-        System.out.println(ctx.varIntervals.get("x"));
-        System.out.println(ctx.varIntervals.get("y"));
-        System.out.println(ctx.varIntervals.get("z"));
+        Map<String, Interval> tempMap = ctx.updateIntervals(in, triple);
+        System.out.println(tempMap.get("x"));
+        System.out.println(tempMap.get("y"));
+        System.out.println(tempMap.get("z"));
 
         // Check results for Correctness.
-        assertTrue(ctx.varIntervals.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
-        assertTrue(ctx.varIntervals.get("y").getLowerBound().equals(new IPSNumber(9, Type.INT)));
-        assertTrue(ctx.varIntervals.get("z").getLowerBound().equals(IPSNumber.TEN_int));
+        assertTrue(tempMap.get("x").getLowerBound().equals(new IPSNumber(Double.NEGATIVE_INFINITY, Type.INT)));
+        assertTrue(tempMap.get("y").getLowerBound().equals(new IPSNumber(Double.NEGATIVE_INFINITY, Type.INT)));
+        assertTrue(tempMap.get("z").getLowerBound().equals(IPSNumber.TEN_int));
 
-        assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));
-        assertTrue(ctx.varIntervals.get("y").getUpperBound().equals(IPSNumber.TEN_int));
-        assertTrue(ctx.varIntervals.get("z").getUpperBound().equals(IPSNumber.TEN_int));
+        assertTrue(tempMap.get("x").getUpperBound().equals(new IPSNumber(Double.POSITIVE_INFINITY, Type.INT)));
+        assertTrue(tempMap.get("y").getUpperBound().equals(new IPSNumber(Double.POSITIVE_INFINITY, Type.INT)));
+        assertTrue(tempMap.get("z").getUpperBound().equals(IPSNumber.TEN_int));
     }
 
+
+    /**
+     * x + x = z
+     * x will be 5 if we introduce improvements.
+     */
     @Test
     public void addContractionTest5UpdateMethod()
     {
@@ -263,24 +195,21 @@ public class AppTest
         Contractor addContractor = new AddContractor(); 
         Constraint triple = new Triplet(z,x,x,addContractor);
 
-        // Mocking the "solver.solve(formula)" method call.
-        List<Constraint> list = List.of(triple);
-        Solver mockedSolver = Mockito.mock(Solver.class);
-        when(mockedSolver.solve(any())).thenReturn(list);
-
-        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
+        Context ctx = new Context(Mockito.mock(IParser.class), in, Mockito.mock(Solver.class));
 
         // Method that actually gets tested.
-        ctx.update();
-        System.out.println(ctx.varIntervals.get("x"));
-        System.out.println(ctx.varIntervals.get("z"));
+        Map<String, Interval> tempMap = ctx.updateIntervals(in, triple);
+        System.out.println(tempMap.get("x"));
+        System.out.println(tempMap.get("z"));
 
         // Check results for Correctness.
-        assertTrue(ctx.varIntervals.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
-        assertTrue(ctx.varIntervals.get("z").getLowerBound().equals(IPSNumber.TEN_int));
+        assertTrue(     tempMap.get("x").getLowerBound().equals(new IPSNumber(Double.NEGATIVE_INFINITY, Type.INT)) 
+                    ||  tempMap.get("x").getLowerBound().equals(new IPSNumber(5, Type.INT)));
+        assertTrue(tempMap.get("z").getLowerBound().equals(IPSNumber.TEN_int));
 
-        assertTrue(ctx.varIntervals.get("x").getUpperBound().equals(IPSNumber.ONE_int));
-        assertTrue(ctx.varIntervals.get("z").getUpperBound().equals(IPSNumber.TEN_int));
+        assertTrue(     tempMap.get("x").getUpperBound().equals(new IPSNumber(Double.POSITIVE_INFINITY, Type.INT))
+                    ||  tempMap.get("x").getLowerBound().equals(new IPSNumber(5, Type.INT)));
+        assertTrue(tempMap.get("z").getUpperBound().equals(IPSNumber.TEN_int));
     }
 
     @Test

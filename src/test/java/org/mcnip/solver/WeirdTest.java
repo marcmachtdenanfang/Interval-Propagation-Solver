@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.mcnip.solver.Contractors.Contractor;
@@ -33,6 +34,7 @@ public class WeirdTest {
    
 
     @Test
+    @Ignore
     public void mulContractionTest1UpdateMethod()
     {
         // Setup.

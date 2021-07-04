@@ -14,12 +14,6 @@ fun findUnits(clauses: List<Clause>, map: Map<String, Interval>, assertedAtoms: 
     when (clause.constraints.map { constraint ->
       if(constraint is Bool)
         (assertedAtoms.find { (it is Bool) && it.name == constraint.name } as Bool?)?.run { isPolarity xor constraint.isPolarity }?:false
-        /*var temp: bool = false
-        var contractor = constraint.getContractor()
-        for(a in assertedAtoms) {
-          if(a is Bool && a.getVariables()[0].equals(constraint.getVariables()[0])) temp = contractor.boolContract(constraint, a)
-          if(temp)
-        }*/
       else {
         maybeUnit = updateIntervals(map.filter { it.key in constraint.variables }, constraint) to constraint
         maybeUnit.first.map { it.value.isEmpty }.reduce { acc, bool -> acc || bool }
@@ -43,8 +37,9 @@ fun narrowContractors(atoms: List<Atom>, currentAssignment: MutableMap<String, I
       }, atom as Constraint).let { newIntervals ->
         if (newIntervals.containsEmptyInterval())
           {} //Step 5
-        else
+        else{
           currentAssignment += newIntervals
+        } 
         if (atom is Pair || atom is Triplet) {
           bounds += extractBounds(newIntervals)
         }
