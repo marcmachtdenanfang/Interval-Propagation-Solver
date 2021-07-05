@@ -4,6 +4,7 @@ import org.mcnip.solver.Model.DotInterval
 import org.mcnip.solver.Model.IPSNumber
 import org.mcnip.solver.Model.IPSNumber.ZERO
 import org.mcnip.solver.Model.Interval
+import org.mcnip.solver.filteredMapOf
 import kotlin.math.PI
 import kotlin.math.nextDown
 import kotlin.math.nextUp
@@ -11,8 +12,8 @@ import kotlin.math.nextUp
 class UnContractions(intervals: Map<String, Interval>, names: Array<String>) {
   private val result = names[0]
   private val argument = names[1]
-  private val resInterval = intervals.getValue(result)
-  private val argInterval = intervals.getValue(argument)
+  private val resInterval = intervals[result]?:DotInterval(result, result)
+  private val argInterval = intervals[argument]?:DotInterval(argument, argument)
   private val resLowerBound: IPSNumber = resInterval.lowerBound
   private val resUpperBound: IPSNumber = resInterval.upperBound
   private val argLowerBound: IPSNumber = argInterval.lowerBound
@@ -21,7 +22,7 @@ class UnContractions(intervals: Map<String, Interval>, names: Array<String>) {
   companion object {
     @JvmStatic
     fun abs(intervals: Map<String, Interval>, names: Array<String>) = UnContractions(intervals, names).run {
-      mapOf(result to Interval(resInterval, when {
+      filteredMapOf(result to Interval(resInterval, when {
         argLowerBound <= ZERO && argUpperBound >= ZERO ->
           ZERO
         argLowerBound > ZERO ->
@@ -40,7 +41,7 @@ class UnContractions(intervals: Map<String, Interval>, names: Array<String>) {
 
     @JvmStatic
     fun neg(intervals: Map<String, Interval>, names: Array<String>) = UnContractions(intervals, names).run {
-      mapOf(result to Interval(resInterval, -argUpperBound, -argLowerBound, false), argument to Interval(argInterval, -resUpperBound, -resLowerBound, false))
+      filteredMapOf(result to Interval(resInterval, -argUpperBound, -argLowerBound, false), argument to Interval(argInterval, -resUpperBound, -resLowerBound, false))
     }
 
     @JvmStatic
@@ -59,7 +60,7 @@ class UnContractions(intervals: Map<String, Interval>, names: Array<String>) {
       val upper = op(argUpperBound.fpValue)
       val upperRise = upper < op(argUpperBound.fpValue.nextUp())
       val distance = argUpperBound.fpValue - argLowerBound.fpValue
-      mapOf(result to when {
+      filteredMapOf(result to when {
         distance > 2.0 * PI || (distance > PI && lowerRise == upperRise)->
           Interval(resInterval, -1.0, 1.0)
         distance < PI && lowerRise && upperRise ->

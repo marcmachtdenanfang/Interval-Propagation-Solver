@@ -1,17 +1,19 @@
 package org.mcnip.solver.contractions
 
+import org.mcnip.solver.Model.DotInterval
 import org.mcnip.solver.Model.IPSNumber
 import org.mcnip.solver.Model.IPSNumber.NEG_INF
 import org.mcnip.solver.Model.IPSNumber.POS_INF
 import org.mcnip.solver.Model.Interval
+import org.mcnip.solver.filteredMapOf
 
 class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
   private val result = names[0]
   private val fstArg = names[1]
   private val sndArg = names[2]
-  private val resInterval = intervals.getValue(result)
-  private val fstInterval = intervals.getValue(fstArg)
-  private val sndInterval = intervals.getValue(sndArg)
+  private val resInterval = intervals[result]?:DotInterval(result, result)
+  private val fstInterval = intervals[fstArg]?:DotInterval(fstArg, fstArg)
+  private val sndInterval = intervals[sndArg]?:DotInterval(sndArg, sndArg)
   private val resLowerBound: IPSNumber = resInterval.lowerBound
   private val resUpperBound: IPSNumber = resInterval.upperBound
   private val fstLowerBound: IPSNumber = fstInterval.lowerBound
@@ -22,48 +24,48 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
   companion object {
     @JvmStatic
     fun add(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      mapOf(result to Interval(resInterval, fstLowerBound + sndLowerBound, fstUpperBound + sndUpperBound, false),
+      filteredMapOf(result to Interval(resInterval, fstLowerBound + sndLowerBound, fstUpperBound + sndUpperBound, false),
       fstArg to Interval(fstInterval, resLowerBound - sndUpperBound, resUpperBound - sndLowerBound, true),
       sndArg to Interval(sndInterval, resLowerBound - fstUpperBound, resUpperBound - fstLowerBound, true))
     }
 
     @JvmStatic
     fun sub(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      mapOf(result to Interval(resInterval, fstLowerBound - sndUpperBound, fstUpperBound - sndLowerBound, true),
+      filteredMapOf(result to Interval(resInterval, fstLowerBound - sndUpperBound, fstUpperBound - sndLowerBound, true),
           fstArg to Interval(fstInterval, resLowerBound + sndLowerBound, resUpperBound + sndUpperBound, false),
           sndArg to Interval(sndInterval, fstLowerBound - resUpperBound, fstUpperBound - resLowerBound, true))
     }
 
     @JvmStatic
     fun mul(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      mapOf(result to resInterval.withMul(fstInterval, sndInterval), fstArg to fstInterval.withDiv(resInterval, sndInterval), sndArg to sndInterval.withDiv(resInterval, fstInterval))
+      filteredMapOf(result to resInterval.withMul(fstInterval, sndInterval), fstArg to fstInterval.withDiv(resInterval, sndInterval), sndArg to sndInterval.withDiv(resInterval, fstInterval))
     }
 
     @JvmStatic
     fun div(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      mapOf(result to resInterval.withDiv(fstInterval, sndInterval), fstArg to fstInterval.withMul(resInterval, sndInterval), sndArg to sndInterval.withDiv(fstInterval, resInterval))
+      filteredMapOf(result to resInterval.withDiv(fstInterval, sndInterval), fstArg to fstInterval.withMul(resInterval, sndInterval), sndArg to sndInterval.withDiv(fstInterval, resInterval))
     }
 
     @JvmStatic
     fun pow(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      mapOf(result to resInterval.withPow(fstInterval, sndInterval), fstArg to fstInterval.withNrt(resInterval, sndInterval), sndArg to sndInterval)
+      filteredMapOf(result to resInterval.withPow(fstInterval, sndInterval), fstArg to fstInterval.withNrt(resInterval, sndInterval), sndArg to sndInterval)
     }
 
     @JvmStatic
     fun nrt(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      mapOf(result to resInterval.withNrt(fstInterval, sndInterval), fstArg to fstInterval.withPow(resInterval, sndInterval), sndArg to sndInterval)
+      filteredMapOf(result to resInterval.withNrt(fstInterval, sndInterval), fstArg to fstInterval.withPow(resInterval, sndInterval), sndArg to sndInterval)
     }
 
     @JvmStatic
     fun min(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      mapOf(result to Interval(resInterval, fstLowerBound.min(sndLowerBound), fstUpperBound.min(sndUpperBound), false),
+      filteredMapOf(result to Interval(resInterval, fstLowerBound.min(sndLowerBound), fstUpperBound.min(sndUpperBound), false),
           fstArg to Interval(fstInterval, resLowerBound, POS_INF, false),
           sndArg to Interval(sndInterval, resLowerBound, POS_INF, false))
     }
 
     @JvmStatic
     fun max(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      mapOf(result to Interval(resInterval, fstLowerBound.max(sndLowerBound), fstUpperBound.max(sndUpperBound), false),
+      filteredMapOf(result to Interval(resInterval, fstLowerBound.max(sndLowerBound), fstUpperBound.max(sndUpperBound), false),
           fstArg to Interval(fstInterval, NEG_INF, resUpperBound, false),
           sndArg to Interval(sndInterval, NEG_INF, resUpperBound, false))
     }

@@ -1,10 +1,13 @@
 package org.mcnip.solver.Model;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+
+import static org.mcnip.solver.Model.Type.*;
 
 
 /**
@@ -20,20 +23,20 @@ public class IPSNumber implements Comparable<IPSNumber> {
     private final BigInteger intValue;
     private Type type;
 
-    public static final IPSNumber ZERO = new IPSNumber(0.0, Type.REAL);
-    public static final IPSNumber ONE = new IPSNumber(1.0, Type.REAL);
-    public static final IPSNumber TEN = new IPSNumber(10.0, Type.REAL);
-    public static final IPSNumber POS_INF = new IPSNumber(Double.POSITIVE_INFINITY, Type.REAL);
-    public static final IPSNumber NEG_INF = new IPSNumber(Double.NEGATIVE_INFINITY, Type.REAL);
+    public static final IPSNumber ZERO = new IPSNumber(0.0, REAL);
+    public static final IPSNumber ONE = new IPSNumber(1.0, REAL);
+    public static final IPSNumber TEN = new IPSNumber(10.0, REAL);
+    public static final IPSNumber POS_INF = new IPSNumber(Double.POSITIVE_INFINITY, REAL);
+    public static final IPSNumber NEG_INF = new IPSNumber(Double.NEGATIVE_INFINITY, REAL);
 
-    public static final IPSNumber ZERO_int = new IPSNumber(0, Type.INT);
-    public static final IPSNumber ONE_int = new IPSNumber(1, Type.INT);
-    public static final IPSNumber TEN_int = new IPSNumber(10, Type.INT);
+    public static final IPSNumber ZERO_int = new IPSNumber(0, INT);
+    public static final IPSNumber ONE_int = new IPSNumber(1, INT);
+    public static final IPSNumber TEN_int = new IPSNumber(10, INT);
 
     @Override
     public String toString()
     {
-        if(intValue == null || type == Type.REAL){
+        if(intValue == null || type == REAL){
             return "" + fpValue;
         }
         return intValue.toString();
@@ -41,17 +44,17 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     @Override
     public int compareTo(@NotNull IPSNumber number) {
-        return (this.type != Type.INT || this.intValue == null || number.getIntValue() == null) ? Double.compare(fpValue, number.fpValue) : intValue.compareTo(number.intValue);
+        return (this.type != INT || this.intValue == null || number.getIntValue() == null) ? Double.compare(fpValue, number.fpValue) : intValue.compareTo(number.intValue);
     }
 
     public IPSNumber(double value, Type t)
     {
-        this.type = Type.INT;
+        this.type = INT;
         this.fpValue = value;
         if(value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY) {
             this.intValue = null;
         } else {
-            this.intValue = new BigInteger(String.valueOf((int) value));
+            this.intValue = new BigInteger(String.valueOf(Math.round(value)));
         }
     }
 
@@ -71,7 +74,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     public IPSNumber(String strValue, Boolean roundUpOrDown)
     {
-        this.type = strValue.contains(".") ? Type.REAL : Type.INT;
+        this.type = strValue.contains(".") ? REAL : INT;
         this.intValue = new BigInteger(strValue.replaceFirst("\\..*$",""));
         this.fpValue = roundUpOrDown ? Math.nextUp(Double.parseDouble(strValue)) : Math.nextDown(Double.parseDouble(strValue));
     }
@@ -83,7 +86,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
             this.fpValue = value.doubleValue();
         }
         else {
-            this.intValue = new BigInteger(String.valueOf((int) value));
+            if ((double) value == Double.POSITIVE_INFINITY || (double) value == Double.NEGATIVE_INFINITY) {
+                this.intValue = null;
+            } else {
+                this.intValue = new BigInteger(String.valueOf(Math.round((double) value)));
+            }
             this.fpValue = (double) value;
         }
     }
@@ -105,12 +112,18 @@ public class IPSNumber implements Comparable<IPSNumber> {
         switch (this.type) 
         {
             case INT:
-                if(this.intValue == null || b.getIntValue() == null) {
-                    return new IPSNumber(Double.max(this.fpValue, b.getFpValue()), Type.INT);
-                }
-                return new IPSNumber(this.intValue.max(b.getIntValue()), Type.INT);
+                if (this.intValue == null && b.getIntValue() == null)
+                    return new IPSNumber(Double.max(this.fpValue, b.getFpValue()), INT);
+                else if (this.fpValue == Double.POSITIVE_INFINITY || b.getFpValue() == Double.POSITIVE_INFINITY)
+                    return new IPSNumber(Double.POSITIVE_INFINITY, INT);
+                else if (this.fpValue == Double.NEGATIVE_INFINITY)
+                    return new IPSNumber(b.getIntValue(), INT);
+                else if (b.getFpValue() == Double.NEGATIVE_INFINITY)
+                    return new IPSNumber(this.intValue, INT);
+                else
+                    return new IPSNumber(this.intValue.max(b.getIntValue()), INT);
             case REAL:
-                return new IPSNumber(Double.max(this.fpValue, b.getFpValue()), Type.REAL);
+                return new IPSNumber(Double.max(this.fpValue, b.getFpValue()), REAL);
             default:
                 return null; // break;
         }
@@ -215,12 +228,18 @@ public class IPSNumber implements Comparable<IPSNumber> {
         switch (this.type) 
         {
             case INT:
-                if(this.intValue == null || b.getIntValue() == null) {
-                    return new IPSNumber(Double.min(this.fpValue, b.getFpValue()), Type.INT);
-                }
-                return new IPSNumber(this.intValue.min(b.getIntValue()), Type.INT);
+                if (this.intValue == null && b.getIntValue() == null)
+                    return new IPSNumber(Double.min(this.fpValue, b.getFpValue()), INT);
+                else if (this.fpValue == Double.NEGATIVE_INFINITY || b.getFpValue() == Double.NEGATIVE_INFINITY)
+                    return new IPSNumber(Double.NEGATIVE_INFINITY, INT);
+                else if (this.fpValue == Double.POSITIVE_INFINITY)
+                    return new IPSNumber(b.getIntValue(), INT);
+                else if (b.getFpValue() == Double.POSITIVE_INFINITY)
+                    return new IPSNumber(Objects.requireNonNull(this.intValue), INT);
+                else
+                    return new IPSNumber(Objects.requireNonNull(this.intValue).min(b.getIntValue()), INT);
             case REAL:
-                return new IPSNumber(Double.min(this.fpValue, b.getFpValue()), Type.REAL);
+                return new IPSNumber(Double.min(this.fpValue, b.getFpValue()), REAL);
             default:
                 return null; // break;
         }
@@ -241,11 +260,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
             // For now we assume that arithmetic operations always have equal type.
             case INT:
                 if(this.getIntValue() == null || b.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue + b.getFpValue(), Type.INT);
+                    return new IPSNumber(this.fpValue + b.getFpValue(), INT);
                 }
-                return new IPSNumber(this.intValue.add(b.getIntValue()), Type.INT);
+                return new IPSNumber(this.intValue.add(b.getIntValue()), INT);
             case REAL:
-                return new IPSNumber(this.fpValue + b.getFpValue(), Type.REAL);
+                return new IPSNumber(this.fpValue + b.getFpValue(), REAL);
             default:
                 return null; // break;
         }
@@ -263,11 +282,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
         {
             case INT:
                 if(this.getIntValue() == null || b.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue - b.getFpValue(), Type.INT);
+                    return new IPSNumber(this.fpValue - b.getFpValue(), INT);
                 }
-                return new IPSNumber(this.intValue.subtract(b.getIntValue()), Type.INT);
+                return new IPSNumber(this.intValue.subtract(b.getIntValue()), INT);
             case REAL:
-                return new IPSNumber(this.fpValue - b.getFpValue(), Type.REAL);
+                return new IPSNumber(this.fpValue - b.getFpValue(), REAL);
             default:
                 return null; // break;
         }
@@ -296,11 +315,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
         {
             case INT:
                 if(this.getIntValue() == null || b.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue * b.getFpValue(), Type.INT);
+                    return new IPSNumber(this.fpValue * b.getFpValue(), INT);
                 }
-                return new IPSNumber(this.intValue.multiply(b.getIntValue()), Type.INT);
+                return new IPSNumber(this.intValue.multiply(b.getIntValue()), INT);
             case REAL:
-                return new IPSNumber(this.fpValue * b.getFpValue(), Type.REAL);
+                return new IPSNumber(this.fpValue * b.getFpValue(), REAL);
             default:
                 return null; // break;
         }
@@ -315,11 +334,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
                 // This must certainly be changed in the future.
                 // infinity/infinity == NaN!
                 if(this.getIntValue() == null || b.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue / b.getFpValue(), Type.INT);
+                    return new IPSNumber(this.fpValue / b.getFpValue(), INT);
                 }
-                return new IPSNumber(this.intValue.divide(b.getIntValue()), Type.INT);
+                return new IPSNumber(this.intValue.divide(b.getIntValue()), INT);
             case REAL:
-                return new IPSNumber(this.fpValue / b.getFpValue(), Type.REAL);
+                return new IPSNumber(this.fpValue / b.getFpValue(), REAL);
             default:
                 return null; // break;
         }
@@ -334,11 +353,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
         {
             case INT:
                 if(this.getIntValue() == null) {
-                    return new IPSNumber(Math.sqrt(this.fpValue), Type.INT);
+                    return new IPSNumber(Math.sqrt(this.fpValue), INT);
                 }
-                return new IPSNumber(this.intValue.sqrt(), Type.INT);
+                return new IPSNumber(this.intValue.sqrt(), INT);
             case REAL:
-                return new IPSNumber(Math.sqrt(this.fpValue), Type.REAL);
+                return new IPSNumber(Math.sqrt(this.fpValue), REAL);
             default:
                 return null; // break;
         }
@@ -356,11 +375,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
         {
             case INT:
                 if(this.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue, Type.INT);
+                    return new IPSNumber(this.fpValue, INT);
                 }
-                return new IPSNumber(this.intValue.pow(constant), Type.INT);
+                return new IPSNumber(this.intValue.pow(constant), INT);
             case REAL:
-                return new IPSNumber(Math.pow(this.fpValue, constant), Type.REAL);
+                return new IPSNumber(Math.pow(this.fpValue, constant), REAL);
             default:
                 return null; // break;
         }
@@ -373,11 +392,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
         {
             case INT:
                 if(this.getIntValue() == null || b.getIntValue() == null) {
-                    return new IPSNumber(b.getFpValue(), Type.INT);
+                    return new IPSNumber(b.getFpValue(), INT);
                 }
-                return new IPSNumber(this.intValue.pow(b.intValue.intValue()), Type.INT);
+                return new IPSNumber(this.intValue.pow(b.intValue.intValue()), INT);
             case REAL:
-                return new IPSNumber(Math.pow(this.fpValue, b.fpValue), Type.REAL);
+                return new IPSNumber(Math.pow(this.fpValue, b.fpValue), REAL);
             default:
                 return null; // break;
         }
@@ -390,11 +409,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
         {
             case INT:
                 if(this.getIntValue() == null) {
-                    return new IPSNumber(-1*this.fpValue, Type.INT);
+                    return new IPSNumber(-1*this.fpValue, INT);
                 }
-                return new IPSNumber(this.intValue.negate(), Type.INT);
+                return new IPSNumber(this.intValue.negate(), INT);
             case REAL:
-                return new IPSNumber(-1*this.fpValue, Type.REAL);
+                return new IPSNumber(-1*this.fpValue, REAL);
             default:
                 return null; // break;
         }
@@ -407,11 +426,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
         {
             case INT:
                 if(this.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue, Type.INT);
+                    return new IPSNumber(this.fpValue, INT);
                 }
-                return new IPSNumber(this.intValue.add(new BigInteger(String.valueOf(1))), Type.INT);
+                return new IPSNumber(this.intValue.add(new BigInteger(String.valueOf(1))), INT);
             case REAL:
-                return new IPSNumber(Math.nextUp(this.fpValue), Type.REAL);
+                return new IPSNumber(Math.nextUp(this.fpValue), REAL);
             default:
                 return null; // break;
         }
@@ -424,11 +443,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
         {
             case INT:
                 if(this.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue, Type.INT);
+                    return new IPSNumber(this.fpValue, INT);
                 }
-                return new IPSNumber(this.intValue.subtract(new BigInteger(String.valueOf(1))), Type.INT);
+                return new IPSNumber(this.intValue.subtract(new BigInteger(String.valueOf(1))), INT);
             case REAL:
-                return new IPSNumber(Math.nextDown(this.fpValue), Type.REAL);
+                return new IPSNumber(Math.nextDown(this.fpValue), REAL);
             default:
                 return null; // break;
         }
@@ -441,11 +460,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
         {
             case INT:
                 if(this.getIntValue() == null) {
-                    return new IPSNumber(this.fpValue, Type.INT);
+                    return new IPSNumber(this.fpValue, INT);
                 }
-                return new IPSNumber(this.intValue, Type.INT);
+                return new IPSNumber(this.intValue, INT);
             case REAL:
-                return new IPSNumber(roundUpOrDown ? Math.nextUp(this.fpValue) : Math.nextDown(this.fpValue), Type.REAL);
+                return new IPSNumber(roundUpOrDown ? Math.nextUp(this.fpValue) : Math.nextDown(this.fpValue), REAL);
             default:
                 return null; // break;
         }

@@ -19,6 +19,8 @@ import org.mcnip.solver.SatSolver.Solver;
 
 import lombok.NoArgsConstructor;
 
+import static org.mcnip.solver.HelpFunctionsKt.*;
+
 
 /**
  * This class should provide the core functionality around our solver.
@@ -195,7 +197,7 @@ public class Context {
      */
     public void assertUnitClauses()
     {
-        HelpFunctionsKt.findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream().takeWhile(a -> !(a instanceof Marker)).collect(Collectors.toList())).forEach(assertedAtoms::push);
+        findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream().takeWhile(a -> !(a instanceof Marker)).collect(Collectors.toList())).forEach(assertedAtoms::push);
     }
 
     /**
@@ -203,9 +205,28 @@ public class Context {
      */
     public void narrowContractions()
     {
-        Pair<Map<String, Interval>, List<Bound>> narrowed = HelpFunctionsKt.narrowContractors(assertedAtoms.stream().takeWhile(a -> !(a instanceof Marker)).collect(Collectors.toList()), intervalAssignmentStack.pop());
-        intervalAssignmentStack.push(narrowed.getFirst());
-        assertedAtoms.addAll(narrowed.getSecond());
+        List<Constraint> newUnits;
+        do {
+            List<Atom> lastAssertedAtoms = assertedAtoms.stream().takeWhile(a -> !(a instanceof Marker)).collect(Collectors.toList());
+            Pair<Map<String, Interval>, List<Bound>> narrowed = narrowContractors(lastAssertedAtoms, intervalAssignmentStack.pop());
+            intervalAssignmentStack.push(narrowed.getFirst());
+            assertedAtoms.addAll(narrowed.getSecond());
+            lastAssertedAtoms.addAll(narrowed.getSecond());
+            newUnits = findUnits(formula.getClauses(), narrowed.getFirst(), lastAssertedAtoms).stream().filter(unit ->
+                !assertedAtoms.contains(unit)).collect(Collectors.toList());
+            newUnits.forEach(assertedAtoms::push);
+        } while (!newUnits.isEmpty());
+    }
+
+    /**
+     * Step 4 ideas
+     */
+    public void splitVariableInterval()
+    {
+        //select unassigned Bool or inconclusive Number
+        //v = assign Bool/split Number in half
+        //intervalAssignmentStack.peek() + .push(update_p mit v)
+        //assertedAtoms.add(Marker und v)
     }
 
     /*
@@ -259,10 +280,10 @@ public class Context {
         for(Interval i : intervals.values())
         {
             res.add(new Bound(i.getVarName(), 
-                    new DotInterval("_cons" + i.getLowerBound().toString(), i.getLowerBound()), 
+                    new DotInterval(i.getLowerBound().toString(), i.getLowerBound()),
                     new GreaterEqualsContractor()));
             res.add(new Bound(i.getVarName(), 
-                    new DotInterval("_cons" + i.getUpperBound().toString(), i.getUpperBound()), 
+                    new DotInterval(i.getUpperBound().toString(), i.getUpperBound()),
                     new LessEqualsContractor()));
         }
         return res;
