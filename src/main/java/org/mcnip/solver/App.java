@@ -80,30 +80,40 @@ public class App
         Context ctx = new Context(parser, new Solver(){
             public List<Constraint> solve(Formula clauses){ return new ArrayList<Constraint>(); }
         });
-        ctx.assertUnitClauses();
 
-        System.out.println(ANSI_GREEN + "--- asserted unit clauses" + ANSI_RESET);
-        for(Atom a : ctx.assertedAtoms){
-            System.out.println(a);
+        if (solving(ctx)) {
+            System.out.println("SAT");
+            ctx.intervalAssignmentStack.peek().values().forEach(System.out::println);
         }
-
-        ctx.narrowContractions();
-        System.out.println(ANSI_GREEN + "--- narrowed assignments" + ANSI_RESET);
-        ctx.intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
-        System.out.println(ANSI_GREEN + "--- asserted atoms" + ANSI_RESET);
-        ctx.assertedAtoms.forEach(a -> System.out.println(a));
-
-
-        // while satisfiable do things,
-        // ctx.doStuff();
-
-        // if UNSAT terminate with error.
-        // 
-
-        // if correct result, terminate with solution.
-
+        else
+            System.out.println("UNSAT");
     }
 
+    private static boolean solving(Context ctx) {
+        boolean satisfiable;
+        do {
+            satisfiable = ctx.assertUnitClauses();
+            if (satisfiable) {
+                System.out.println(ANSI_GREEN + "--- asserted unit clauses" + ANSI_RESET);
+                for (Atom a : ctx.assertedAtoms) {
+                    System.out.println(a);
+                }
+
+                satisfiable = ctx.narrowContractions();
+                if (satisfiable) {
+                    System.out.println(ANSI_GREEN + "--- narrowed assignments" + ANSI_RESET);
+                    ctx.intervalAssignmentStack.peek().forEach((k, v) -> System.out.println(v));
+                    System.out.println(ANSI_GREEN + "--- asserted atoms" + ANSI_RESET);
+                    ctx.assertedAtoms.forEach(a -> System.out.println(a));
+
+                    if (!ctx.splitVariableInterval()) return true;
+                }
+                else satisfiable = ctx.revertPreviousSplit();
+            }
+            else satisfiable = ctx.revertPreviousSplit();
+        } while (satisfiable);
+        return false;
+    }
 
     /**
      * Handles commandline arguments. If -h or --help is passed then only 

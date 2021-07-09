@@ -2,9 +2,9 @@ package org.mcnip.solver.contractions
 
 import org.mcnip.solver.Model.DotInterval
 import org.mcnip.solver.Model.IPSNumber
-import org.mcnip.solver.Model.IPSNumber.NEG_INF
-import org.mcnip.solver.Model.IPSNumber.POS_INF
+import org.mcnip.solver.Model.IPSNumber.*
 import org.mcnip.solver.Model.Interval
+import org.mcnip.solver.Model.Type.INT
 import org.mcnip.solver.filteredMapOf
 
 class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
@@ -78,17 +78,17 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
 
   private fun Interval.withOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval) = Triple(op, i0, i1).let { Interval(this, it.min(), it.max(), true) }
 
-  private fun Interval.withCautionOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval) =
-      if (i1.lowerBound.isZeroOrInfinite)
-        if (i1.upperBound.isZeroOrInfinite)
-          this
-        else
-          oneSidedIntervalOp(op, i0, i1.upperBound)
-      else
-        if (i1.upperBound.isZeroOrInfinite)
-          oneSidedIntervalOp(op, i0, i1.lowerBound)
-        else
-          withOp(op, i0, i1)
+  private fun Interval.withCautionOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval) = when {
+    i1.lowerBound.isZeroOrInfinite ->
+      if (i1.upperBound.isZeroOrInfinite) this
+      else oneSidedIntervalOp(op, i0, i1.upperBound)
+    i1.upperBound.isZeroOrInfinite ->
+      oneSidedIntervalOp(op, i0, i1.lowerBound)
+    op == IPSNumber::nrt && i1.upperBound.intValue.toInt()%2 == 0 ->
+      withOp(op, Interval(i0.varName, if (i0.lowerBound.type != INT) ZERO else ZERO_int, i0.upperBound), i1)
+    else ->
+      withOp(op, i0, i1)
+  }
 
   private fun oneSidedIntervalOp(op: IPSNumber.(IPSNumber) -> IPSNumber, interval: Interval, number: IPSNumber) =
       listOf(IPSNumber::min, IPSNumber::max).map { it(interval.lowerBound.op(number), interval.upperBound.op(number)) }.run {

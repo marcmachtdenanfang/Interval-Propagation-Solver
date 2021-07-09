@@ -7,9 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import kotlin.Pair;
 import org.mcnip.solver.Contractors.BoundContractor.GreaterEqualsContractor;
@@ -194,39 +192,74 @@ public class Context {
 
     /**
      * Step 2 from the paper
+     * @return
      */
-    public void assertUnitClauses()
+    public boolean assertUnitClauses()
     {
-        findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream().takeWhile(a -> !(a instanceof Marker)).collect(Collectors.toList())).forEach(assertedAtoms::push);
+        List<Constraint> newAtoms = findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream().takeWhile(a -> !(a instanceof Marker)).collect(Collectors.toList()));
+        if (newAtoms == null)
+            return false;
+        newAtoms.forEach(assertedAtoms::push);
+        return true;
     }
 
     /**
      * Step 3 from the paper
      */
-    public void narrowContractions()
+    public boolean narrowContractions()
     {
         List<Constraint> newUnits;
         do {
             List<Atom> lastAssertedAtoms = assertedAtoms.stream().takeWhile(a -> !(a instanceof Marker)).collect(Collectors.toList());
             Pair<Map<String, Interval>, List<Bound>> narrowed = narrowContractors(lastAssertedAtoms, intervalAssignmentStack.pop());
+            if (narrowed == null)
+                return false;
             intervalAssignmentStack.push(narrowed.getFirst());
             assertedAtoms.addAll(narrowed.getSecond());
             lastAssertedAtoms.addAll(narrowed.getSecond());
-            newUnits = findUnits(formula.getClauses(), narrowed.getFirst(), lastAssertedAtoms).stream().filter(unit ->
-                !assertedAtoms.contains(unit)).collect(Collectors.toList());
+            newUnits = findUnits(formula.getClauses(), narrowed.getFirst(), lastAssertedAtoms);
+            if (newUnits == null)
+                return false;
+            newUnits = newUnits.stream().filter(unit -> !assertedAtoms.contains(unit)).collect(Collectors.toList());
             newUnits.forEach(assertedAtoms::push);
         } while (!newUnits.isEmpty());
+        return true;
     }
 
     /**
      * Step 4 ideas
      */
-    public void splitVariableInterval()
+    public boolean splitVariableInterval()
     {
-        //select unassigned Bool or inconclusive Number
+        //select unassigned Bool or inconclusive Number, if not possible/too small:
+        return false;
         //v = assign Bool/split Number in half
         //intervalAssignmentStack.peek() + .push(update_p mit v)
         //assertedAtoms.add(Marker und v)
+        //return true;
+    }
+
+    /**
+     * Step 5 from the paper
+     */
+    public boolean revertPreviousSplit()
+    {
+        intervalAssignmentStack.pop();
+        Atom guiltyAtom;
+        if (assertedAtoms.size() == 0)
+            return false;
+        Atom marker = assertedAtoms.pop();
+        do {
+            guiltyAtom = marker;
+            if (assertedAtoms.size() == 0)
+                return false;
+            marker = assertedAtoms.pop();
+        } while (!(marker instanceof Marker));
+        guiltyAtom = invert(guiltyAtom);
+        assertedAtoms.push(guiltyAtom);
+        if (!(guiltyAtom instanceof Bool))
+            intervalAssignmentStack.push(update(guiltyAtom, intervalAssignmentStack.pop()));
+        return true;
     }
 
     /*
