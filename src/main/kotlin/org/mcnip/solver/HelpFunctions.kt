@@ -12,18 +12,20 @@ private infix fun List<String>.from(assignment: Map<String, Interval>) = filter 
 
 fun findUnits(clauses: List<Clause>, map: Map<String, Interval>, assertedAtoms: List<Atom>): List<Constraint>? {
   val units = mutableListOf<Constraint>()
-  var maybeUnit = mapOf<String, Interval>() to clauses[0].constraints[0]
+  var newUnit = clauses[0].constraints[0]
   clauses.forEach { clause ->
     when (clause.constraints.map { constraint ->
       if(constraint is Bool)
         (assertedAtoms.find { (it is Bool) && it.name == constraint.name } as Bool?)?.run { isPolarity xor constraint.isPolarity }?:false
       else {
-        maybeUnit = updateIntervals(map.filter { it.key in constraint.variables }, constraint) to constraint
-        maybeUnit.first.map { it.value.isEmpty }.reduce { acc, bool -> acc || bool }
+        if (updateIntervals(map.filter { it.key in constraint.variables }, constraint).map { it.value.isEmpty }.reduce { acc, bool -> acc || bool })
+          true
+        else
+          false.also { newUnit = constraint }
       }
     }.filter { !it }.size) {
       0 -> return null
-      1 -> units += maybeUnit.second
+      1 -> units += newUnit
     }
   }
   return units
@@ -35,12 +37,9 @@ fun List<Atom>.narrowContractors(currentAssignment: MutableMap<String, Interval>
     if (atom !is Bool) atom.update(currentAssignment).let { newIntervals ->
       if (newIntervals.containsEmptyInterval())
         return null
-      else{
-        currentAssignment += newIntervals
-      }
-      if (atom is org.mcnip.solver.Model.Pair || atom is Triplet) {
+      currentAssignment += newIntervals
+      if (atom is org.mcnip.solver.Model.Pair || atom is Triplet)
         bounds += extractBounds(newIntervals)
-      }
     }
   }
   return currentAssignment to bounds

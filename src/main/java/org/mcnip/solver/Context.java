@@ -199,6 +199,7 @@ public class Context {
         List<Constraint> newAtoms = findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream().takeWhile(a -> !(a instanceof Marker)).collect(Collectors.toList()));
         if (newAtoms == null)
             return false;
+        newAtoms = newAtoms.stream().filter(atom -> !assertedAtoms.contains(atom)).collect(Collectors.toList());
         newAtoms.forEach(assertedAtoms::push);
         return true;
     }
