@@ -14,12 +14,12 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
   private val resInterval = intervals[result]?:DotInterval(result, result)
   private val fstInterval = intervals[fstArg]?:DotInterval(fstArg, fstArg)
   private val sndInterval = intervals[sndArg]?:DotInterval(sndArg, sndArg)
-  private val resLowerBound: IPSNumber = resInterval.lowerBound
-  private val resUpperBound: IPSNumber = resInterval.upperBound
-  private val fstLowerBound: IPSNumber = fstInterval.lowerBound
-  private val fstUpperBound: IPSNumber = fstInterval.upperBound
-  private val sndLowerBound: IPSNumber = sndInterval.lowerBound
-  private val sndUpperBound: IPSNumber = sndInterval.upperBound
+  private val resLowerBound = resInterval.lowerBound
+  private val resUpperBound = resInterval.upperBound
+  private val fstLowerBound = fstInterval.lowerBound
+  private val fstUpperBound = fstInterval.upperBound
+  private val sndLowerBound = sndInterval.lowerBound
+  private val sndUpperBound = sndInterval.upperBound
 
   companion object {
     @JvmStatic

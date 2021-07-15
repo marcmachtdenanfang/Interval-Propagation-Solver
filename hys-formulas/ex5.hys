@@ -1,0 +1,7 @@
+DECL
+  define a = 9;
+  int [1, a] x, y;
+
+EXPR
+  7 < x or y > pow(9, 9) * x;
+  y = min(a, 4);

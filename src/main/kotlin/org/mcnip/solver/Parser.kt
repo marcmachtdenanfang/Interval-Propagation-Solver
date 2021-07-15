@@ -78,15 +78,22 @@ class Parser(filePath: String) : IParser {
     variables.forEach {
       intervals[it.key] = Interval(it.key, it.value.first, it.value.second)
     }
-    boundList.forEach { (relType, leftArg, rightArg) ->
-      bounds += Bound(leftArg, getInterval(rightArg), when (relType) {
-        relOps[0] -> GreaterEqualsContractor()
-        relOps[1] -> LessEqualsContractor()
-        relOps[2] -> NotEqualsContractor()
-        relOps[3] -> EqualsContractor()
-        relOps[4] -> GreaterContractor()
-        else -> LessContractor()
-      })
+    boundList.forEach { (fst, snd, trd) ->
+      bounds += (
+          if (snd.isNumber())
+            Triple(fst.replace('<', '_').replace('>', '<').replace('_', '>'), trd, snd)
+          else
+            Triple(fst, snd, trd)
+          ).let { (relType, leftArg, rightArg) ->
+            Bound(leftArg, getInterval(rightArg), when (relType) {
+              relOps[0] -> GreaterEqualsContractor()
+              relOps[1] -> LessEqualsContractor()
+              relOps[2] -> NotEqualsContractor()
+              relOps[3] -> EqualsContractor()
+              relOps[4] -> GreaterContractor()
+              else -> LessContractor()
+            })
+          }
     }
     clauseList.forEach { clause ->
       val variables = mutableSetOf<String>()
@@ -239,9 +246,7 @@ class Parser(filePath: String) : IParser {
       val sndMatch = atomReg.find(expr, relMatch.range.last)!!
       expr = "${expr.substring(0, fstMatch.range.first)}_bnd${boundList.size}${expr.substring(sndMatch.range.last + 1)}"
       val fstVal = fstMatch.value.trimEnd()
-      (if (varReg matches fstVal) fstVal to sndMatch.value else sndMatch.value to fstVal).let { (left, right) ->
-        boundList += BoundTriple(relMatch.value, left, right)
-      }
+      boundList += BoundTriple(relMatch.value, fstVal, sndMatch.value)
     }
     return expr
   }
@@ -287,10 +292,12 @@ class Parser(filePath: String) : IParser {
   }
 
   private fun getInterval(str: String) =
-      if (str.removePrefix("-")[0].isDigit())
+      if (str.isNumber())
         DotInterval(str, str)
       else
         intervals.getOrPut(str, { Interval(str, null) })
+
+  private fun String.isNumber() = removePrefix("-")[0].isDigit()
 
   override fun toString() = "constants:\n$constants\n\nvariables:\n$variables\n\nbooleans:\n$booleans\n\nclauses:\n$clauseList\n\nbounds:\n$boundList\n\nbrackets:\n$brackets\n\nnegations:\n$negations\n\nmultiplications:\n$multiplications\n\ndivisions:\n$divisions\n\nadditions:\n$additions\n\nsubtractions:\n$subtractions\n\nabsolutes:\n$absolutes\n\nminimums:\n$minimums\n\nmaximums:\n$maximums\n\nexponents:\n$exponents\n\nsines:\n$sines\n\ncosines:\n$cosines\n\npowers:\n$powers\n\nroots:\n$roots"
 

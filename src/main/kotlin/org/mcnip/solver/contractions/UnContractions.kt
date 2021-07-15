@@ -1,7 +1,6 @@
 package org.mcnip.solver.contractions
 
 import org.mcnip.solver.Model.DotInterval
-import org.mcnip.solver.Model.IPSNumber
 import org.mcnip.solver.Model.IPSNumber.ZERO
 import org.mcnip.solver.Model.Interval
 import org.mcnip.solver.filteredMapOf
@@ -14,10 +13,10 @@ class UnContractions(intervals: Map<String, Interval>, names: Array<String>) {
   private val argument = names[1]
   private val resInterval = intervals[result]?:DotInterval(result, result)
   private val argInterval = intervals[argument]?:DotInterval(argument, argument)
-  private val resLowerBound: IPSNumber = resInterval.lowerBound
-  private val resUpperBound: IPSNumber = resInterval.upperBound
-  private val argLowerBound: IPSNumber = argInterval.lowerBound
-  private val argUpperBound: IPSNumber = argInterval.upperBound
+  private val resLowerBound = resInterval.lowerBound
+  private val resUpperBound = resInterval.upperBound
+  private val argLowerBound = argInterval.lowerBound
+  private val argUpperBound = argInterval.upperBound
 
   companion object {
     @JvmStatic
