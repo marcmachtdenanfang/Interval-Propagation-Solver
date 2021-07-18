@@ -140,6 +140,32 @@ public class Interval {
         return upperBound;
     }
 
+    public IPSNumber getMidPoint() {
+        if(this.upperBound.equals(IPSNumber.POS_INF) && this.lowerBound.equals(IPSNumber.NEG_INF)) {
+            return new IPSNumber(0, lowerBound.getType());
+        } else if(this.upperBound.equals(IPSNumber.POS_INF)) {
+            if(this.upperBound.getType() == Type.INT) {
+                // (1l<<63)-1 == Long.Max_Value
+                BigInteger big = BigInteger.valueOf(Long.MAX_VALUE);
+                IPSNumber temp = this.lowerBound.add(new IPSNumber(big, Type.INT));
+                return temp.div(new IPSNumber(2, Type.INT));
+            }
+            // for intervals [a, inf], the midpoint is Real.MAX_VALUE, IEEE P1788
+            return IPSNumber.POS_INF;
+        } else if(this.lowerBound.equals(IPSNumber.NEG_INF)) {
+            if(this.lowerBound.getType() == Type.INT) {
+                // (1l<<63)-1 == Long.Max_Value
+                BigInteger big = BigInteger.valueOf(Long.MIN_VALUE);
+                IPSNumber temp = this.upperBound.add(new IPSNumber(big, Type.INT));
+                return temp.div(new IPSNumber(2, Type.INT));
+            }
+            // for intervals [-inf, a], the midpoint is Real.MIN_VALUE, IEEE P1788
+            return IPSNumber.NEG_INF;
+        }
+        IPSNumber temp = this.upperBound.add(this.lowerBound);
+        return temp.div(new IPSNumber(2, this.lowerBound.getType()));
+    }
+
     /**
      * Internal representation for empty Interval is
      * lowerBound > upperBound.
@@ -150,4 +176,19 @@ public class Interval {
     {
         return this.lowerBound.gt(this.upperBound);
     }
+
+    public boolean containsMoreThanOneValue() {
+        // since we always have closed intervals, this code suffices.
+        if(lowerBound.equals(upperBound)) return false;
+        return true;
+    }
+    
+
+    public boolean isDotInfinite() {
+        if(this.lowerBound.equals(this.upperBound)) {
+            return this.lowerBound.isInfinite();
+        }
+        return false;
+    }
+
 }

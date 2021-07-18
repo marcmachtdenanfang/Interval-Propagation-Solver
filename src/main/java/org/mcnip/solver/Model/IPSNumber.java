@@ -483,4 +483,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
         return this.fpValue == (double) 0 || this.getFpValue().isInfinite();
     }
 
+    public Boolean isInfinite() {
+        return this.getFpValue().isInfinite();
+    }
 }

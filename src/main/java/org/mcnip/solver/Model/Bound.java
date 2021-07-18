@@ -42,4 +42,8 @@ public class Bound extends Constraint {
     public Interval getBound() {
         return bound;
     }
+
+    public boolean isInfinite() {
+        return this.bound.isDotInfinite();
+    }
 }

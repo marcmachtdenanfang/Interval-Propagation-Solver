@@ -3,6 +3,7 @@ package org.mcnip.solver;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -38,6 +39,8 @@ public class App
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
+
+    public static Logger logger;
 
     private static CommandLine cmd = null;
     private static String inputFilePath;
@@ -75,6 +78,8 @@ public class App
 
         }
 
+        logger = Logger.getLogger("App");
+
         
         // Main functionality
         Context ctx = new Context(parser, new Solver(){
@@ -105,8 +110,9 @@ public class App
                     ctx.intervalAssignmentStack.peek().forEach((k, v) -> System.out.println(v));
                     System.out.println(ANSI_GREEN + "--- asserted atoms" + ANSI_RESET);
                     ctx.assertedAtoms.forEach(a -> System.out.println(a));
-
+                    
                     if (!ctx.splitVariableInterval()) return true;
+                    //return false;
                 }
                 else satisfiable = ctx.revertPreviousSplit();
             }

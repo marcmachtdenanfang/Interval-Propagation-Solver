@@ -6,7 +6,9 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Stack;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import kotlin.Pair;
@@ -37,6 +39,7 @@ public class Context {
         this.formula = parser.getFormula();
         intervalAssignmentStack.push(parser.getIntervals());
         // assertedAtoms stays empty in the beginning.
+        logger = Logger.getLogger("abcd");
     }
     
     public Context(IParser parser, Solver solver) 
@@ -47,9 +50,10 @@ public class Context {
         // init context state:
         this.formula = parser.getFormula();
         intervalAssignmentStack.push(parser.getIntervals());
-        // assertedAtoms stays empty in the beginning.
+        logger = Logger.getLogger("abcd");
     }
 
+    public static Logger logger;
     /**
      * Actually varIntervals is not necessary. We use varAssignmentStack instead.
      * Some design choices need to be made.
@@ -196,6 +200,9 @@ public class Context {
      */
     public boolean assertUnitClauses()
     {
+        // System.out.println("huhu");
+        //     intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+        //     System.out.println("abcdefghijklmnopqrstuvwxyz");
         List<Constraint> newAtoms = findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream().takeWhile(a -> !(a instanceof Marker)).collect(Collectors.toList()));
         if (newAtoms == null)
             return false;
@@ -211,10 +218,14 @@ public class Context {
     {
         List<Constraint> newUnits;
         do {
-            List<Atom> lastAssertedAtoms = assertedAtoms.stream().takeWhile(a -> !(a instanceof Marker)).collect(Collectors.toList());
-            Pair<Map<String, Interval>, List<Bound>> narrowed = narrowContractors(lastAssertedAtoms, intervalAssignmentStack.pop());
+            List<Atom> lastAssertedAtoms = assertedAtoms.stream().takeWhile(a -> true/*-> !(a instanceof Marker)*/).collect(Collectors.toList());
+            // System.out.println("huhu");
+            // intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+            // System.out.println("abcdefghijklmnopqrstuvwxyz");
+            Pair<Map<String, Interval>, List<Bound>> narrowed = narrowContractors(lastAssertedAtoms, intervalAssignmentStack.peek());
             if (narrowed == null)
                 return false;
+            intervalAssignmentStack.pop();    
             intervalAssignmentStack.push(narrowed.getFirst());
             assertedAtoms.addAll(narrowed.getSecond());
             lastAssertedAtoms.addAll(narrowed.getSecond());
@@ -233,11 +244,55 @@ public class Context {
     public boolean splitVariableInterval()
     {
         //select unassigned Bool or inconclusive Number, if not possible/too small:
-        return false;
-        //v = assign Bool/split Number in half
-        //intervalAssignmentStack.peek() + .push(update_p mit v)
-        //assertedAtoms.add(Marker und v)
-        //return true;
+        /*Bool unassignedBool = findUnassignedBool();
+        if(unassignedBool != null) {
+            assertedAtoms.push(new Marker());
+            assertedAtoms.push(unassignedBool);
+            return true;
+        }*/
+
+        // Necessary Changes:
+        // 1. only choose from problem variables, that are actually in our current set of unit clauses.
+        // 2. sort those intervals by interval size (ascending).
+        Map<String, Interval> vars = intervalAssignmentStack.peek();
+        List<String> problemVars = new ArrayList<>();
+
+        // filter vars so we only get problemVars with interval size greater than one
+        vars.forEach(
+            (k,v) -> { 
+                if(k.charAt(0) != '_' && v.containsMoreThanOneValue()) problemVars.add(k);
+            }
+        );
+        
+        if(problemVars.isEmpty()) return false;
+
+        
+        Random rand = new Random();
+        int counter = rand.nextInt(problemVars.size());
+        String variableToSplit = problemVars.get(counter);
+        Interval x = vars.get(variableToSplit);
+        
+        IPSNumber c = x.getMidPoint();
+        
+        Bound bound = new Bound(x.getVarName(), new DotInterval(c.toString(), c), new LessEqualsContractor());
+                
+        assertedAtoms.push(new Marker());
+        assertedAtoms.push(bound);
+        return narrowContractions();
+
+        
+        /*for(Interval i : vars.values()) {
+
+            if() {
+                //v = assign Bool/split Number in half
+                //intervalAssignmentStack.peek() + .push(update_p mit v)
+                IPSNumber c = i.getMidPoint();
+                Bound bound = new Bound(i.getVarName(), new DotInterval(c.toString(), c), new GreaterEqualsContractor());
+                assertedAtoms.push(new Marker());
+                assertedAtoms.push(bound);
+                return true;
+            }
+        }*/
     }
 
     /**
@@ -245,6 +300,7 @@ public class Context {
      */
     public boolean revertPreviousSplit()
     {
+        System.out.println("backtrack");
         intervalAssignmentStack.pop();
         Atom guiltyAtom;
         if (assertedAtoms.size() == 0)
@@ -300,7 +356,13 @@ public class Context {
      * @return Contracted intervals, find them with their name.
      */
     public static Map<String, Interval> updateIntervals(Map<String, Interval> intervals, Constraint constraint) {
-        return constraint.getContractor().contract(intervals, constraint.getVariables());
+        // logger.warning("huhuasdhuiasdhais");
+        // logger.warning(constraint.toString());
+        // if(intervals.isEmpty()) logger.info("yeahyeahyeahyeahyeah");
+        // intervals.forEach((k,v) -> logger.severe(v.toString()));
+        var t = constraint.getContractor().contract(intervals, constraint.getVariables());
+        // t.forEach((k,v) -> logger.warning(v.toString()));
+        return t;
     }
 
     /**
@@ -390,6 +452,3 @@ public class Context {
 
 }
 
-
-@NoArgsConstructor
-class Marker implements Atom {}
