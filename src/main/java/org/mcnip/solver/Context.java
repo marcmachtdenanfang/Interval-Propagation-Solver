@@ -140,7 +140,7 @@ public class Context {
      * <p>
      * Since we opted to make them Constraints rather than intervals, we use this data structure.
      */
-    Stack<Map<String, Bool>> boolAssignmentStack = new Stack<>();
+    //Stack<Map<String, Bool>> boolAssignmentStack = new Stack<>();
 
     /**
      * Currently active formula. Can be extended by our Sat Solver, 
@@ -160,7 +160,7 @@ public class Context {
      * we insert a {@link org.mcnip.solver.Model.Marker} into the deque as a backtracking point.
      * Here however, they need to be literal markers i.e. "|".
      */
-    Deque<String> omega = new ArrayDeque<>();
+    //Deque<String> omega = new ArrayDeque<>();
 
     /**
      * Compute the possible options when one or more variables of the constraint are omega.
@@ -169,7 +169,7 @@ public class Context {
      * 0 if unsatisfiable (result is a problem variable, and one of the arguments is omega).
      * -1 if result is or becomes omega.
      */
-    int omegaContinue(Constraint c)
+    /*int omegaContinue(Constraint c)
     {
         boolean ret = false;
         String[] names = c.getVariables();
@@ -192,7 +192,7 @@ public class Context {
             }
         }
         return -1;
-    }
+    }*/
 
     /**
      * Step 2 from the paper
@@ -200,13 +200,13 @@ public class Context {
      */
     public boolean assertUnitClauses()
     {
-        System.out.println("huhu bei assertunitclauses");
-            intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
-            System.out.println("abcdefghijklmnopqrstuvwxyz");
+        // System.out.println("huhu bei assertunitclauses");
+        //     intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+        //     System.out.println("abcdefghijklmnopqrstuvwxyz");
         List<Constraint> newAtoms = findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream()
                             .takeWhile(a 
-                                        //-> true 
-                                        -> !(a instanceof Marker)
+                                        -> true 
+                                        //-> !(a instanceof Marker)
                                       )
                             .collect(Collectors.toList()));
         if (newAtoms == null)
@@ -235,16 +235,16 @@ public class Context {
             intervalAssignmentStack.pop();    
             intervalAssignmentStack.push(narrowed.getFirst());
             
-            System.out.println("huhu");
-            intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
-            System.out.println("abcdefghijklmnopqrstuvwxyz");
+            // System.out.println("huhu");
+            // intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+            // System.out.println("abcdefghijklmnopqrstuvwxyz");
 
             //assertedAtoms.addAll(narrowed.getSecond());
             //lastAssertedAtoms.addAll(narrowed.getSecond());
-            for(Bound b : narrowed.getSecond()) {
-                assertedAtoms.push(b);
-                lastAssertedAtoms.add(b);
-            }
+            // for(Bound b : narrowed.getSecond()) {
+            //     assertedAtoms.push(b);
+            //     lastAssertedAtoms.add(b);
+            // }
             
             newUnits = findUnits(formula.getClauses(), narrowed.getFirst(), lastAssertedAtoms);
             if (newUnits == null)
@@ -277,7 +277,7 @@ public class Context {
         // filter vars so we only get problemVars with interval size greater than one
         vars.forEach(
             (k,v) -> { 
-                if(k.charAt(0) != '_' && v.containsMoreThanOneValue()) {
+                if(/*k.charAt(0) != '_' &&*/ v.containsMoreThanOneValue()) {
                     problemVars.add(k);
                 }
             }
@@ -315,12 +315,12 @@ public class Context {
     {
         System.out.println("backtrack");
 
-        intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
-        System.out.println("still backtracking");        
+        // intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+        // System.out.println("still backtracking");        
         intervalAssignmentStack.pop();
 
-        intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
-        System.out.println("end backtrack printing");
+        // intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+        // System.out.println("end backtrack printing");
         Atom guiltyAtom;
         if (assertedAtoms.size() == 0)
             return false;
@@ -339,9 +339,9 @@ public class Context {
             tempMap.putAll(updateGuiltyVariable);
             intervalAssignmentStack.push(tempMap);
         }
-        System.out.println("step5 after all");    
-        intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
-        System.out.println("step5 printing done");
+        // System.out.println("step5 after all");    
+        // intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+        // System.out.println("step5 printing done");
         return true;
     }
 
@@ -434,19 +434,22 @@ public class Context {
         return ret;
     }
 
+    
     /**
      * adds a {@link org.mcnip.solver.Model.Marker} onto the assertedAtoms stack.
      * also adds a marker ("|") onto the omega stack.
      */
-    void addMarker()
+    
+    /* void addMarker()
     {
         assertedAtoms.push(new Marker());
         omega.push("|");
-    }
+    }*/
 
     /**
      * Use this method to backtrack over our assertionStacks and omegas.
      */
+    /*
     void backtrack()
     {
         Atom a;
@@ -461,8 +464,9 @@ public class Context {
         }
         return;
     }
+    */
 
-
+    /*
     boolean strongSatisfiability()
     {
         boolean ret = false;
@@ -475,6 +479,7 @@ public class Context {
 
         return ret;
     }
+    */
 
 }
 

@@ -1,0 +1,13 @@
+(set-logic NIA)
+(declare-const x Int)
+(declare-const y Int)
+(assert (and 
+		(> x 1)
+		(> y 1)
+		(< y 10000)
+		(< x 10000)
+		(not (= x 1151))
+		(not (= y 120))
+		(= 1 (- (* x x) (* 92 (* y y))))))
+(check-sat)
+(get-model)
