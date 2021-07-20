@@ -191,4 +191,13 @@ public class Interval {
         return false;
     }
 
+    public Type getType() {
+        return this.lowerBound.getType();
+    }
+
+    public void setType(Type type) {
+        this.lowerBound.setType(type);
+        this.upperBound.setType(type);
+    }
+
 }

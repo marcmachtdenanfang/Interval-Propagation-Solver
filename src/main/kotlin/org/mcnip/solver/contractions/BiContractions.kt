@@ -85,7 +85,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
     i1.upperBound.isZeroOrInfinite ->
       oneSidedIntervalOp(op, i0, i1.lowerBound)
     op == IPSNumber::nrt && i1.upperBound.intValue.toInt()%2 == 0 ->
-      withOp(op, Interval(i0.varName, if (i0.lowerBound.type != INT) ZERO else ZERO_int, i0.upperBound), i1)
+      withOp(op, Interval(i0.varName, if (i0.type != INT) ZERO else ZERO_int, i0.upperBound), i1)
     else ->
       withOp(op, i0, i1)
   }

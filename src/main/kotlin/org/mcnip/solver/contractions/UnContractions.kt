@@ -22,14 +22,14 @@ class UnContractions(intervals: Map<String, Interval>, names: Array<String>) {
     @JvmStatic
     fun abs(intervals: Map<String, Interval>, names: Array<String>) = UnContractions(intervals, names).run {
       filteredMapOf(result to Interval(resInterval, when {
-        argLowerBound <= ZERO && argUpperBound >= ZERO ->
+        ZERO in argLowerBound..argUpperBound ->
           ZERO
         argLowerBound > ZERO ->
           argLowerBound
         else ->
           -argUpperBound
       }, when {
-        argLowerBound <= ZERO && argUpperBound >= ZERO ->
+        ZERO in argLowerBound..argUpperBound ->
           argUpperBound.max(-argLowerBound)
         argLowerBound > ZERO ->
           argUpperBound
