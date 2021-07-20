@@ -157,7 +157,7 @@ public class Context {
      * We maintain a deque of currently asserted "faulty" variables.
      * <p> 
      * Similarly to {@link org.mcnip.solver.Context#assertedAtoms} 
-     * we insert a {@link org.mcnip.solver.Marker} into the deque as a backtracking point.
+     * we insert a {@link org.mcnip.solver.Model.Marker} into the deque as a backtracking point.
      * Here however, they need to be literal markers i.e. "|".
      */
     Deque<String> omega = new ArrayDeque<>();
@@ -415,7 +415,7 @@ public class Context {
     }
 
     /**
-     * adds a {@link org.mcnip.solver.Marker} onto the assertedAtoms stack.
+     * adds a {@link org.mcnip.solver.Model.Marker} onto the assertedAtoms stack.
      * also adds a marker ("|") onto the omega stack.
      */
     void addMarker()

@@ -127,6 +127,7 @@ class Parser(filePath: String) : IParser {
     cosines.operateUn("cos", CosContractor())
     powers.operateBi("pow", PowContractor())
     roots.operateBi("nrt", NrtContractor())
+    typecasting()
     formula = Formula(clauses)
   }
 
@@ -276,13 +277,13 @@ class Parser(filePath: String) : IParser {
   private fun BinaryOperations.operateBi(str: String, contractor: Contractor) = forEachIndexed { idx, (left, right) ->
     val leftArg = getInterval(left)
     val rightArg = getInterval(right)
-    val result = Interval("_$str$idx", leftArg.lowerBound.type?:rightArg.lowerBound.type)
+    val result = Interval("_$str$idx", leftArg.type?:rightArg.type)
     addIntervalAndClause(result, setOf(result.varName, leftArg.varName, rightArg.varName), Triplet(result, leftArg, rightArg, contractor))
   }
 
   private fun UnaryOperations.operateUn(str: String, contractor: Contractor) = forEachIndexed { idx, name ->
     val arg = getInterval(name)
-    val result = Interval("_$str$idx", arg.lowerBound.type)
+    val result = Interval("_$str$idx", arg.type)
     addIntervalAndClause(result, setOf(result.varName, arg.varName), Pair(result, arg, contractor))
   }
 
@@ -298,6 +299,33 @@ class Parser(filePath: String) : IParser {
         intervals.getOrPut(str, { Interval(str, null) })
 
   private fun String.isNumber() = removePrefix("-")[0].isDigit()
+
+  private fun typecasting() {
+    bounds.forEach {
+      if (it.bound.type == null)
+        it.bound.type = intervals.getValue(it.bound.varName).type
+    }
+    clauses.forEach { clause ->
+      clause.constraints.forEach { constraint ->
+        when (constraint) {
+          is Triplet -> {
+            val mainType = constraint.result.type?:constraint.leftArg.type?:constraint.rightArg.type?:intervals[constraint.result.varName]?.type?:intervals[constraint.leftArg.varName]?.type?:intervals[constraint.rightArg.varName]?.type
+            constraint.result.type = mainType
+            constraint.leftArg.type = mainType
+            constraint.rightArg.type = mainType
+          }
+          is org.mcnip.solver.Model.Pair -> {
+            val mainType = constraint.result.type?:constraint.origin.type?:intervals[constraint.result.varName]?.type?:intervals[constraint.origin.varName]?.type
+            constraint.result.type = mainType
+            constraint.origin.type = mainType
+          }
+          is Bound ->
+            if (constraint.bound.type == null)
+              constraint.bound.type = intervals.getValue(constraint.bound.varName).type
+        }
+      }
+    }
+  }
 
   override fun toString() = "constants:\n$constants\n\nvariables:\n$variables\n\nbooleans:\n$booleans\n\nclauses:\n$clauseList\n\nbounds:\n$boundList\n\nbrackets:\n$brackets\n\nnegations:\n$negations\n\nmultiplications:\n$multiplications\n\ndivisions:\n$divisions\n\nadditions:\n$additions\n\nsubtractions:\n$subtractions\n\nabsolutes:\n$absolutes\n\nminimums:\n$minimums\n\nmaximums:\n$maximums\n\nexponents:\n$exponents\n\nsines:\n$sines\n\ncosines:\n$cosines\n\npowers:\n$powers\n\nroots:\n$roots"
 

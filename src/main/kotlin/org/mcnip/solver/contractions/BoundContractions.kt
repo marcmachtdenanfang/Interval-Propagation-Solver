@@ -15,8 +15,8 @@ class BoundContractions(private val intervals: Map<String, Interval>, names: Arr
   private val limiterLowerBound = limiterInterval.lowerBound
   private val limiterUpperBound = limiterInterval.upperBound
   private fun fold(operation: (Boolean, Interval) -> Boolean) = intervals.values.fold(false, operation)
-  private fun lowerLimit() = { acc: Boolean, interval: Interval -> acc || interval.lowerBound.fpValue.isInfinite() }
-  private fun upperLimit() = { acc: Boolean, interval: Interval -> acc || interval.upperBound.fpValue.isInfinite() }
+  private fun lowerLimit() = { acc: Boolean, interval: Interval -> acc || interval.lowerBound.isInfinite }
+  private fun upperLimit() = { acc: Boolean, interval: Interval -> acc || interval.upperBound.isInfinite }
 
   companion object {
     @JvmStatic
@@ -46,7 +46,7 @@ class BoundContractions(private val intervals: Map<String, Interval>, names: Arr
 
     @JvmStatic
     fun notEquals(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      if (fold { acc, it -> acc || (it.lowerBound.fpValue.isInfinite() && it.upperBound.fpValue.isInfinite()) }) intervals else filteredMapOf(base to when {
+      if (fold { acc, it -> acc || (it.lowerBound.isInfinite && it.upperBound.isInfinite) }) intervals else filteredMapOf(base to when {
         limiterUpperBound < baseLowerBound || baseUpperBound < limiterLowerBound || (baseLowerBound < limiterLowerBound && limiterUpperBound < baseUpperBound) ->
           baseInterval
         limiterLowerBound <= baseLowerBound && baseUpperBound <= limiterUpperBound ->

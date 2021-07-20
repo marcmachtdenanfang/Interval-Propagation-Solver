@@ -20,9 +20,8 @@
 
 
 DECL
-    define a = 200;
+    define a = 200.0;
     float [-a, a] x, y;
 
 EXPR
-    
-    y = x^2 - 0.3 * exp(neg(a*(x - 0.5))^2);
+    y = x^2.0 - 0.3 * exp(neg(a*(x - 0.5))^2.0);

@@ -49,7 +49,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     public IPSNumber(double value, Type t)
     {
-        this.type = INT;
+        this.type = t;
         this.fpValue = value;
         if(value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY) {
             this.intValue = null;
@@ -105,6 +105,10 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     public Type getType() {
         return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public IPSNumber max(IPSNumber b) // throws Exception
