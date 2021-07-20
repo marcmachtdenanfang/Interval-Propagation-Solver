@@ -54,6 +54,8 @@ public class Context {
         logger = Logger.getLogger("abcd");
     }
 
+    boolean verbosePrinting;
+
     public static Logger logger;
     /**
      * Actually varIntervals is not necessary. We use varAssignmentStack instead.
@@ -331,7 +333,9 @@ public class Context {
      */
     public boolean revertPreviousSplit()
     {
-        System.out.println("backtrack");
+        if(this.verbosePrinting) {
+            System.out.println("backtrack");
+        }
 
         // intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
         // System.out.println("still backtracking");        

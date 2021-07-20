@@ -45,6 +45,7 @@ public class App
     private static CommandLine cmd = null;
     private static String inputFilePath;
 
+    public static boolean verbosePrinting;
 
 
     public static void main( String[] args )
@@ -78,14 +79,21 @@ public class App
 
         }
 
+        
+        
         logger = Logger.getLogger("App");
-
+        
         
         // Main functionality
         Context ctx = new Context(parser, new Solver(){
             public List<Constraint> solve(Formula clauses){ return new ArrayList<Constraint>(); }
         });
-
+        
+        if(cmd.hasOption("v")) {
+            verbosePrinting = true;
+            ctx.verbosePrinting = true;
+        }
+        
         if (solving(ctx)) {
             System.out.println("SAT");
             ctx.intervalAssignmentStack.peek().values().forEach(System.out::println);
@@ -99,17 +107,21 @@ public class App
         do {
             satisfiable = ctx.assertUnitClauses();
             if (satisfiable) {
-                System.out.println(ANSI_GREEN + "--- asserted unit clauses" + ANSI_RESET);
-                for (Atom a : ctx.assertedAtoms) {
-                    System.out.println(a);
+                if(verbosePrinting) {
+                    System.out.println(ANSI_GREEN + "--- asserted unit clauses" + ANSI_RESET);
+                    for (Atom a : ctx.assertedAtoms) {
+                        System.out.println(a);
+                    }
                 }
 
                 satisfiable = ctx.narrowContractions();
                 if (satisfiable) {
-                    System.out.println(ANSI_GREEN + "--- narrowed assignments" + ANSI_RESET);
-                    ctx.intervalAssignmentStack.peek().forEach((k, v) -> System.out.println(v));
-                    System.out.println(ANSI_GREEN + "--- asserted atoms" + ANSI_RESET);
-                    ctx.assertedAtoms.forEach(a -> System.out.println(a));
+                    if(verbosePrinting) {
+                        System.out.println(ANSI_GREEN + "--- narrowed assignments" + ANSI_RESET);
+                        ctx.intervalAssignmentStack.peek().forEach((k, v) -> System.out.println(v));
+                        System.out.println(ANSI_GREEN + "--- asserted atoms" + ANSI_RESET);
+                        ctx.assertedAtoms.forEach(a -> System.out.println(a));
+                    }
                     
                     if (!ctx.splitVariableInterval()) return true;
                     //return false;
@@ -133,7 +145,8 @@ public class App
     private static void handleOptions(String[] args) {
         Options options = new Options();
         Option help = new Option("h", "help", false, "print this message");
-        Option print = new Option("p", "print", false, "Optional: verbose printing of parsed formula");
+        Option print = new Option("p", "print", false, "Optional: verbose printing of parsed formula.");
+        Option verbose = new Option("v", "verbose", false, "Optional: verbose printing of Output during solving.");
         Option input = 
               Option.builder("i")
                     .longOpt("input")
@@ -158,6 +171,7 @@ public class App
         options.addOption(input);
         options.addOption(help);
         options.addOption(print);
+        options.addOption(verbose);
         cmd = null;
 
         if(hasHelp || args.length == 0) {
