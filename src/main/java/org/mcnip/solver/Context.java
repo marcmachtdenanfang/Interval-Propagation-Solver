@@ -227,7 +227,7 @@ public class Context {
                 return false;
             intervalAssignmentStack.pop();    
             intervalAssignmentStack.push(narrowed.getFirst());
-            assertedAtoms.addAll(narrowed.getSecond());
+            //assertedAtoms.addAll(narrowed.getSecond());
             lastAssertedAtoms.addAll(narrowed.getSecond());
             newUnits = findUnits(formula.getClauses(), narrowed.getFirst(), lastAssertedAtoms);
             if (newUnits == null)
@@ -278,7 +278,13 @@ public class Context {
                 
         assertedAtoms.push(new Marker());
         assertedAtoms.push(bound);
-        return narrowContractions();
+        
+        Map<String, Interval> toUpdate = Map.of(x.getVarName(), vars.get(x.getVarName()));
+        Map<String, Interval> updateV = updateIntervals(toUpdate, bound);
+        vars.putAll(updateV);
+        intervalAssignmentStack.push(vars);
+        return true;
+        //return narrowContractions();
 
         
         /*for(Interval i : vars.values()) {
