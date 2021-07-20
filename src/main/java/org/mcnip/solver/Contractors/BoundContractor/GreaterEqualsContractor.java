@@ -15,4 +15,9 @@ public class GreaterEqualsContractor implements Contractor {
         return org.mcnip.solver.contractions.BoundContractions.greaterEquals(in, names);
     }
 
+    @Override
+    public String toString() {
+        return " >= ";
+    }
+
 }

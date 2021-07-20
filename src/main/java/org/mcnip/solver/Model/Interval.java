@@ -12,10 +12,14 @@ public class Interval {
     private final String varName;
     @Setter private IPSNumber lowerBound;
     @Setter private IPSNumber upperBound;
+    
 
     @Override
     public String toString()
     {
+        if(isNumeric(varName)) {
+            return varName;
+        }
         return varName + " := [" + lowerBound.toString() + ", " + upperBound.toString() + "]";
     }
 
@@ -198,6 +202,15 @@ public class Interval {
     public void setType(Type type) {
         this.lowerBound.setType(type);
         this.upperBound.setType(type);
+    }
+
+    public static boolean isNumeric(String str) { 
+        try {  
+          Double.parseDouble(str);  
+          return true;
+        } catch(NumberFormatException e){  
+          return false;  
+        }  
     }
 
 }

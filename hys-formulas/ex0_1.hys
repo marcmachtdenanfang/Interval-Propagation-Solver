@@ -4,7 +4,7 @@
 
 DECL
   -- The  range  of  each  variable has to be  bounded.
-  int [1, 100] a, b, c;
+  int [2, 100] a, b, c;
   bool d;
 
 EXPR

@@ -32,7 +32,7 @@ public class Bound extends Constraint {
     @Override
     public String toString()
     {
-        return "Bound: " + varName + " "+ this.getContractor().getClass().getSimpleName() + " " + bound;
+        return "Bound: " + varName + " "+ this.getContractor() + " " + bound;
     }
 
     public String getVarName() {

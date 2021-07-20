@@ -200,10 +200,15 @@ public class Context {
      */
     public boolean assertUnitClauses()
     {
-        // System.out.println("huhu");
-        //     intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
-        //     System.out.println("abcdefghijklmnopqrstuvwxyz");
-        List<Constraint> newAtoms = findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream().takeWhile(a -> !(a instanceof Marker)).collect(Collectors.toList()));
+        System.out.println("huhu bei assertunitclauses");
+            intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+            System.out.println("abcdefghijklmnopqrstuvwxyz");
+        List<Constraint> newAtoms = findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream()
+                            .takeWhile(a 
+                                        //-> true 
+                                        -> !(a instanceof Marker)
+                                      )
+                            .collect(Collectors.toList()));
         if (newAtoms == null)
             return false;
         newAtoms = newAtoms.stream().filter(atom -> !assertedAtoms.contains(atom)).collect(Collectors.toList());
@@ -218,17 +223,29 @@ public class Context {
     {
         List<Constraint> newUnits;
         do {
-            List<Atom> lastAssertedAtoms = assertedAtoms.stream().takeWhile(a -> true/*-> !(a instanceof Marker)*/).collect(Collectors.toList());
-            // System.out.println("huhu");
-            // intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
-            // System.out.println("abcdefghijklmnopqrstuvwxyz");
+            List<Atom> lastAssertedAtoms = assertedAtoms.stream()
+                    .takeWhile(a 
+                                -> true 
+                                //-> !(a instanceof Marker)
+                              )
+                    .collect(Collectors.toList());
             Pair<Map<String, Interval>, List<Bound>> narrowed = narrowContractors(lastAssertedAtoms, intervalAssignmentStack.peek());
             if (narrowed == null)
                 return false;
             intervalAssignmentStack.pop();    
             intervalAssignmentStack.push(narrowed.getFirst());
+            
+            System.out.println("huhu");
+            intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+            System.out.println("abcdefghijklmnopqrstuvwxyz");
+
             //assertedAtoms.addAll(narrowed.getSecond());
-            lastAssertedAtoms.addAll(narrowed.getSecond());
+            //lastAssertedAtoms.addAll(narrowed.getSecond());
+            for(Bound b : narrowed.getSecond()) {
+                assertedAtoms.push(b);
+                lastAssertedAtoms.add(b);
+            }
+            
             newUnits = findUnits(formula.getClauses(), narrowed.getFirst(), lastAssertedAtoms);
             if (newUnits == null)
                 return false;
@@ -260,7 +277,9 @@ public class Context {
         // filter vars so we only get problemVars with interval size greater than one
         vars.forEach(
             (k,v) -> { 
-                if(k.charAt(0) != '_' && v.containsMoreThanOneValue()) problemVars.add(k);
+                if(k.charAt(0) != '_' && v.containsMoreThanOneValue()) {
+                    problemVars.add(k);
+                }
             }
         );
         
@@ -281,24 +300,12 @@ public class Context {
         
         Map<String, Interval> toUpdate = Map.of(x.getVarName(), vars.get(x.getVarName()));
         Map<String, Interval> updateV = updateIntervals(toUpdate, bound);
-        vars.putAll(updateV);
-        intervalAssignmentStack.push(vars);
+        HashMap<String, Interval> tempMap = new HashMap<>();
+        vars.forEach((k,v) -> tempMap.put(k,v));
+        tempMap.putAll(updateV);
+        intervalAssignmentStack.push(tempMap);
+
         return true;
-        //return narrowContractions();
-
-        
-        /*for(Interval i : vars.values()) {
-
-            if() {
-                //v = assign Bool/split Number in half
-                //intervalAssignmentStack.peek() + .push(update_p mit v)
-                IPSNumber c = i.getMidPoint();
-                Bound bound = new Bound(i.getVarName(), new DotInterval(c.toString(), c), new GreaterEqualsContractor());
-                assertedAtoms.push(new Marker());
-                assertedAtoms.push(bound);
-                return true;
-            }
-        }*/
     }
 
     /**
@@ -307,7 +314,13 @@ public class Context {
     public boolean revertPreviousSplit()
     {
         System.out.println("backtrack");
+
+        intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+        System.out.println("still backtracking");        
         intervalAssignmentStack.pop();
+
+        intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+        System.out.println("end backtrack printing");
         Atom guiltyAtom;
         if (assertedAtoms.size() == 0)
             return false;
@@ -320,8 +333,15 @@ public class Context {
         } while (!(marker instanceof Marker));
         guiltyAtom = invert(guiltyAtom);
         assertedAtoms.push(guiltyAtom);
-        if (!(guiltyAtom instanceof Bool))
-            intervalAssignmentStack.push(update(guiltyAtom, intervalAssignmentStack.pop()));
+        if (!(guiltyAtom instanceof Bool)) {
+            Map<String, Interval> updateGuiltyVariable = update(guiltyAtom, intervalAssignmentStack.peek());
+            Map<String, Interval> tempMap = intervalAssignmentStack.pop();
+            tempMap.putAll(updateGuiltyVariable);
+            intervalAssignmentStack.push(tempMap);
+        }
+        System.out.println("step5 after all");    
+        intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
+        System.out.println("step5 printing done");
         return true;
     }
 
