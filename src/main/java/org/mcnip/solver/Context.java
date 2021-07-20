@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -203,6 +204,7 @@ public class Context {
         // System.out.println("huhu bei assertunitclauses");
         //     intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
         //     System.out.println("abcdefghijklmnopqrstuvwxyz");
+
         List<Constraint> newAtoms = findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream()
                             .takeWhile(a 
                                         -> true 
@@ -223,12 +225,28 @@ public class Context {
     {
         List<Constraint> newUnits;
         do {
-            List<Atom> lastAssertedAtoms = assertedAtoms.stream()
-                    .takeWhile(a 
-                                -> true 
-                                //-> !(a instanceof Marker)
-                              )
-                    .collect(Collectors.toList());
+            List<Atom> lastAssertedAtoms = new ArrayList<>();
+
+            Iterator<Atom> itr  = assertedAtoms.descendingIterator();
+            while(itr.hasNext()) {
+                Atom a = itr.next();
+                if(a instanceof Marker) break;
+                lastAssertedAtoms.add(a);
+            }
+
+            itr = assertedAtoms.iterator();
+            while(itr.hasNext()) {
+                Atom a = itr.next();
+                if(a instanceof Marker) break;
+                lastAssertedAtoms.add(a);
+            }
+            
+            // assertedAtoms.stream()
+            //         .takeWhile(a 
+            //                     -> true 
+            //                     //-> !(a instanceof Marker)
+            //                   )
+            //         .collect(Collectors.toList());
             Pair<Map<String, Interval>, List<Bound>> narrowed = narrowContractors(lastAssertedAtoms, intervalAssignmentStack.peek());
             if (narrowed == null)
                 return false;
@@ -239,8 +257,8 @@ public class Context {
             // intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
             // System.out.println("abcdefghijklmnopqrstuvwxyz");
 
-            //assertedAtoms.addAll(narrowed.getSecond());
-            //lastAssertedAtoms.addAll(narrowed.getSecond());
+            // assertedAtoms.addAll(narrowed.getSecond());
+            // lastAssertedAtoms.addAll(narrowed.getSecond());
             // for(Bound b : narrowed.getSecond()) {
             //     assertedAtoms.push(b);
             //     lastAssertedAtoms.add(b);
