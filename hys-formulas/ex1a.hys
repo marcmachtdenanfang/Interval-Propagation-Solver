@@ -23,9 +23,9 @@ DECL
     int [0,100000] a1, a2, a3, a4, a5, a6, N;
 
 EXPR
-    n * a1 + m = N;
-    n * a2 + m = N - a1 - 1 * m;
-    n * a3 + m = N - a1 - a2 - 2 * m;
-    n * a4 + m = N - a1 - a2 - a3 - 3 * m;
-    n * a5 + m = N - a1 - a2 - a3 - a4 - 4 * m;
-    n * a6 + m = N - a1 - a2 - a3 - a4 - a5 - 5 * m;
+    5 * a1 + m = N;
+    5 * a2 + m = N - a1 - 1 * m;
+    5 * a3 + m = N - a1 - a2 - 2 * m;
+    5 * a4 + m = N - a1 - a2 - a3 - 3 * m;
+    5 * a5 + m = N - a1 - a2 - a3 - a4 - 4 * m;
+    5 * a6 + m = N - a1 - a2 - a3 - a4 - a5 - 5 * m;

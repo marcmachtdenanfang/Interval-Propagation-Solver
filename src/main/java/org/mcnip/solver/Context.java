@@ -208,9 +208,8 @@ public class Context {
         //     System.out.println("abcdefghijklmnopqrstuvwxyz");
 
         List<Constraint> newAtoms = findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream()
-                            .takeWhile(a 
-                                        -> true 
-                                        //-> !(a instanceof Marker)
+                            .filter(a ->
+                                    !(a instanceof Marker)
                                       )
                             .collect(Collectors.toList()));
         if (newAtoms == null)
@@ -252,7 +251,7 @@ public class Context {
             Pair<Map<String, Interval>, List<Bound>> narrowed = narrowContractors(lastAssertedAtoms, intervalAssignmentStack.peek());
             if (narrowed == null)
                 return false;
-            intervalAssignmentStack.pop();    
+            intervalAssignmentStack.pop();
             intervalAssignmentStack.push(narrowed.getFirst());
             
             // System.out.println("huhu");
@@ -296,14 +295,20 @@ public class Context {
 
         // filter vars so we only get problemVars with interval size greater than one
         vars.forEach(
-            (k,v) -> { 
-                if(/*k.charAt(0) != '_' &&*/ v.containsMoreThanOneValue()) {
+            (k,v) -> {
+                if (k.charAt(0) != '_' && v.containsMoreThanOneValue())
                     problemVars.add(k);
-                }
             }
         );
-        
-        if(problemVars.isEmpty()) return false;
+
+        if (problemVars.isEmpty()) //prefer problem variables, probably needs more testing
+            vars.forEach(
+                (k,v) -> {
+                    if (v.containsMoreThanOneValue())// if (k.charAt(0) == '_')
+                        problemVars.add(k);
+                }
+            );
+        if (problemVars.isEmpty()) return false;
 
         
         Random rand = new Random();
