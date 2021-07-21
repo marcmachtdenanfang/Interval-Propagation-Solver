@@ -18,7 +18,8 @@ fun findUnits(clauses: List<Clause>, map: Map<String, Interval>, assertedAtoms: 
       if(constraint is Bool)
         (assertedAtoms.find { (it is Bool) && it.name == constraint.name } as Bool?)?.run { isPolarity xor constraint.isPolarity }?:false
       else {
-        if (updateIntervals(map.filter { it.key in constraint.variables }, constraint).map { it.value.isEmpty }.reduce { acc, bool -> acc || bool })
+        val filteredMap = map.filter { it.key in constraint.variables }
+        if (/*constraint.variables.map { it in filteredMap }.reduce { acc, bool -> acc && bool } && */updateIntervals(filteredMap, constraint).map { it.value.isEmpty }.reduce { acc, bool -> acc || bool })
           true
         else
           false.also { newUnit = constraint }

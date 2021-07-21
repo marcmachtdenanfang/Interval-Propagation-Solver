@@ -90,9 +90,9 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
       withOp(op, i0, i1)
   }
 
-  private fun oneSidedIntervalOp(op: IPSNumber.(IPSNumber) -> IPSNumber, interval: Interval, number: IPSNumber) =
-      listOf(IPSNumber::min, IPSNumber::max).map { it(interval.lowerBound.op(number), interval.upperBound.op(number)) }.run {
-        Interval(interval, first(), last(), true)
+  private fun Interval.oneSidedIntervalOp(op: IPSNumber.(IPSNumber) -> IPSNumber, interval: Interval, number: IPSNumber) =
+      listOf(IPSNumber::min, IPSNumber::max).map { it(interval.lowerBound.op(number), interval.upperBound.op(number)) }.let {
+        Interval(this, it.first(), it.last(), true)
       }
 
   private fun Triple<(IPSNumber, IPSNumber) -> IPSNumber, Interval, Interval>.min() = minmax(first, second, third, IPSNumber::min)

@@ -59,18 +59,19 @@ class UnContractions(intervals: Map<String, Interval>, names: Array<String>) {
       val upper = op(argUpperBound.fpValue)
       val upperRise = upper < op(argUpperBound.fpValue.nextUp())
       val distance = argUpperBound.fpValue - argLowerBound.fpValue
-      filteredMapOf(result to when {
+      val (newLower, newUpper) = when {
         distance > 2.0 * PI || (distance > PI && lowerRise == upperRise)->
-          Interval(resInterval, -1.0, 1.0)
+          -1.0 to 1.0
         distance < PI && lowerRise && upperRise ->
-          Interval(resInterval, lower.nextDown(), upper.nextUp())
+          lower.nextDown() to upper.nextUp()
         distance < PI && !lowerRise && !upperRise ->
-          Interval(resInterval, upper.nextDown(), lower.nextUp())
+          upper.nextDown() to lower.nextUp()
         lowerRise ->
-          Interval(resInterval, kotlin.math.min(lower, upper).nextDown(), 1.0)
+          kotlin.math.min(lower, upper).nextDown() to 1.0
         else ->
-          Interval(resInterval, -1.0, kotlin.math.max(lower, upper).nextUp())
-      }, argument to argInterval)
+          -1.0 to kotlin.math.max(lower, upper).nextUp()
+      }
+      filteredMapOf(result to Interval(resInterval, newLower, newUpper), argument to argInterval)
     }
   }
 }
