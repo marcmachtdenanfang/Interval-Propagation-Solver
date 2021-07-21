@@ -20,7 +20,7 @@ public class Interval {
         if(isNumeric(varName)) {
             return varName;
         }
-        return varName + " := [" + lowerBound.toString() + ", " + upperBound.toString() + "]";
+        return varName + " in [" + lowerBound.toString() + ", " + upperBound.toString() + "]";
     }
 
     public Interval(String name, Type t)

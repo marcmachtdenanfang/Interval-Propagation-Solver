@@ -1,4 +1,4 @@
--- Problem is UNSAT (check on other systems, an example file using Prolog CLPFD is given).
+-- Problem is SAT (check on other systems, an example file using Prolog CLPFD is given).
 
 --------------------------------------------------------------------------------
 --

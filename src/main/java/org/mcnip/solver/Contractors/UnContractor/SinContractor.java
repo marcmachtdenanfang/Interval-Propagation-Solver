@@ -13,4 +13,9 @@ public class SinContractor implements Contractor {
     {
         return org.mcnip.solver.contractions.UnContractions.sin(in, names);
     }
+
+    @Override
+    public String toString() {
+        return "sin";
+    }
 }

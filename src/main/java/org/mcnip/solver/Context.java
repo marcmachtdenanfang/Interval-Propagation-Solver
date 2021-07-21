@@ -4,10 +4,12 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -227,21 +229,30 @@ public class Context {
     {
         List<Constraint> newUnits;
         do {
-            List<Atom> lastAssertedAtoms = new ArrayList<>();
+            
+            Set<Atom> lastAssertedAtomsSet = new HashSet<>();
 
+            int counter = 0;
             Iterator<Atom> itr  = assertedAtoms.descendingIterator();
             while(itr.hasNext()) {
                 Atom a = itr.next();
-                if(a instanceof Marker) break;
-                lastAssertedAtoms.add(a);
+                if(a instanceof Marker) {
+                    //counter += 1;
+                    //if(counter >= 2) 
+                    break;
+                }
+                lastAssertedAtomsSet.add(a);
             }
 
             itr = assertedAtoms.iterator();
             while(itr.hasNext()) {
                 Atom a = itr.next();
                 if(a instanceof Marker) break;
-                lastAssertedAtoms.add(a);
+                lastAssertedAtomsSet.add(a);
             }
+            
+            List<Atom> lastAssertedAtoms = new ArrayList<>();
+            lastAssertedAtomsSet.forEach(e -> lastAssertedAtoms.add(e));
             
             // assertedAtoms.stream()
             //         .takeWhile(a 
@@ -249,18 +260,22 @@ public class Context {
             //                     //-> !(a instanceof Marker)
             //                   )
             //         .collect(Collectors.toList());
+
             Pair<Map<String, Interval>, List<Bound>> narrowed = narrowContractors(lastAssertedAtoms, intervalAssignmentStack.peek());
             if (narrowed == null)
-                return false;
-            intervalAssignmentStack.pop();    
-            intervalAssignmentStack.push(narrowed.getFirst());
+                return false;    
+
+            
+            var tempMap = intervalAssignmentStack.pop();
+            tempMap.putAll(narrowed.getFirst());
+            intervalAssignmentStack.push(tempMap);
             
             // System.out.println("huhu");
             // intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
             // System.out.println("abcdefghijklmnopqrstuvwxyz");
 
             // assertedAtoms.addAll(narrowed.getSecond());
-            // lastAssertedAtoms.addAll(narrowed.getSecond());
+            lastAssertedAtoms.addAll(narrowed.getSecond());
             // for(Bound b : narrowed.getSecond()) {
             //     assertedAtoms.push(b);
             //     lastAssertedAtoms.add(b);

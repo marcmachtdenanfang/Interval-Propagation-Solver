@@ -34,7 +34,6 @@ public class WeirdTest {
    
 
     @Test
-    @Ignore
     public void mulContractionTest1UpdateMethod()
     {
         // Setup.

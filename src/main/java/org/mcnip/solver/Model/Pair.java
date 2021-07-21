@@ -34,7 +34,7 @@ public class Pair extends Constraint
     @Override
     public String toString()
     {
-        return result + " = " + this.getContractor().getClass().getSimpleName() + " " + origin;
+        return "{Pair: " + result.getVarName() + " == " + this.getContractor() + "(" + origin.getVarName() + "), " + result + ", " + origin + "}";
     }
 
     public Interval getResult() {

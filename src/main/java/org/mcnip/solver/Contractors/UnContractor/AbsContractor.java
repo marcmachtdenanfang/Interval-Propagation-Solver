@@ -13,4 +13,9 @@ public class AbsContractor implements Contractor {
     {
         return org.mcnip.solver.contractions.UnContractions.abs(in, names);
     }
+
+    @Override
+    public String toString() {
+        return "abs";
+    }
 }

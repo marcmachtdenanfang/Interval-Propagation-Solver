@@ -13,4 +13,9 @@ public class NegContractor implements Contractor {
     {
         return org.mcnip.solver.contractions.UnContractions.neg(in, names);
     }
+
+    @Override
+    public String toString() {
+        return "neg";
+    }
 }

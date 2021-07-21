@@ -13,5 +13,10 @@ public class SubContractor implements Contractor {
     {
         return org.mcnip.solver.contractions.BiContractions.sub(in, names);
     }
+
+    @Override
+    public String toString() {
+        return "sub";
+    }
     
 }

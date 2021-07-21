@@ -18,4 +18,9 @@ public class AddContractor implements Contractor {
         return org.mcnip.solver.contractions.BiContractions.add(in, names);
     }
 
+    @Override
+    public String toString() {
+        return "add";
+    }
+
 }

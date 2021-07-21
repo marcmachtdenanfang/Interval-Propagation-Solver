@@ -13,4 +13,9 @@ public class CosContractor implements Contractor {
     {
         return org.mcnip.solver.contractions.UnContractions.cos(in, names);
     }
+
+    @Override
+    public String toString() {
+        return "cos";
+    }
 }

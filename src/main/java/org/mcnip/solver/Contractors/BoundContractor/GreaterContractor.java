@@ -17,7 +17,7 @@ public class GreaterContractor implements Contractor {
 
     @Override
     public String toString() {
-        return " > ";
+        return ">";
     }
 
 }

@@ -29,7 +29,13 @@ public class Triplet extends Constraint
     @Override
     public String toString()
     {
-        return result + " = " + leftArg + " " + this.getContractor().getClass().getSimpleName() + " " + rightArg;
+        return "{Triple: " + result.getVarName() 
+                + " == " + this.getContractor() 
+                + "(" + leftArg.getVarName() 
+                + ", " + rightArg.getVarName() 
+                + "), " + result 
+                + ", " + leftArg 
+                + ", " + rightArg + "}";
     }
 
     public Interval getResult() {

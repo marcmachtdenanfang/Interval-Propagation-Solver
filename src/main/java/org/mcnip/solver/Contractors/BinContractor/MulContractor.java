@@ -14,4 +14,8 @@ public class MulContractor implements Contractor {
         return org.mcnip.solver.contractions.BiContractions.mul(in, names);
     }
     
+    @Override
+    public String toString() {
+        return "mul";
+    }
 }

@@ -17,7 +17,7 @@ public class EqualsContractor implements Contractor {
 
     @Override
     public String toString() {
-        return " == ";
+        return "==";
     }
 
 }

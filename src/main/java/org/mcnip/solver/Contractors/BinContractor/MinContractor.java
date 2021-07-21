@@ -14,4 +14,9 @@ public class MinContractor implements Contractor {
     return org.mcnip.solver.contractions.BiContractions.min(in, names);
   }
 
+  @Override
+    public String toString() {
+        return "min";
+    }
+
 }
