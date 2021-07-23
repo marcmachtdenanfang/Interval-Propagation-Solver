@@ -1,0 +1,12 @@
+-- 2.1.1 example with modifications
+-- Optimal value: c = 10
+
+DECL
+  -- The  range  of  each  variable has to be  bounded.
+  int [2, 100] a, b, c;
+
+EXPR
+  -- Constraint to be  solved.
+  a*a + b*b = c*c;
+  a != 6 or b > 8;
+  c != 5;
