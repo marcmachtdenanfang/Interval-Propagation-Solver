@@ -6,6 +6,8 @@ import org.mcnip.solver.Model.IPSNumber.*
 import org.mcnip.solver.Model.Interval
 import org.mcnip.solver.Model.Type.INT
 import org.mcnip.solver.filteredMapOf
+import kotlin.math.nextDown
+import kotlin.math.nextUp
 
 class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
   private val result = names[0]
@@ -24,7 +26,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
   companion object {
     @JvmStatic
     fun add(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      filteredMapOf(result to Interval(resInterval, fstLowerBound + sndLowerBound, fstUpperBound + sndUpperBound, false),
+      filteredMapOf(result to Interval(resInterval, fstLowerBound + sndLowerBound, fstUpperBound + sndUpperBound),
       fstArg to Interval(fstInterval, resLowerBound - sndUpperBound, resUpperBound - sndLowerBound, true),
       sndArg to Interval(sndInterval, resLowerBound - fstUpperBound, resUpperBound - fstLowerBound, true))
     }
@@ -32,7 +34,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
     @JvmStatic
     fun sub(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
       filteredMapOf(result to Interval(resInterval, fstLowerBound - sndUpperBound, fstUpperBound - sndLowerBound, true),
-          fstArg to Interval(fstInterval, resLowerBound + sndLowerBound, resUpperBound + sndUpperBound, false),
+          fstArg to Interval(fstInterval, resLowerBound + sndLowerBound, resUpperBound + sndUpperBound),
           sndArg to Interval(sndInterval, fstLowerBound - resUpperBound, fstUpperBound - resLowerBound, true))
     }
 
@@ -58,22 +60,39 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
 
     @JvmStatic
     fun min(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      filteredMapOf(result to Interval(resInterval, fstLowerBound.min(sndLowerBound), fstUpperBound.min(sndUpperBound), false),
-          fstArg to Interval(fstInterval, resLowerBound, POS_INF, false),
-          sndArg to Interval(sndInterval, resLowerBound, POS_INF, false))
+      filteredMapOf(result to Interval(resInterval, fstLowerBound.min(sndLowerBound), fstUpperBound.min(sndUpperBound)),
+          fstArg to Interval(fstInterval, resLowerBound, POS_INF),
+          sndArg to Interval(sndInterval, resLowerBound, POS_INF))
     }
 
     @JvmStatic
     fun max(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      filteredMapOf(result to Interval(resInterval, fstLowerBound.max(sndLowerBound), fstUpperBound.max(sndUpperBound), false),
-          fstArg to Interval(fstInterval, NEG_INF, resUpperBound, false),
-          sndArg to Interval(sndInterval, NEG_INF, resUpperBound, false))
+      filteredMapOf(result to Interval(resInterval, fstLowerBound.max(sndLowerBound), fstUpperBound.max(sndUpperBound)),
+          fstArg to Interval(fstInterval, NEG_INF, resUpperBound),
+          sndArg to Interval(sndInterval, NEG_INF, resUpperBound))
     }
   }
 
   private fun Interval.withMul(i0: Interval, i1: Interval) = withOp(IPSNumber::mul, i0, i1)
-  private fun Interval.withDiv(numerator: Interval, denominator: Interval) = withCautionOp(IPSNumber::div, numerator, denominator)
   private fun Interval.withPow(base: Interval, power: Interval) = withOp(IPSNumber::pow, base, power)
+
+  private fun Interval.withDiv(numerator: Interval, denominator: Interval) = when {
+    type != INT && denominator.lowerBound.fpValue <= 0.0.nextUp() && denominator.upperBound.fpValue >= 0.0.nextDown() ->
+      this
+    numerator.lowerBound.isInfinite && numerator.upperBound.isInfinite ->
+      this
+    type == INT && denominator.lowerBound == ZERO_int && denominator.upperBound == ZERO_int ->
+      this
+    type != INT || denominator.lowerBound > ZERO_int || denominator.upperBound < ZERO_int ->
+      withOp(IPSNumber::div, numerator, denominator)
+    denominator.lowerBound == ZERO_int ->
+      withOp(IPSNumber::div, numerator, Interval(denominator.varName, ONE_int, denominator.upperBound))
+    denominator.upperBound == ZERO_int ->
+      withOp(IPSNumber::div, numerator, Interval(denominator.varName, denominator.lowerBound, NEG_ONE_int))
+    else ->
+      Interval(withOp(IPSNumber::div, numerator, denominator), numerator.lowerBound.min(-numerator.upperBound), numerator.upperBound.max(-numerator.lowerBound))
+  }
+
   private fun Interval.withNrt(num: Interval, root: Interval) = withCautionOp(IPSNumber::nrt, num, root)
 
   private fun Interval.withOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval) = Triple(op, i0, i1).let { Interval(this, it.min(), it.max(), true) }

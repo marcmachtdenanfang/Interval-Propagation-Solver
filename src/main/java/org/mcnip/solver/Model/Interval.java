@@ -100,6 +100,16 @@ public class Interval {
 
     public Interval(
         Interval result,
+        IPSNumber altLowerBound,
+        IPSNumber altUpperBound)
+    {
+        this.varName = result.varName;
+        this.lowerBound = result.lowerBound.max(altLowerBound);
+        this.upperBound = result.upperBound.min(altUpperBound);
+    }
+
+    public Interval(
+        Interval result,
         Double altLowerBound,
         Double altUpperBound)
     {
