@@ -383,7 +383,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     public IPSNumber nrt(IPSNumber b) // throws Exception
     {
-        return new IPSNumber(Math.pow(this.fpValue, 1.0 / b.fpValue), this.type);
+        return (this.intValue != null) ? new IPSNumber(Math.pow(this.fpValue, 1.0 / b.fpValue), this.type) : this;
     }
 
     public IPSNumber exp(int constant) // throws Exception

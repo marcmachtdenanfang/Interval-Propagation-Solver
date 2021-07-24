@@ -1,0 +1,15 @@
+-- 2.1.1 example with modifications
+-- UNSAT
+
+DECL
+  -- The  range  of  each  variable has to be  bounded.
+  int [2, 14] a, b, c;
+
+EXPR
+  -- Constraint to be  solved.
+  a*a + b*b = c*c;
+  a != 6 or b > 8;
+  c != 5 and c != 10;
+  a != 5 or a < 5;
+  b != 5;
+  b != 12 or b >= 13;

@@ -2,8 +2,6 @@ package org.mcnip.solver.Model;
 
 import java.math.BigInteger;
 
-import org.jetbrains.annotations.NotNull;
-
 import lombok.Setter;
 
 
@@ -17,10 +15,14 @@ public class Interval {
     @Override
     public String toString()
     {
-        if(isNumeric(varName)) {
+        if(isNumeric(varName))
             return varName;
-        }
-        return varName + " := [" + lowerBound.toString() + ", " + upperBound.toString() + "]";
+        if (this.containsMoreThanOneValue())
+            return varName + " := [" + lowerBound + ", " + upperBound + "]";
+        else if (getType() != Type.INT)
+            return varName + " ~= " + this.getMidPoint();
+        else
+            return varName + " := " + lowerBound;
     }
 
     public Interval(String name, Type t)
@@ -194,9 +196,9 @@ public class Interval {
     public boolean containsMoreThanOneValue() {
         // since we always have closed intervals, this code suffices.
         if(lowerBound.equals(upperBound)) return false;
-        return true;
+        // additional padding should be used for floats since they might not be exact
+        else return this.getType() == Type.INT || lowerBound.nextUp().nextUp().nextUp().lt(upperBound);
     }
-    
 
     public boolean isDotInfinite() {
         if(this.lowerBound.equals(this.upperBound)) {
