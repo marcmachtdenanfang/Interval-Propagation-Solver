@@ -289,12 +289,34 @@ public class Context {
         return true;
     }
 
+    /*Bool findUnassignedBool()
+    {
+        List<Bool> allBools = this.formula.getBools();
+        List<String> assertedBools = new ArrayList<>();
+        List<String> unassignedBools = new ArrayList<>();
+        Map<String, Integer> t = new HashMap<>();
+        for(Atom a : assertedAtoms)
+        {
+            if(!(a instanceof Bool)) continue;
+            Bool temp = (Bool) a;
+            if(temp.isPolarity())
+            {
+                t.put(temp.getVariables()[0], 1);
+            } else {
+                t.put(temp.getVariables()[0], 0);
+            }
+        }
+        
+    }*/
+
     /**
      * Step 4 ideas
      */
     public boolean splitVariableInterval()
     {
         //select unassigned Bool or inconclusive Number, if not possible/too small:
+        
+
         /*Bool unassignedBool = findUnassignedBool();
         if(unassignedBool != null) {
             assertedAtoms.push(new Marker());

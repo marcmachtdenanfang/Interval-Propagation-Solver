@@ -103,15 +103,19 @@ class Parser(filePath: String) : IParser {
           lit.startsWith("!_bra") -> "!${brackets[lit.drop(5).toInt()]}".removePrefix("!!")
           else -> lit
         }
-        if (str.startsWith("_bnd"))
+        if (str.startsWith("_bnd")) {
           bounds[str.drop(4).toInt()]
-        else
-          (if (str[0] != '!')
-            Bool(str)
+        }
+        else {
+          (if (str[0] != '!') {
+            // Bool(str)
+            Bound(str, DotInterval("1", 1), GreaterEqualsContractor())
+          }
           else {
             str = str.drop(1)
-            Bool(str, false)
-          }).also { variables += str }
+            //Bool(str, false)
+            Bound(str, DotInterval("0", 0), LessEqualsContractor())
+          })}.also { variables += str }
       }.let { clauses += Clause(variables, it) }
     }
     negations.operateUn("neg", NegContractor())
@@ -129,6 +133,8 @@ class Parser(filePath: String) : IParser {
     roots.operateBi("nrt", NrtContractor())
     typecasting()
     formula = Formula(clauses)
+    println("bounds")
+    println(bounds)
   }
 
   private fun String.boundVariables() = this.split("] ").map { it.splitTrim(',') }.toPair().run {
@@ -146,6 +152,8 @@ class Parser(filePath: String) : IParser {
     }
   }
 
+  //private fun String.boolVariables() = .let {}
+
   private fun declare(declarations: MutableList<String>) {
     declarations.forEach { decl ->
       when {
@@ -153,14 +161,21 @@ class Parser(filePath: String) : IParser {
           decl.drop(7).splitTrim('=').toPair().run {
             constants[first] = second
           }
-        decl[0] == 'b' ->
-          booleans += decl.drop(6)
+        decl[0] == 'b' -> {
+          //booleans += decl.drop(5)
+          val boolNames = decl.drop(5).splitTrim(',')
+          for(bool in boolNames) {
+            variables[bool] = Pair("0","1")
+          }
+        }
         else ->
           decl.removePrefix("fl").drop(5).boundVariables().map { (variable, bound) ->
             variables[variable] = bound.toPair()
           }
       }
     }
+    booleans += "aha"
+    println(booleans)
   }
 
   private fun String.innerBrackets(): Pair<Int, Int> {

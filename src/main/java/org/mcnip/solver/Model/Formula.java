@@ -1,12 +1,17 @@
 package org.mcnip.solver.Model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import lombok.Getter;
 
 public class Formula {
     
     @Getter private List<Clause> clauses;
+    @Getter private List<Bool> bools;
 
     /**
      * Only accepts formulas already in cnf as per our parser.
@@ -15,6 +20,7 @@ public class Formula {
      */
     public Formula(List<Clause> in) {
         this.clauses = preprocessFormula(in);
+        this.bools = extractBools(clauses);
     }
 
     /**
@@ -39,6 +45,24 @@ public class Formula {
             resClauses.add(new Clause(c.getVariables(), currentClause));
         }
         return resClauses;
+    }
+
+    private List<Bool> extractBools(List<Clause> clauses)
+    {
+        List<Bool> retBools = new ArrayList<>();
+        Iterator<Clause> iterator = clauses.iterator();
+
+        while(iterator.hasNext())
+        {
+            Clause clause = iterator.next();
+            List<Bool> temp = clause.getConstraints()
+                                .stream()
+                                .filter(constr -> constr instanceof Bool)
+                                .map(constr -> (Bool) constr) // unfortunately necessary
+                                .collect(Collectors.toList());
+            retBools.addAll(temp);
+        }
+        return retBools;
     }
 
 }
