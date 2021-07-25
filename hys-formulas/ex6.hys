@@ -1,6 +1,6 @@
 DECL
   define a = 1.0;
-  float [-1.0, 1.0] x, y;
+  float [-a, a] x, y;
 
 EXPR
   x = 0.5;

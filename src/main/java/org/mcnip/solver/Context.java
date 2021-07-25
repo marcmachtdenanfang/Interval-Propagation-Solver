@@ -317,14 +317,14 @@ public class Context {
         );
 
         Random select = new Random();
-        int probability = 4;
+        int probability = 10;
         int selector = select.nextInt(probability);
 
         // in 1/probability of cases we add aux variables to our pool of splitting variables.
-        if (problemVars.isEmpty() || selector == probability-1) //prefer problem variables, probably needs more testing
+        if (problemVars.isEmpty() || selector == probability-1) 
             vars.forEach(
                 (k,v) -> {
-                    if (v.containsMoreThanOneValue())// if (k.charAt(0) == '_')
+                    if (v.containsMoreThanOneValue())
                         problemVars.add(k);
                 }
             );

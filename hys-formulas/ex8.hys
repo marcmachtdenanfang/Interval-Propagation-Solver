@@ -1,14 +1,10 @@
 -- 2.1.1 example
 -- Optimal value: c = 5
--- edited
 
 DECL
   -- The  range  of  each  variable has to be  bounded.
-  int [2, 100] a,b,c;
-  bool d;
+  float [2.0, 1000000000000.0] a, c;
 
 EXPR
   -- Constraint to be  solved.
-  a*a + b*b = c*c or a*a = abs(c) or d;
-  abs(b) = a or b = abs(a) or !d;
-  a != 2;
+  a^17 = c;

@@ -32,23 +32,6 @@ public class Interval {
         this.upperBound = new IPSNumber(Double.POSITIVE_INFINITY, t);
     }
 
-    /**
-     * Constructor for boolean Intervals.
-     * @param name Name of variable
-     * @param posPolarity Polarity of boolean variable is positive (true) or negative (false).
-     */
-    public Interval(String name, boolean posPolarity)
-    {
-        this.varName = name;
-        if(posPolarity) {
-            this.lowerBound = new IPSNumber(1, Type.BOOL);
-            this.upperBound = new IPSNumber(Double.POSITIVE_INFINITY, Type.BOOL);
-        } else {
-            this.lowerBound = new IPSNumber(Double.NEGATIVE_INFINITY, Type.BOOL);
-            this.upperBound = new IPSNumber(0, Type.BOOL);
-        }
-    }
-
     public Interval(String name, String lowerBound, String upperBound) {
         this.varName = name;
         this.lowerBound = new IPSNumber(lowerBound, false);
@@ -167,7 +150,7 @@ public class Interval {
                 return temp.div(new IPSNumber(2, Type.INT));
             }
             // for intervals [a, inf], the midpoint is Real.MAX_VALUE, IEEE P1788
-            return IPSNumber.POS_INF;
+            return new IPSNumber(Double.MAX_VALUE, Type.REAL);
         } else if(this.lowerBound.equals(IPSNumber.NEG_INF)) {
             if(this.lowerBound.getType() == Type.INT) {
                 // (1l<<63)-1 == Long.Max_Value
@@ -176,7 +159,7 @@ public class Interval {
                 return temp.div(new IPSNumber(2, Type.INT));
             }
             // for intervals [-inf, a], the midpoint is Real.MIN_VALUE, IEEE P1788
-            return IPSNumber.NEG_INF;
+            return new IPSNumber(Double.MIN_VALUE, Type.REAL);
         }
         IPSNumber temp = this.upperBound.add(this.lowerBound);
         return temp.div(new IPSNumber(2, this.lowerBound.getType()));
