@@ -22,6 +22,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
   private val fstUpperBound = fstInterval.upperBound
   private val sndLowerBound = sndInterval.lowerBound
   private val sndUpperBound = sndInterval.upperBound
+  private val type = resInterval.type
 
   companion object {
     @JvmStatic
@@ -55,13 +56,13 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
     @JvmStatic
     fun pow(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
       val newResult = resInterval.withPow(fstInterval, sndInterval)
-      filteredMapOf(result to newResult, fstArg to fstInterval.withNrt(newResult, sndInterval), sndArg to sndInterval)
+      filteredMapOf(result to newResult, fstArg to (if (type != INT) fstInterval else fstInterval.withNrt(newResult, sndInterval)), sndArg to sndInterval)
     }
 
     @JvmStatic
     fun nrt(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
       val newResult = resInterval.withNrt(fstInterval, sndInterval)
-      filteredMapOf(result to newResult, fstArg to fstInterval.withPow(newResult, sndInterval), sndArg to sndInterval)
+      filteredMapOf(result to newResult, fstArg to (if (type != INT) fstInterval else fstInterval.withPow(newResult, sndInterval)), sndArg to sndInterval)
     }
 
     @JvmStatic
@@ -101,18 +102,25 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
   private fun Interval.withOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval) = Triple(op, i0, i1).let { Interval(this, it.min(), it.max(), true) }
 
   private fun Interval.withCautionOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval): Interval {
-    val fst = i0
+    if (i0.lowerBound.isInfinite || i0.upperBound.isInfinite) return this
     val snd = Interval(i1, ONE_int, i1.upperBound)
     return when {
       snd.upperBound < ONE_int ->
         Interval(varName, ONE, ZERO)
-      fst.lowerBound < ZERO_int ->
-        if (snd.lowerBound.intValue.toInt() % 2 != 0)
-          withOp(op, fst, DotInterval(snd.varName, snd.lowerBound.intValue))
-        else
-          Interval(varName, ONE, ZERO)
+      i0.lowerBound >= ZERO_int ->
+        withOp(op, i0, snd)
+      snd.lowerBound.intValue.toInt() % 2 > 0 ->
+        withOp(op, i0, DotInterval(snd.varName, snd.lowerBound.intValue))
+      op != IPSNumber::pow ->
+        if (i0.upperBound < ZERO_int) this
+        else withOp(op, Interval(i0, ZERO_int, i0.upperBound), DotInterval(snd.varName, snd.lowerBound.intValue))
       else ->
-        withOp(op, fst, snd)
+        when {
+          i0.upperBound < ZERO_int ->
+            withOp(op, i0, DotInterval(snd.varName, snd.lowerBound.intValue))
+          else ->
+            withOp(op, Interval(i0, ZERO_int, i0.upperBound), DotInterval(snd.varName, snd.lowerBound.intValue))
+        }
     }//.also { println("$it = $i0 $op $i1") }
   }
 

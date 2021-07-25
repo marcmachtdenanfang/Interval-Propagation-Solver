@@ -1,7 +1,8 @@
+-- example from the paper
+
 DECL
-    int [-10, 30] x;
-    int [-8, 25] y;
+    float [-10.0, 30.0] x;
+    float [-8.0, 25.0] y;
 
 EXPR
-    ((x = cos(y)) or (y = sin(x)));
-    (x < 0 or x*x = -3*y);
+    (x = cos(y) or y = sin(x)) and (x < 0.0 or x^2.0 = -3.0 * y);
