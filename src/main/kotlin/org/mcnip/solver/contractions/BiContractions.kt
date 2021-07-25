@@ -26,50 +26,54 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
   companion object {
     @JvmStatic
     fun add(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      filteredMapOf(result to Interval(resInterval, fstLowerBound + sndLowerBound, fstUpperBound + sndUpperBound),
-      fstArg to Interval(fstInterval, resLowerBound - sndUpperBound, resUpperBound - sndLowerBound, true),
-      sndArg to Interval(sndInterval, resLowerBound - fstUpperBound, resUpperBound - fstLowerBound, true))
+      val newResult = Interval(resInterval, fstLowerBound + sndLowerBound, fstUpperBound + sndUpperBound)
+      filteredMapOf(result to newResult,
+      fstArg to Interval(fstInterval, newResult.lowerBound - sndUpperBound, newResult.upperBound - sndLowerBound, true),
+      sndArg to Interval(sndInterval, newResult.lowerBound - fstUpperBound, newResult.upperBound - fstLowerBound, true))
     }
 
     @JvmStatic
     fun sub(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      filteredMapOf(result to Interval(resInterval, fstLowerBound - sndUpperBound, fstUpperBound - sndLowerBound, true),
-          fstArg to Interval(fstInterval, resLowerBound + sndLowerBound, resUpperBound + sndUpperBound),
-          sndArg to Interval(sndInterval, fstLowerBound - resUpperBound, fstUpperBound - resLowerBound, true))
+      val newResult = Interval(resInterval, fstLowerBound - sndUpperBound, fstUpperBound - sndLowerBound, true)
+      filteredMapOf(result to newResult,
+          fstArg to Interval(fstInterval, newResult.lowerBound + sndLowerBound, newResult.upperBound + sndUpperBound),
+          sndArg to Interval(sndInterval, fstLowerBound - newResult.upperBound, fstUpperBound - newResult.lowerBound, true))
     }
 
     @JvmStatic
     fun mul(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      filteredMapOf(result to resInterval.withMul(fstInterval, sndInterval), fstArg to fstInterval.withDiv(resInterval, sndInterval), sndArg to sndInterval.withDiv(resInterval, fstInterval))
+      val newResult = resInterval.withMul(fstInterval, sndInterval)
+      filteredMapOf(result to newResult, fstArg to fstInterval.withDiv(newResult, sndInterval), sndArg to sndInterval.withDiv(newResult, fstInterval))
     }
 
     @JvmStatic
     fun div(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      filteredMapOf(result to resInterval.withDiv(fstInterval, sndInterval), fstArg to fstInterval.withMul(resInterval, sndInterval), sndArg to sndInterval.withDiv(fstInterval, resInterval))
+      val newResult = resInterval.withDiv(fstInterval, sndInterval)
+      filteredMapOf(result to newResult, fstArg to fstInterval.withMul(newResult, sndInterval), sndArg to sndInterval.withDiv(fstInterval, newResult))
     }
 
     @JvmStatic
     fun pow(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      filteredMapOf(result to resInterval.withPow(fstInterval, sndInterval), fstArg to fstInterval.withNrt(resInterval, sndInterval), sndArg to sndInterval)
+      val newResult = resInterval.withPow(fstInterval, sndInterval)
+      filteredMapOf(result to newResult, fstArg to fstInterval.withNrt(newResult, sndInterval), sndArg to sndInterval)
     }
 
     @JvmStatic
     fun nrt(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      filteredMapOf(result to resInterval.withNrt(fstInterval, sndInterval), fstArg to fstInterval.withPow(resInterval, sndInterval), sndArg to sndInterval)
+      val newResult = resInterval.withNrt(fstInterval, sndInterval)
+      filteredMapOf(result to newResult, fstArg to fstInterval.withPow(newResult, sndInterval), sndArg to sndInterval)
     }
 
     @JvmStatic
     fun min(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      filteredMapOf(result to Interval(resInterval, fstLowerBound.min(sndLowerBound), fstUpperBound.min(sndUpperBound)),
-          fstArg to Interval(fstInterval, resLowerBound, POS_INF),
-          sndArg to Interval(sndInterval, resLowerBound, POS_INF))
+      val newResult = Interval(resInterval, fstLowerBound.min(sndLowerBound), fstUpperBound.min(sndUpperBound))
+      filteredMapOf(result to newResult, fstArg to Interval(fstInterval, resLowerBound, POS_INF), sndArg to Interval(sndInterval, resLowerBound, POS_INF))
     }
 
     @JvmStatic
     fun max(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      filteredMapOf(result to Interval(resInterval, fstLowerBound.max(sndLowerBound), fstUpperBound.max(sndUpperBound)),
-          fstArg to Interval(fstInterval, NEG_INF, resUpperBound),
-          sndArg to Interval(sndInterval, NEG_INF, resUpperBound))
+      val newResult = Interval(resInterval, fstLowerBound.max(sndLowerBound), fstUpperBound.max(sndUpperBound))
+      filteredMapOf(result to newResult, fstArg to Interval(fstInterval, NEG_INF, resUpperBound), sndArg to Interval(sndInterval, NEG_INF, resUpperBound))
     }
   }
 
@@ -97,7 +101,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
   private fun Interval.withOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval) = Triple(op, i0, i1).let { Interval(this, it.min(), it.max(), true) }
 
   private fun Interval.withCautionOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval): Interval {
-    val fst = if (i0.lowerBound.isInfinite) Interval(i0, ZERO_int, i0.upperBound) else i0
+    val fst = i0
     val snd = Interval(i1, ONE_int, i1.upperBound)
     return when {
       snd.upperBound < ONE_int ->
@@ -109,7 +113,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
           Interval(varName, ONE, ZERO)
       else ->
         withOp(op, fst, snd)
-    }
+    }//.also { println("$it = $i0 $op $i1") }
   }
 
   private fun Triple<(IPSNumber, IPSNumber) -> IPSNumber, Interval, Interval>.min() = minmax(first, second, third, IPSNumber::min)
