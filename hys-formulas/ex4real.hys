@@ -1,0 +1,7 @@
+DECL
+    float [-10.0, 30.0] x;
+    float [-8.0, 25.0] y;
+
+EXPR
+    ((x = cos(y)) or (y = sin(x)));
+    (x < 0.0 or x*x = -3.0*y);

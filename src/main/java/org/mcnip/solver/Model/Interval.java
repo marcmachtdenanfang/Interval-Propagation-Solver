@@ -183,6 +183,9 @@ public class Interval {
      */
     public boolean isEmpty()
     {
+        if(this.lowerBound.getType().equals(Type.REAL) && !this.lowerBound.nextUp().equals(upperBound)) {
+            return false;
+        }
         return this.lowerBound.gt(this.upperBound);
     }
 

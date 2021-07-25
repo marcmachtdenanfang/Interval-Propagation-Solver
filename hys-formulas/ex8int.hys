@@ -3,7 +3,7 @@
 
 DECL
   -- The  range  of  each  variable has to be  bounded.
-  int [-30000000, 100000000000000] a, c;
+  int [-30000000, -1] a, c;
 
 EXPR
   -- Constraint to be  solved.
