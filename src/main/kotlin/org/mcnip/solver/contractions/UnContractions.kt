@@ -1,6 +1,7 @@
 package org.mcnip.solver.contractions
 
 import org.mcnip.solver.Model.DotInterval
+import org.mcnip.solver.Model.DotInterval.E
 import org.mcnip.solver.Model.IPSNumber.ZERO
 import org.mcnip.solver.Model.Interval
 import org.mcnip.solver.filteredMapOf
@@ -45,7 +46,7 @@ class UnContractions(intervals: Map<String, Interval>, names: Array<String>) {
 
     @JvmStatic
     fun exp(intervals: Map<String, Interval>, names: Array<String>) =
-        BiContractions.pow(intervals + ("_E" to DotInterval("_E", kotlin.math.E)), names + "_E").run { intervals - "_E" }
+        BiContractions.pow(intervals + ("_E" to E), names + "_E").run { intervals - "_E" }
 
     @JvmStatic
     fun sin(intervals: Map<String, Interval>, names: Array<String>) = tri({ kotlin.math.sin(it) }, intervals, names)

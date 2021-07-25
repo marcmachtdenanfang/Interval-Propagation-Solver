@@ -73,38 +73,43 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
     }
   }
 
-  private fun Interval.withMul(i0: Interval, i1: Interval) = withOp(IPSNumber::mul, i0, i1)
-  private fun Interval.withPow(base: Interval, power: Interval) = withCautionOp(IPSNumber::pow, base, power)
-  private fun Interval.withNrt(num: Interval, root: Interval) = withCautionOp(IPSNumber::nrt, num, root)
+  private fun Interval.withMul(multiplier: Interval, multiplicand: Interval) = withOp(IPSNumber::mul, multiplier, multiplicand)
+  private fun Interval.withPow(base: Interval, exponent: Interval) = withCautionOp(IPSNumber::pow, base, exponent)
+  private fun Interval.withNrt(radicand: Interval, degree: Interval) = withCautionOp(IPSNumber::nrt, radicand, degree)
 
-  private fun Interval.withDiv(numerator: Interval, denominator: Interval) = when {
-    type != INT && denominator.lowerBound.fpValue <= 0.0.nextUp() && denominator.upperBound.fpValue >= 0.0.nextDown() ->
+  private fun Interval.withDiv(dividend: Interval, divisor: Interval) = when {
+    type != INT && divisor.lowerBound.fpValue <= 0.0.nextUp() && divisor.upperBound.fpValue >= 0.0.nextDown() ->
       this
-    numerator.lowerBound.isInfinite && numerator.upperBound.isInfinite ->
+    dividend.lowerBound.isInfinite && dividend.upperBound.isInfinite ->
       this
-    type == INT && denominator.lowerBound == ZERO_int && denominator.upperBound == ZERO_int ->
+    type == INT && divisor.lowerBound == ZERO_int && divisor.upperBound == ZERO_int ->
       this
-    type != INT || denominator.lowerBound > ZERO_int || denominator.upperBound < ZERO_int ->
-      withOp(IPSNumber::div, numerator, denominator)
-    denominator.lowerBound == ZERO_int ->
-      withOp(IPSNumber::div, numerator, Interval(denominator.varName, ONE_int, denominator.upperBound))
-    denominator.upperBound == ZERO_int ->
-      withOp(IPSNumber::div, numerator, Interval(denominator.varName, denominator.lowerBound, NEG_ONE_int))
+    type != INT || divisor.lowerBound > ZERO_int || divisor.upperBound < ZERO_int ->
+      withOp(IPSNumber::div, dividend, divisor)
+    divisor.lowerBound == ZERO_int ->
+      withOp(IPSNumber::div, dividend, Interval(divisor.varName, ONE_int, divisor.upperBound))
+    divisor.upperBound == ZERO_int ->
+      withOp(IPSNumber::div, dividend, Interval(divisor.varName, divisor.lowerBound, NEG_ONE_int))
     else ->
-      Interval(withOp(IPSNumber::div, numerator, denominator), numerator.lowerBound.min(-numerator.upperBound), numerator.upperBound.max(-numerator.lowerBound))
+      Interval(withOp(IPSNumber::div, dividend, divisor), dividend.lowerBound.min(-dividend.upperBound), dividend.upperBound.max(-dividend.lowerBound))
   }
 
   private fun Interval.withOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval) = Triple(op, i0, i1).let { Interval(this, it.min(), it.max(), true) }
 
-  private fun Interval.withCautionOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval) = when {
-    i1.upperBound.intValue.signum() < 1 ->
-      Interval(this, i0.lowerBound, i0.upperBound)
-    i1.lowerBound.intValue.signum() < 1 ->
-      withOp(op, i0, Interval(i1.varName, if (type != INT) ONE else ONE_int, i1.upperBound))
-    op != IPSNumber::pow && i0.lowerBound < ZERO_int && i1.lowerBound.intValue == i1.upperBound.intValue && i1.lowerBound.intValue.toInt() % 2 == 0 ->
-      withOp(op, i0, i1).run { Interval(this, ZERO_int, upperBound) }
-    else ->
-      withOp(op, i0, i1)
+  private fun Interval.withCautionOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval): Interval {
+    val fst = if (i0.lowerBound.isInfinite) Interval(i0, ZERO_int, i0.upperBound) else i0
+    val snd = Interval(i1, ONE_int, i1.upperBound)
+    return when {
+      snd.upperBound < ONE_int ->
+        Interval(varName, ONE, ZERO)
+      fst.lowerBound < ZERO_int ->
+        if (snd.lowerBound.intValue.toInt() % 2 != 0)
+          withOp(op, fst, DotInterval(snd.varName, snd.lowerBound.intValue))
+        else
+          Interval(varName, ONE, ZERO)
+      else ->
+        withOp(op, fst, snd)
+    }
   }
 
   private fun Triple<(IPSNumber, IPSNumber) -> IPSNumber, Interval, Interval>.min() = minmax(first, second, third, IPSNumber::min)

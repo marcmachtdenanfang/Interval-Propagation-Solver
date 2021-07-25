@@ -15,7 +15,7 @@ public class Interval {
     @Override
     public String toString()
     {
-        if(isNumeric(varName))
+        if(isNumeric())
             return varName;
         if (this.containsMoreThanOneValue())
             return varName + " in [" + lowerBound + ", " + upperBound + "]";
@@ -209,13 +209,8 @@ public class Interval {
         this.upperBound.setType(type);
     }
 
-    public static boolean isNumeric(String str) { 
-        try {  
-          Double.parseDouble(str);  
-          return true;
-        } catch(NumberFormatException e){  
-          return false;  
-        }  
+    public boolean isNumeric() {
+        return this.varName.charAt(0) == '-' || Character.isDigit(this.varName.charAt(0));
     }
 
 }

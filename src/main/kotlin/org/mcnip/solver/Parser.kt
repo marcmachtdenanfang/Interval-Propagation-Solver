@@ -5,7 +5,8 @@ import org.mcnip.solver.Contractors.BoundContractor.*
 import org.mcnip.solver.Contractors.Contractor
 import org.mcnip.solver.Contractors.UnContractor.*
 import org.mcnip.solver.Model.*
-import kotlin.Pair
+import org.mcnip.solver.Model.Type.*
+import org.mcnip.solver.Model.Pair as Dyad
 
 typealias UnaryOperations = MutableList<String>
 typealias BinaryOperations = MutableList<Pair<String, String>>
@@ -81,7 +82,7 @@ class Parser(filePath: String) : IParser {
     boundList.forEach { (fst, snd, trd) ->
       bounds += (
           if (snd.isNumber())
-            Triple(fst.replace('<', '_').replace('>', '<').replace('_', '>'), trd, snd)
+            Triple(fst.replace('<', '#').replace('>', '<').replace('#', '>'), trd, snd)
           else
             Triple(fst, snd, trd)
           ).let { (relType, leftArg, rightArg) ->
@@ -150,8 +151,6 @@ class Parser(filePath: String) : IParser {
     }
   }
 
-  //private fun String.boolVariables() = .let {}
-
   private fun declare(declarations: MutableList<String>) {
     declarations.forEach { decl ->
       when {
@@ -160,10 +159,8 @@ class Parser(filePath: String) : IParser {
             constants[first] = second
           }
         decl[0] == 'b' -> {
-          //booleans += decl.drop(5)
-          val boolNames = decl.drop(5).splitTrim(',')
-          for(bool in boolNames) {
-            variables[bool] = Pair("0","1")
+          decl.drop(6).splitTrim(',').forEach { bool ->
+            variables[bool] = "0" to "1"
           }
         }
         else ->
@@ -197,7 +194,7 @@ class Parser(filePath: String) : IParser {
           if (braOpen > 2 && expr.substring(braOpen - 3, braOpen) in braOps) {
             val braOp = expr.substring(braOpen - 3, braOpen)
             val idx = bracketOpsCount.getValue(braOp)
-            expressions += ".$braOp ${expr.substring(braOpen + 1, braClose)}"
+            expressions += ".$braOp°${expr.substring(braOpen + 1, braClose)}"
             expr = "${expr.substring(0, braOpen - 3)}_$braOp$idx${expr.substring(braClose + 1)}"
             bracketOpsCount[braOp] = idx + 1
           }
@@ -206,7 +203,7 @@ class Parser(filePath: String) : IParser {
             if (" or " in inner || " and " in inner)
               expr = "${expr.substring(0, braOpen)}$inner${expr.substring(braClose + 1)}"
             else {
-              expressions += ".bra $inner"
+              expressions += ".bra°$inner"
               expr = "${expr.substring(0, braOpen)}_bra${bracketCount++}${expr.substring(braClose + 1)}"
             }
           }
@@ -295,7 +292,7 @@ class Parser(filePath: String) : IParser {
   private fun UnaryOperations.operateUn(str: String, contractor: Contractor) = forEachIndexed { idx, name ->
     val arg = getInterval(name)
     val result = Interval("_$str$idx", arg.type)
-    addIntervalAndClause(result, setOf(result.varName, arg.varName), Pair(result, arg, contractor))
+    addIntervalAndClause(result, setOf(result.varName, arg.varName), Dyad(result, arg, contractor))
   }
 
   private fun addIntervalAndClause(result: Interval, set: Set<String>, constraint: Constraint) {
@@ -303,11 +300,24 @@ class Parser(filePath: String) : IParser {
     clauses += Clause(set, listOf(constraint))
   }
 
-  private fun getInterval(str: String) =
-      if (str.isNumber())
-        DotInterval(str, str)
-      else
-        intervals.getOrPut(str, { Interval(str, null) })
+  private fun getInterval(str: String) = when {
+    str.isNumber() -> DotInterval(str, str)
+    str in intervals.keys -> intervals.getValue(str)
+    str.startsWith('_') -> intervals.getOrPut(str, { Interval(str, null) })
+    else -> "_$str${when (str) {
+      "bra" -> brackets.size
+      "neg" -> negations.size
+      "abs" -> absolutes.size
+      "min" -> minimums.size
+      "max" -> maximums.size
+      "exp" -> exponents.size
+      "sin" -> sines.size
+      "cos" -> cosines.size
+      "pow" -> powers.size
+      "nrt" -> roots.size
+      else -> ""
+    }}".let { name -> intervals.getOrPut(name, { Interval(name, null) }) }
+  }
 
   private fun String.isNumber() = removePrefix("-")[0].isDigit()
 
@@ -320,13 +330,13 @@ class Parser(filePath: String) : IParser {
       clause.constraints.forEach { constraint ->
         when (constraint) {
           is Triplet -> {
-            val mainType = constraint.result.type?:constraint.leftArg.type?:constraint.rightArg.type?:intervals[constraint.result.varName]?.type?:intervals[constraint.leftArg.varName]?.type?:intervals[constraint.rightArg.varName]?.type
+            val mainType = constraint.result.type?:constraint.leftArg.type?:constraint.rightArg.type?:intervals[constraint.result.varName]?.type?:intervals[constraint.leftArg.varName]?.type?:intervals[constraint.rightArg.varName]?.type?:if (constraint.leftArg.varName.contains('.')) REAL else INT
             constraint.result.type = mainType
             constraint.leftArg.type = mainType
             constraint.rightArg.type = mainType
           }
-          is org.mcnip.solver.Model.Pair -> {
-            val mainType = constraint.result.type?:constraint.origin.type?:intervals[constraint.result.varName]?.type?:intervals[constraint.origin.varName]?.type
+          is Dyad -> {
+            val mainType = constraint.result.type?:constraint.origin.type?:intervals[constraint.result.varName]?.type?:intervals[constraint.origin.varName]?.type?:if (constraint.origin.varName.contains('.')) REAL else INT
             constraint.result.type = mainType
             constraint.origin.type = mainType
           }

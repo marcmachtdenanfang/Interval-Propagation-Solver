@@ -1,11 +1,15 @@
--- 2.1.1 example
--- Optimal value: c = 5
-
 DECL
+<<<<<<< HEAD:hys-formulas/ex8real.hys
   -- The  range  of  each  variable has to be  bounded.
   float [-3.0, 500000.0] a, 
   float [1, 300000000] c;
+=======
+  int [-5, 4] x;
+  float [-8.0, 7.0] y;
+  int [-999, 9] z;
+>>>>>>> 92dae8e8402df9d2f411e28955a9f864e0cd7df8:hys-formulas/ex8.hys
 
 EXPR
-  -- Constraint to be  solved.
-  a^17 = c;
+  x = nrt(-27, 3);
+  y = nrt(-123.45, 5.0);
+  z = pow(-9, 3);
