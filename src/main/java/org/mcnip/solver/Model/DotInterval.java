@@ -3,7 +3,8 @@ package org.mcnip.solver.Model;
 import java.math.BigInteger;
 
 public class DotInterval extends Interval {
-    
+    public static final DotInterval E = new DotInterval("_E", kotlin.math.MathKt.E);
+
     public DotInterval(String name, int bound)
     {
         // a dot-interval is always a closed interval,

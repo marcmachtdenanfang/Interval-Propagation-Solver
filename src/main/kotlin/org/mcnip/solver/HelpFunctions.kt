@@ -4,7 +4,7 @@ import org.mcnip.solver.Context.*
 import org.mcnip.solver.Contractors.BoundContractor.*
 import org.mcnip.solver.Contractors.Contractor
 import org.mcnip.solver.Model.*
-import kotlin.Pair
+import org.mcnip.solver.Model.Pair as Dyad
 
 private fun <K> Map<K, Interval>.containsEmptyInterval() = values.fold(false) { acc, interval -> acc || interval.isEmpty }
 
@@ -39,7 +39,7 @@ fun List<Atom>.narrowContractors(currentAssignment: MutableMap<String, Interval>
       if (newIntervals.containsEmptyInterval())
         return null
       currentAssignment += newIntervals
-      if (atom is org.mcnip.solver.Model.Pair || atom is Triplet)
+      if (atom is Dyad || atom is Triplet)
         bounds += extractBounds(newIntervals)
     }
   }
@@ -48,7 +48,7 @@ fun List<Atom>.narrowContractors(currentAssignment: MutableMap<String, Interval>
 
 fun Atom.update(currentAssignment: Map<String, Interval>): MutableMap<String, Interval> = updateIntervals(when (this) {
   is Bound -> listOf(varName, bound.varName) from currentAssignment
-  is org.mcnip.solver.Model.Pair -> listOf(result.varName, origin.varName) from currentAssignment
+  is Dyad -> listOf(result.varName, origin.varName) from currentAssignment
   else -> listOf((this as Triplet).result.varName, leftArg.varName, rightArg.varName) from currentAssignment
 }, this as Constraint)
 

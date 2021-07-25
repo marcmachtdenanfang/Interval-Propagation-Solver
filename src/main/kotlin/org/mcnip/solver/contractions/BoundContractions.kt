@@ -50,7 +50,7 @@ class BoundContractions(private val intervals: Map<String, Interval>, names: Arr
         limiterUpperBound < baseLowerBound || baseUpperBound < limiterLowerBound || (baseLowerBound < limiterLowerBound && limiterUpperBound < baseUpperBound) ->
           baseInterval
         limiterLowerBound <= baseLowerBound && baseUpperBound <= limiterUpperBound ->
-          Interval(base, IPSNumber(1, baseLowerBound.type), IPSNumber(0, baseLowerBound.type))
+          Interval(base, IPSNumber.ONE, IPSNumber.ZERO)
         limiterLowerBound <= baseLowerBound ->
           Interval(base, limiterUpperBound.nextUp(), baseUpperBound)
         else ->
