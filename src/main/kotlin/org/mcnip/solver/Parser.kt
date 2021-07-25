@@ -159,10 +159,8 @@ class Parser(filePath: String) : IParser {
             constants[first] = second
           }
         decl[0] == 'b' -> {
-          //booleans += decl.drop(5)
-          val boolNames = decl.drop(5).splitTrim(',')
-          for(bool in boolNames) {
-            variables[bool] = Pair("0","1")
+          decl.drop(6).splitTrim(',').forEach { bool ->
+            variables[bool] = "0" to "1"
           }
         }
         else ->

@@ -5,7 +5,7 @@
 DECL
   -- The  range  of  each  variable has to be  bounded.
   int [2, 100] a, b, c;
-  bool d;
+  boole d;
 
 EXPR
   -- Constraint to be  solved.
