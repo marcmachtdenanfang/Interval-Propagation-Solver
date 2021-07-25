@@ -1,0 +1,9 @@
+DECL
+  define a = -2.474572753906250278;
+  float [0.0, 5.0] x, y, z;
+  float [0.0, 2.75] c;
+
+EXPR
+  y = x^c;
+  z * 2.2 = nrt(neg(a), c);
+  z = y / 4.0;

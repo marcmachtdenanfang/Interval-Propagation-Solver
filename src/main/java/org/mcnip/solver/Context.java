@@ -274,7 +274,7 @@ public class Context {
             // System.out.println("abcdefghijklmnopqrstuvwxyz");
 
             // assertedAtoms.addAll(narrowed.getSecond());
-            lastAssertedAtoms.addAll(narrowed.getSecond());
+            //lastAssertedAtoms.addAll(narrowed.getSecond());
             // for(Bound b : narrowed.getSecond()) {
             //     assertedAtoms.push(b);
             //     lastAssertedAtoms.add(b);
@@ -316,7 +316,12 @@ public class Context {
             }
         );
 
-        if (problemVars.isEmpty()) //prefer problem variables, probably needs more testing
+        Random select = new Random();
+        int probability = 4;
+        int selector = select.nextInt(probability);
+
+        // in 1/probability of cases we add aux variables to our pool of splitting variables.
+        if (problemVars.isEmpty() || selector == probability-1) //prefer problem variables, probably needs more testing
             vars.forEach(
                 (k,v) -> {
                     if (v.containsMoreThanOneValue())// if (k.charAt(0) == '_')

@@ -96,14 +96,10 @@ public class App
         
         if (solving(ctx)) {
             System.out.println("SAT");
-            ctx.intervalAssignmentStack.peek().values()
-                .stream()
-                .filter(i -> !i.getVarName().startsWith("_"))
-                .forEach(System.out::println);
-            ctx.assertedAtoms
-                .stream()
-                .filter(a -> a instanceof Bool)
-                .forEach(System.out::println);
+            ctx.assertedAtoms.stream().filter(a -> a instanceof Bool).forEach(System.out::println);
+            ctx.intervalAssignmentStack.peek().values().forEach(interval -> {
+                if (interval.getVarName().charAt(0) != '_' || verbosePrinting) System.out.println(interval);
+            } );
         }
         else
             System.out.println("UNSAT");

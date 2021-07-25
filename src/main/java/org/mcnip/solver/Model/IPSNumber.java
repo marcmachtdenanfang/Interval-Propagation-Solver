@@ -30,6 +30,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
     public static final IPSNumber NEG_INF = new IPSNumber(Double.NEGATIVE_INFINITY, REAL);
 
     public static final IPSNumber ZERO_int = new IPSNumber(0, INT);
+    public static final IPSNumber NEG_ONE_int = new IPSNumber(-1, INT);
     public static final IPSNumber ONE_int = new IPSNumber(1, INT);
     public static final IPSNumber TEN_int = new IPSNumber(10, INT);
 
@@ -45,6 +46,18 @@ public class IPSNumber implements Comparable<IPSNumber> {
     @Override
     public int compareTo(@NotNull IPSNumber number) {
         return (this.type != INT || this.intValue == null || number.getIntValue() == null) ? Double.compare(fpValue, number.fpValue) : intValue.compareTo(number.intValue);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        return this.compareTo((IPSNumber) object) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fpValue, intValue, type);
     }
 
     public IPSNumber(double value, Type t)
@@ -370,7 +383,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     public IPSNumber nrt(IPSNumber b) // throws Exception
     {
-        return new IPSNumber(Math.pow(this.fpValue, 1.0 / b.fpValue), this.type);
+        return (this.intValue != null) ? new IPSNumber(Math.pow(this.fpValue, 1.0 / b.fpValue), this.type) : this;
     }
 
     public IPSNumber exp(int constant) // throws Exception
@@ -424,7 +437,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
         // throw new Exception("unexpected NumberType enum in Negation.");
     }
 
-    public IPSNumber inc() // throws Exception
+    public IPSNumber nextUp() // throws Exception
     {
         switch(this.type)
         {
@@ -441,7 +454,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
         // throw new Exception("unexpected NumberType enum in Negation.");
     }
 
-    public IPSNumber dec() // throws Exception
+    public IPSNumber nextDown() // throws Exception
     {
         switch(this.type)
         {

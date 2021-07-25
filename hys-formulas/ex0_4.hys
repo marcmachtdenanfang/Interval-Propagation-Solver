@@ -1,0 +1,11 @@
+-- 2.1.1 example with modifications
+-- Optimal value: c = 905
+
+DECL
+  -- The  range  of  each  variable has to be  bounded.
+  int [600, 1000] a, b, c;
+
+EXPR
+  -- Constraint to be  solved.
+  a*a + b*b = c*c;
+  c > 900;

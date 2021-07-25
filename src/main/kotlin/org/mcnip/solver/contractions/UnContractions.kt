@@ -35,12 +35,12 @@ class UnContractions(intervals: Map<String, Interval>, names: Array<String>) {
           argUpperBound
         else ->
           -argLowerBound
-      }, false), argument to Interval(argInterval, -resUpperBound, resUpperBound, false))
+      }), argument to Interval(argInterval, -resUpperBound, resUpperBound))
     }
 
     @JvmStatic
     fun neg(intervals: Map<String, Interval>, names: Array<String>) = UnContractions(intervals, names).run {
-      filteredMapOf(result to Interval(resInterval, -argUpperBound, -argLowerBound, false), argument to Interval(argInterval, -resUpperBound, -resLowerBound, false))
+      filteredMapOf(result to Interval(resInterval, -argUpperBound, -argLowerBound), argument to Interval(argInterval, -resUpperBound, -resLowerBound))
     }
 
     @JvmStatic

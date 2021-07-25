@@ -9,7 +9,6 @@ DECL
 
 EXPR
   -- Constraint to be  solved.
-  a != b;
+  a != 5;
   a*a + b*b = c*c or a*a = abs(c) or d;
   abs(b) = a or b = abs(a) or !d;
-
