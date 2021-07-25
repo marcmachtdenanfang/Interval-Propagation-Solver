@@ -154,6 +154,22 @@ public class Context {
     Formula formula;
 
     /**
+     * Number of backtracks.
+     */
+    int backtracks;
+
+    /**
+     * Probability of adding auxiliary variables into the pool of variables eligible for splitting.
+     */
+    int probability = 5;
+
+    /**
+     * Number of bits used for splitting integer varaiables. Necessary due to using unbounded BigIntegers.
+     */
+    int intPrecision = 128;
+
+
+    /**
      * According to the paper, auxiliary variables introduced by rewriting code into 
      * three-adress form are allowed to have empty or faulty intervals.
      * The reason is: we might compute intervals for these variables, but it is possible we never use them.
@@ -289,41 +305,17 @@ public class Context {
         return true;
     }
 
-    /*Bool findUnassignedBool()
+    private int getRandomInt(int size)
     {
-        List<Bool> allBools = this.formula.getBools();
-        List<String> assertedBools = new ArrayList<>();
-        List<String> unassignedBools = new ArrayList<>();
-        Map<String, Integer> t = new HashMap<>();
-        for(Atom a : assertedAtoms)
-        {
-            if(!(a instanceof Bool)) continue;
-            Bool temp = (Bool) a;
-            if(temp.isPolarity())
-            {
-                t.put(temp.getVariables()[0], 1);
-            } else {
-                t.put(temp.getVariables()[0], 0);
-            }
-        }
-        
-    }*/
+        Random rand = new Random();
+        return rand.nextInt(size);
+    }
 
     /**
      * Step 4 ideas
      */
     public boolean splitVariableInterval()
     {
-        //select unassigned Bool or inconclusive Number, if not possible/too small:
-        
-
-        /*Bool unassignedBool = findUnassignedBool();
-        if(unassignedBool != null) {
-            assertedAtoms.push(new Marker());
-            assertedAtoms.push(unassignedBool);
-            return true;
-        }*/
-
         // Necessary Changes:
         // 1. only choose from problem variables, that are actually in our current set of unit clauses.
         // 2. sort those intervals by interval size (ascending).
@@ -338,12 +330,8 @@ public class Context {
             }
         );
 
-        Random select = new Random();
-        int probability = 10;
-        int selector = select.nextInt(probability);
-
         // in 1/probability of cases we add aux variables to our pool of splitting variables.
-        if (problemVars.isEmpty() || selector == probability-1) 
+        if (problemVars.isEmpty() || getRandomInt(probability) == probability-1) 
             vars.forEach(
                 (k,v) -> {
                     if (v.containsMoreThanOneValue())
@@ -352,13 +340,11 @@ public class Context {
             );
         if (problemVars.isEmpty()) return false;
 
-        
-        Random rand = new Random();
-        int counter = rand.nextInt(problemVars.size());
+        int counter = getRandomInt(problemVars.size());
         String variableToSplit = problemVars.get(counter);
         Interval x = vars.get(variableToSplit);
         
-        IPSNumber c = x.getMidPoint();
+        IPSNumber c = x.getMidPoint(intPrecision);
         
         Bound bound = new Bound(x.getVarName(), new DotInterval(c.toString(), c), new LessEqualsContractor());
                 
@@ -372,6 +358,7 @@ public class Context {
         tempMap.putAll(updateV);
         intervalAssignmentStack.push(tempMap);
 
+        backtracks += 1;
         return true;
     }
 

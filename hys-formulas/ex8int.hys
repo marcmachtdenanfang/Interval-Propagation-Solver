@@ -3,8 +3,11 @@
 
 DECL
   -- The  range  of  each  variable has to be  bounded.
-  float [2.0, 1000000000000.0] a, c;
+  int [-30000000, 100000000000000] a, c;
 
 EXPR
   -- Constraint to be  solved.
   a^17 = c;
+  a != 0;
+  a != 1;
+  a != 2;

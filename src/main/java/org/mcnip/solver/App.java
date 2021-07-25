@@ -93,6 +93,26 @@ public class App
             verbosePrinting = true;
             ctx.verbosePrinting = true;
         }
+
+        if(cmd.hasOption("l")) {
+            int t = Integer.parseInt(cmd.getOptionValue("l"));
+            if( t < 1) {
+                System.err.println("Likelihood option must at least be 1.");
+                System.err.println("Defaulting likelihood to 5.");
+            } else {
+                ctx.probability = t;
+            }
+        }
+
+        if(cmd.hasOption("b")) {
+            int t = Integer.parseInt(cmd.getOptionValue("b"));
+            if(t < 0) {
+                System.err.println("Bit precision for integers must be positive.");
+                System.err.println("Defaulting to 128.");
+            } else {
+                ctx.intPrecision = t;
+            }
+        }
         
         if (solving(ctx)) {
             System.out.println("SAT");
@@ -100,6 +120,7 @@ public class App
             ctx.intervalAssignmentStack.peek().values().forEach(interval -> {
                 if (interval.getVarName().charAt(0) != '_' || verbosePrinting) System.out.println(interval);
             } );
+            if(cmd.hasOption("p")) System.out.println("Number of backtracks: " + ctx.backtracks);
         }
         else
             System.out.println("UNSAT");
@@ -150,6 +171,8 @@ public class App
         Option help = new Option("h", "help", false, "print this message");
         Option print = new Option("p", "print", false, "Optional: verbose printing of parsed formula.");
         Option verbose = new Option("v", "verbose", false, "Optional: verbose printing of Output during solving.");
+        Option likelihood = new Option("l", "likelihood", true, "Optional: Change likelihood of adding aux_variables into pool of variables eligible for splitting. Must at least be 1. Default is 5.");
+        Option intPrecision = new Option("b", "intPrecision", true, "Optional: Desired number of bits representing integers during variable splitting. Default is 128.");
         Option input = 
               Option.builder("i")
                     .longOpt("input")
@@ -175,6 +198,8 @@ public class App
         options.addOption(help);
         options.addOption(print);
         options.addOption(verbose);
+        options.addOption(likelihood);
+        options.addOption(intPrecision);
         cmd = null;
 
         if(hasHelp || args.length == 0) {

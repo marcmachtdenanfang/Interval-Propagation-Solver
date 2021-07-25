@@ -133,8 +133,6 @@ class Parser(filePath: String) : IParser {
     roots.operateBi("nrt", NrtContractor())
     typecasting()
     formula = Formula(clauses)
-    println("bounds")
-    println(bounds)
   }
 
   private fun String.boundVariables() = this.split("] ").map { it.splitTrim(',') }.toPair().run {
@@ -174,8 +172,6 @@ class Parser(filePath: String) : IParser {
           }
       }
     }
-    booleans += "aha"
-    println(booleans)
   }
 
   private fun String.innerBrackets(): Pair<Int, Int> {
@@ -344,7 +340,7 @@ class Parser(filePath: String) : IParser {
 
   override fun toString() = "constants:\n$constants\n\nvariables:\n$variables\n\nbooleans:\n$booleans\n\nclauses:\n$clauseList\n\nbounds:\n$boundList\n\nbrackets:\n$brackets\n\nnegations:\n$negations\n\nmultiplications:\n$multiplications\n\ndivisions:\n$divisions\n\nadditions:\n$additions\n\nsubtractions:\n$subtractions\n\nabsolutes:\n$absolutes\n\nminimums:\n$minimums\n\nmaximums:\n$maximums\n\nexponents:\n$exponents\n\nsines:\n$sines\n\ncosines:\n$cosines\n\npowers:\n$powers\n\nroots:\n$roots"
 
-  fun asCNF(): String = ("CNF: " +
+  fun asCNF(): String = ("\u001B[32m-- CNF:\u001B[0m\n" +
       constants.toList().joinToString(separator = "") { "${it.first} = ${it.second} and " } +
       variables.toList().joinToString(separator = "") { "${it.first} >= ${it.second.first} and ${it.first} <= ${it.second.second} and " } +
       clauseList.joinToString(separator = "") { "(${it.joinToString(" or ")}) and ".run {

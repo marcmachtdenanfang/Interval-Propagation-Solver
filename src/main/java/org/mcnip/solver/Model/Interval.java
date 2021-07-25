@@ -20,7 +20,7 @@ public class Interval {
         if (this.containsMoreThanOneValue())
             return varName + " in [" + lowerBound + ", " + upperBound + "]";
         else if (getType() != Type.INT)
-            return varName + " ~= " + this.getMidPoint();
+            return varName + " ~= " + this.getMidPoint(64);
         else
             return varName + " := " + lowerBound;
     }
@@ -139,13 +139,22 @@ public class Interval {
         return upperBound;
     }
 
-    public IPSNumber getMidPoint() {
+    private static String genBitString(int length) {
+        String ret = "";
+        for(int i = 0; i < length; i++) {
+            ret += "1";
+        }
+        return ret;
+    }
+
+    public IPSNumber getMidPoint(int bitPrecision) {
         if(this.upperBound.equals(IPSNumber.POS_INF) && this.lowerBound.equals(IPSNumber.NEG_INF)) {
             return new IPSNumber(0, lowerBound.getType());
         } else if(this.upperBound.equals(IPSNumber.POS_INF)) {
             if(this.upperBound.getType() == Type.INT) {
                 // (1l<<63)-1 == Long.Max_Value
-                BigInteger big = BigInteger.valueOf(Long.MAX_VALUE);
+                BigInteger big = new BigInteger(genBitString(bitPrecision), 2);
+                // BigInteger big = BigInteger.valueOf(Long.MAX_VALUE);
                 IPSNumber temp = this.lowerBound.add(new IPSNumber(big, Type.INT));
                 return temp.div(new IPSNumber(2, Type.INT));
             }
@@ -153,8 +162,9 @@ public class Interval {
             return new IPSNumber(Double.MAX_VALUE, Type.REAL);
         } else if(this.lowerBound.equals(IPSNumber.NEG_INF)) {
             if(this.lowerBound.getType() == Type.INT) {
-                // (1l<<63)-1 == Long.Max_Value
-                BigInteger big = BigInteger.valueOf(Long.MIN_VALUE);
+                // (-1l<<63) == Long.MIN_Value
+                BigInteger big = new BigInteger("-" + genBitString(bitPrecision), 2);
+                // BigInteger big = BigInteger.valueOf(Long.MIN_VALUE);
                 IPSNumber temp = this.upperBound.add(new IPSNumber(big, Type.INT));
                 return temp.div(new IPSNumber(2, Type.INT));
             }

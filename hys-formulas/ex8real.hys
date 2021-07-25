@@ -1,0 +1,11 @@
+-- 2.1.1 example
+-- Optimal value: c = 5
+
+DECL
+  -- The  range  of  each  variable has to be  bounded.
+  float [-3.0, 500000.0] a, 
+  float [1, 300000000] c;
+
+EXPR
+  -- Constraint to be  solved.
+  a^17 = c;
