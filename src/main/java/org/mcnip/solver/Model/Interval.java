@@ -16,13 +16,13 @@ public class Interval {
     public String toString()
     {
         if(isNumeric())
-            return varName;
-        if (this.containsMoreThanOneValue())
+           return varName;
+        // else if (this.containsMoreThanOneValue())
             return varName + " in [" + lowerBound + ", " + upperBound + "]";
-        else if (getType() != Type.INT)
-            return varName + " ~= " + this.getMidPoint(64);
-        else
-            return varName + " := " + lowerBound;
+        // else if (getType() != Type.INT)
+        //     return varName + " ~= " + this.getMidPoint(64);
+        // else
+        //     return varName + " := " + lowerBound;
     }
 
     public Interval(String name, Type t)
