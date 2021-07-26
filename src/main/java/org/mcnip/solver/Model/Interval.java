@@ -10,14 +10,18 @@ public class Interval {
     private final String varName;
     @Setter private IPSNumber lowerBound;
     @Setter private IPSNumber upperBound;
+    // a ~= 200.0
+    // x ~= -0.048828125363797825
+    // _pow0 ~= 0.0023841858265427557
+    // y ~= -0.2976158141734573
+    // _sub0 ~= -0.2976158141734573
     
-
     @Override
     public String toString()
     {
         if(isNumeric())
            return varName;
-        // else if (this.containsMoreThanOneValue())
+        // else if (this.containsMoreThanOneValue() || this.isEmpty())
             return varName + " in [" + lowerBound + ", " + upperBound + "]";
         // else if (getType() != Type.INT)
         //     return varName + " ~= " + this.getMidPoint(64);
@@ -183,9 +187,9 @@ public class Interval {
      */
     public boolean isEmpty()
     {
-        if(this.lowerBound.getType().equals(Type.REAL) && !this.lowerBound.nextUp().equals(upperBound)) {
-            return false;
-        }
+        // if(this.lowerBound.getType().equals(Type.REAL) && this.lowerBound.nextUp().nextUp().equals(upperBound)) {
+        //     return true;
+        // }
         return this.lowerBound.gt(this.upperBound);
     }
 
@@ -196,12 +200,12 @@ public class Interval {
         else return this.getType() == Type.INT || lowerBound.nextUp().nextUp().nextUp().lt(upperBound);
     }
 
-    public boolean isDotInfinite() {
-        if(this.lowerBound.equals(this.upperBound)) {
-            return this.lowerBound.isInfinite();
-        }
-        return false;
-    }
+    // public boolean isDotInfinite() {
+    //     if(this.lowerBound.equals(this.upperBound)) {
+    //         return this.lowerBound.isInfinite();
+    //     }
+    //     return false;
+    // }
 
     public Type getType() {
         return this.lowerBound.getType();

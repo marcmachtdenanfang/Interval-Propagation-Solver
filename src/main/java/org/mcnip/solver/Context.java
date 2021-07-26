@@ -252,8 +252,9 @@ public class Context {
             while(itr.hasNext()) {
                 Atom a = itr.next();
                 if(a instanceof Marker) {
-                    //counter += 1;
-                    //if(counter >= 2) 
+                    counter += 1;
+                    if(counter >= 2) 
+                        continue;
                     break;
                 }
                 lastAssertedAtomsSet.add(a);
@@ -267,7 +268,12 @@ public class Context {
             }
             
             List<Atom> lastAssertedAtoms = new ArrayList<>();
-            lastAssertedAtomsSet.forEach(e -> lastAssertedAtoms.add(e));
+            lastAssertedAtomsSet.forEach(e -> {
+                    if(e instanceof Bound) lastAssertedAtoms.add(e);
+                    lastAssertedAtoms.add(0, e);
+                }
+                
+                );
             
             // assertedAtoms.stream()
             //         .takeWhile(a 
