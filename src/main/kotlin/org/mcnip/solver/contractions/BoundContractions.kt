@@ -14,7 +14,11 @@ class BoundContractions(private val intervals: Map<String, Interval>, names: Arr
   private val baseUpperBound = baseInterval.upperBound
   private val limiterLowerBound = limiterInterval.lowerBound
   private val limiterUpperBound = limiterInterval.upperBound
-  private fun fold(operation: (Boolean, Interval) -> Boolean) = intervals.values.fold(false, operation)
+  private fun fold(operation: (Boolean, Interval) -> Boolean) =
+    if (intervals.values.fold(true) { acc: Boolean, interval: Interval -> interval.containsMoreThanOneValue() && acc })
+      intervals.values.fold(false, operation)
+    else
+      false
   private fun lowerLimit() = { acc: Boolean, interval: Interval -> acc || interval.lowerBound.isInfinite }
   private fun upperLimit() = { acc: Boolean, interval: Interval -> acc || interval.upperBound.isInfinite }
 
@@ -26,22 +30,22 @@ class BoundContractions(private val intervals: Map<String, Interval>, names: Arr
 
     @JvmStatic
     fun greater(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      /*if (fold(upperLimit())) intervals else*/ filteredMapOf(base to Interval(baseInterval, limiterUpperBound.nextUp(), baseUpperBound), limiter to limiterInterval)
+      if (fold(upperLimit())) intervals else filteredMapOf(base to Interval(baseInterval, limiterUpperBound.nextUp(), baseUpperBound), limiter to limiterInterval)
     }
 
     @JvmStatic
     fun greaterEquals(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      /*if (fold(upperLimit())) intervals else */filteredMapOf(base to Interval(baseInterval, limiterUpperBound, baseUpperBound), limiter to limiterInterval)
+      if (fold(upperLimit())) intervals else filteredMapOf(base to Interval(baseInterval, limiterUpperBound, baseUpperBound), limiter to limiterInterval)
     }
 
     @JvmStatic
     fun less(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      /*if (fold(lowerLimit())) intervals else */filteredMapOf(base to Interval(baseInterval, baseLowerBound, limiterLowerBound.nextDown()), limiter to limiterInterval)
+      if (fold(lowerLimit())) intervals else filteredMapOf(base to Interval(baseInterval, baseLowerBound, limiterLowerBound.nextDown()), limiter to limiterInterval)
     }
 
     @JvmStatic
     fun lessEquals(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      /*if (fold(lowerLimit())) intervals else*/ filteredMapOf(base to Interval(baseInterval, baseLowerBound, limiterLowerBound), limiter to limiterInterval)
+      if (fold(lowerLimit())) intervals else filteredMapOf(base to Interval(baseInterval, baseLowerBound, limiterLowerBound), limiter to limiterInterval)
     }
 
     @JvmStatic

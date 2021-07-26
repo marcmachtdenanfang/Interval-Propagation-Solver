@@ -88,11 +88,12 @@ public class IPSNumber implements Comparable<IPSNumber> {
     public IPSNumber(String strValue, Boolean roundUpOrDown)
     {
         this.type = strValue.contains(".") ? REAL : INT;
-        if(strValue.equals("Infinity") || strValue.equals("-Infinity") || strValue.equals("NaN")) {
+        if (strValue.equals("Infinity") || strValue.equals("-Infinity") || strValue.equals("NaN")) {
+            System.out.println("THIS SHOULD NOT HAPPEN!");
             this.intValue = null;
-        } else {
-            this.intValue = new BigInteger(strValue.replaceFirst("\\..*$",""));
         }
+        else
+            this.intValue = new BigInteger(strValue.replaceFirst("\\..*$", ""));
         this.fpValue = roundUpOrDown ? Math.nextUp(Double.parseDouble(strValue)) : Math.nextDown(Double.parseDouble(strValue));
     }
 

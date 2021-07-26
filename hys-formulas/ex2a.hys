@@ -24,4 +24,6 @@ DECL
     float [-a, a] x, y;
 
 EXPR
-    y = x^2.0 - 0.3 * exp(neg(a*(x - 0.5))^2.0);
+-- x^2.0 - 0.3 *, wenn das weggelassen wird, dann hat _exp0 keinen TYPE! komischer fehler.
+-- y = x^2.0 - 0.3 * exp(neg(a*(x - 0.5))^2.0);
+    y = x^2.0 - 0.3;

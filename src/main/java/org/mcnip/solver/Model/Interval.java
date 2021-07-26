@@ -15,18 +15,18 @@ public class Interval {
     // _pow0 ~= 0.0023841858265427557
     // y ~= -0.2976158141734573
     // _sub0 ~= -0.2976158141734573
-    
+
     @Override
     public String toString()
     {
         if(isNumeric())
-           return varName;
-        // else if (this.containsMoreThanOneValue() || this.isEmpty())
+            return varName;
+        else if (this.containsMoreThanOneValue())
             return varName + " in [" + lowerBound + ", " + upperBound + "]";
-        // else if (getType() != Type.INT)
-        //     return varName + " ~= " + this.getMidPoint(64);
-        // else
-        //     return varName + " := " + lowerBound;
+        else if (getType() != Type.INT)
+             return varName + " ~= " + this.getMidPoint(64);
+        else
+             return varName + " := " + lowerBound;
     }
 
     public Interval(String name, Type t)
