@@ -26,22 +26,22 @@ class BoundContractions(private val intervals: Map<String, Interval>, names: Arr
 
     @JvmStatic
     fun greater(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      if (fold(upperLimit())) intervals else filteredMapOf(base to Interval(baseInterval, limiterUpperBound.nextUp(), baseUpperBound), limiter to limiterInterval)
+      /*if (fold(upperLimit())) intervals else*/ filteredMapOf(base to Interval(baseInterval, limiterUpperBound.nextUp(), baseUpperBound), limiter to limiterInterval)
     }
 
     @JvmStatic
     fun greaterEquals(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      if (fold(upperLimit())) intervals else filteredMapOf(base to Interval(baseInterval, limiterUpperBound, baseUpperBound), limiter to limiterInterval)
+      /*if (fold(upperLimit())) intervals else */filteredMapOf(base to Interval(baseInterval, limiterUpperBound, baseUpperBound), limiter to limiterInterval)
     }
 
     @JvmStatic
     fun less(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      if (fold(lowerLimit())) intervals else filteredMapOf(base to Interval(baseInterval, baseLowerBound, limiterLowerBound.nextDown()), limiter to limiterInterval)
+      /*if (fold(lowerLimit())) intervals else */filteredMapOf(base to Interval(baseInterval, baseLowerBound, limiterLowerBound.nextDown()), limiter to limiterInterval)
     }
 
     @JvmStatic
     fun lessEquals(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
-      if (fold(lowerLimit())) intervals else filteredMapOf(base to Interval(baseInterval, baseLowerBound, limiterLowerBound), limiter to limiterInterval)
+      /*if (fold(lowerLimit())) intervals else*/ filteredMapOf(base to Interval(baseInterval, baseLowerBound, limiterLowerBound), limiter to limiterInterval)
     }
 
     @JvmStatic

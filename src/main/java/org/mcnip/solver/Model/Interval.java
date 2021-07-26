@@ -176,7 +176,11 @@ public class Interval {
             return new IPSNumber(Double.MIN_VALUE, Type.REAL);
         }
         IPSNumber temp = this.upperBound.add(this.lowerBound);
-        return temp.div(new IPSNumber(2, this.lowerBound.getType()));
+        IPSNumber temp2 = temp.div(new IPSNumber(2, this.lowerBound.getType()));
+        if(this.lowerBound.getType() == Type.INT && this.lowerBound.lt(IPSNumber.ZERO_int) && temp2.lt(IPSNumber.ZERO_int)) {
+            return temp2.sub(IPSNumber.ONE_int);
+        }
+        return temp2;
     }
 
     /**
@@ -200,12 +204,12 @@ public class Interval {
         else return this.getType() == Type.INT || lowerBound.nextUp().nextUp().nextUp().lt(upperBound);
     }
 
-    // public boolean isDotInfinite() {
-    //     if(this.lowerBound.equals(this.upperBound)) {
-    //         return this.lowerBound.isInfinite();
-    //     }
-    //     return false;
-    // }
+    public boolean isDotInfinite() {
+        if(this.lowerBound.equals(this.upperBound)) {
+            return this.lowerBound.isInfinite();
+        }
+        return false;
+    }
 
     public Type getType() {
         return this.lowerBound.getType();

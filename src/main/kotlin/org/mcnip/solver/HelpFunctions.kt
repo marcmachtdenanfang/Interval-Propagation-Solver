@@ -35,7 +35,7 @@ fun findUnits(clauses: List<Clause>, map: Map<String, Interval>, assertedAtoms: 
 fun List<Atom>.narrowContractors(currentAssignment: MutableMap<String, Interval>): Pair<MutableMap<String, Interval>, MutableList<Bound>>? {
   val bounds = mutableListOf<Bound>()
   forEach { atom ->
-    if (atom !is Bool /*&& !(atom is Bound && atom.isInfinite)*/) atom.update(currentAssignment).let { newIntervals ->
+    if (atom !is Bool && !(atom is Bound && atom.isInfinite)) atom.update(currentAssignment).let { newIntervals ->
       if (newIntervals.containsEmptyInterval())
         return null
       currentAssignment += newIntervals
