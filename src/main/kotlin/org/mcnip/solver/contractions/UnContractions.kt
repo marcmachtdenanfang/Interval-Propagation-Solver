@@ -46,7 +46,7 @@ class UnContractions(intervals: Map<String, Interval>, names: Array<String>) {
 
     @JvmStatic
     fun exp(intervals: Map<String, Interval>, names: Array<String>) =
-        BiContractions.pow(intervals + ("_E" to E), names + "_E").run { intervals - "_E" }
+        BiContractions.pow(intervals + ("_E" to E), arrayOf(names[0], "_E", names[1])).run { intervals - "_E" }
 
     @JvmStatic
     fun sin(intervals: Map<String, Interval>, names: Array<String>) = tri({ kotlin.math.sin(it) }, intervals, names)

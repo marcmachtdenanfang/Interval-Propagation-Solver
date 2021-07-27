@@ -146,9 +146,9 @@ public class IPSNumber implements Comparable<IPSNumber> {
                 else if (this.fpValue == Double.NEGATIVE_INFINITY)
                     return new IPSNumber(b.getIntValue(), INT);
                 else if (b.getFpValue() == Double.NEGATIVE_INFINITY)
-                    return new IPSNumber(this.intValue, INT);
+                    return new IPSNumber(Objects.requireNonNull(this.intValue), INT);
                 else
-                    return new IPSNumber(this.intValue.max(b.getIntValue()), INT);
+                    return new IPSNumber(Objects.requireNonNull(this.intValue).max(b.getIntValue()), INT);
             case REAL:
                 return new IPSNumber(Double.max(this.fpValue, b.getFpValue()), REAL);
             default:
