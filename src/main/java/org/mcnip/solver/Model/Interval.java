@@ -10,11 +10,6 @@ public class Interval {
     private final String varName;
     @Setter private IPSNumber lowerBound;
     @Setter private IPSNumber upperBound;
-    // a ~= 200.0
-    // x ~= -0.048828125363797825
-    // _pow0 ~= 0.0023841858265427557
-    // y ~= -0.2976158141734573
-    // _sub0 ~= -0.2976158141734573
 
     @Override
     public String toString()
@@ -175,11 +170,17 @@ public class Interval {
             // for intervals [-inf, a], the midpoint is Real.MIN_VALUE, IEEE P1788
             return new IPSNumber(Double.MIN_VALUE, Type.REAL);
         }
+        if(this.lowerBound.getType() == Type.REAL && lowerBound.add(upperBound).isInfinite()) {
+            IPSNumber tlower = lowerBound.div(new IPSNumber(2.0, Type.REAL));
+            IPSNumber tupper = upperBound.div(new IPSNumber(2.0, Type.REAL));
+            return tlower.add(tupper);
+        }
         IPSNumber temp = this.upperBound.add(this.lowerBound);
         IPSNumber temp2 = temp.div(new IPSNumber(2, this.lowerBound.getType()));
         if(this.lowerBound.getType() == Type.INT && this.lowerBound.lt(IPSNumber.ZERO_int) && temp2.lt(IPSNumber.ZERO_int)) {
             return temp2.sub(IPSNumber.ONE_int);
         }
+        // if(this.lowerBound.getType() == Type.REAL) return temp2.nextUp();
         return temp2;
     }
 

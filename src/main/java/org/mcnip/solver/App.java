@@ -122,8 +122,10 @@ public class App
             } );
             if(cmd.hasOption("p")) System.out.println("Number of backtracks: " + ctx.backtracks);
         }
-        else
+        else {
             System.out.println("UNSAT");
+            if(cmd.hasOption("p")) System.out.println("Number of backtracks: " + ctx.backtracks);
+        }
     }
 
     private static boolean solving(Context ctx) {

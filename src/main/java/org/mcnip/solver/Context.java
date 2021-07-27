@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import kotlin.Pair;
+
+import org.mcnip.solver.Contractors.BoundContractor.GreaterContractor;
 import org.mcnip.solver.Contractors.BoundContractor.GreaterEqualsContractor;
 import org.mcnip.solver.Contractors.BoundContractor.LessEqualsContractor;
 import org.mcnip.solver.Model.*;
@@ -252,9 +254,9 @@ public class Context {
             while(itr.hasNext()) {
                 Atom a = itr.next();
                 if(a instanceof Marker) {
-                    counter += 1;
-                    if(counter >= 2) 
-                        continue;
+                    // counter += 1;
+                    // if(counter >= 2) 
+                    //     continue;
                     break;
                 }
                 lastAssertedAtomsSet.add(a);
@@ -337,7 +339,7 @@ public class Context {
         );
 
         // in 1/probability of cases we add aux variables to our pool of splitting variables.
-        if (problemVars.isEmpty() || getRandomInt(probability) == probability-1) 
+        if (problemVars.isEmpty() || getRandomInt(this.probability) == this.probability-1) 
             vars.forEach(
                 (k,v) -> {
                     if (v.containsMoreThanOneValue())
@@ -351,8 +353,15 @@ public class Context {
         Interval x = vars.get(variableToSplit);
         
         IPSNumber c = x.getMidPoint(intPrecision);
+        // System.out.println(x);
+        // System.out.println(c);
         
-        Bound bound = new Bound(x.getVarName(), new DotInterval(c.toString(), c), new LessEqualsContractor());
+        Bound bound;
+        // if(getRandomInt(2) == 1) {
+            bound = new Bound(x.getVarName(), new DotInterval(c.toString(), c), new LessEqualsContractor());
+        // } else {
+            // bound = new Bound(x.getVarName(), new DotInterval(c.toString(), c), new GreaterContractor());
+        // }
                 
         assertedAtoms.push(new Marker());
         assertedAtoms.push(bound);

@@ -1,6 +1,7 @@
 package org.mcnip.solver.Model;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Objects;
 
 import lombok.Getter;
@@ -90,6 +91,10 @@ public class IPSNumber implements Comparable<IPSNumber> {
         this.type = strValue.contains(".") ? REAL : INT;
         if (strValue.equals("Infinity") || strValue.equals("-Infinity") || strValue.equals("NaN")) {
             System.out.println("THIS SHOULD NOT HAPPEN!");
+            StackTraceElement[] ste = Thread.currentThread().getStackTrace();
+            Arrays.asList(ste).forEach(System.out::println);
+            System.out.println(strValue);
+            System.exit(1);
             this.intValue = null;
         }
         else

@@ -55,7 +55,7 @@ class BoundContractions(private val intervals: Map<String, Interval>, names: Arr
     @JvmStatic
     fun lessEquals(intervals: Map<String, Interval>, names: Array<String>) = BoundContractions(intervals, names).run {
       if (baseLowerBound.isInfinite() && baseUpperBound.isInfinite()) {
-        filteredMapOf(base to Interval(baseInterval, baseLowerBound, limiterLowerBound.nextUp()), limiter to limiterInterval)
+        filteredMapOf(base to Interval(baseInterval, baseLowerBound, limiterLowerBound), limiter to limiterInterval)
       }
       else if (fold(lowerLimit())) intervals else filteredMapOf(base to Interval(baseInterval, baseLowerBound, limiterLowerBound), limiter to limiterInterval)
     }

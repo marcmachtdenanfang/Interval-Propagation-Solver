@@ -36,6 +36,12 @@ fun List<Atom>.narrowContractors(currentAssignment: MutableMap<String, Interval>
   val bounds = mutableListOf<Bound>()
   forEach { atom ->
     if (atom !is Bool && !(atom is Bound && atom.isInfinite)) atom.update(currentAssignment).let { newIntervals ->
+      // if(atom is Bound) {
+      //   println("narrowContractors")
+      //   println(atom)
+      //   println(currentAssignment)
+      //   println(atom.update(currentAssignment))
+      // }
       if (newIntervals.containsEmptyInterval())
         return null
       currentAssignment += newIntervals

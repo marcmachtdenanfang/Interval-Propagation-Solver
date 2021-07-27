@@ -1,6 +1,8 @@
 DECL
   define a = -2.474572753906250278;
-  float [0.0, 5.0] x, y, z;
+  float [-1.0, 5.0] x;
+  float [-1.0, 5.0] y;
+  float [-1.0, 5.0] z;
   float [0.0, 2.75] c;
 
 EXPR
