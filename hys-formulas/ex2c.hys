@@ -1,0 +1,28 @@
+--------------------------------------------------------------------------------
+--
+--  HYSAT sample input file.
+--
+--  Author : Christian Herde
+--
+--  Last Modified : 
+--		Tue Nov 17 16:20:17 CET 2009
+--
+--------------------------------------------------------------------------------
+    
+
+-- The function below (source: lecture `Validated Numerics' by Warwick Tucker, 
+-- Uppsala University) has a sharp bend in the interval [0.48, 0.52] which 
+-- contains the global minimum. Conventional methods for nonlinear optimization
+-- might miss it. HySAT won't.
+--
+-- Call: hysat --minimize y optimization.hys
+-- Optimal value: y approx. -0.05
+
+
+DECL
+    define a = 200.0;
+    float [0.49999, 0.50001] x;
+    float [-0.05001, -0.04999] y;
+
+EXPR
+    y = x^2 - 0.3 * exp(neg(a*(x - 0.5))^2);

@@ -89,7 +89,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
     {
         this.type = strValue.contains(".") ? REAL : INT;
         if (strValue.equals("Infinity") || strValue.equals("-Infinity") || strValue.equals("NaN")) {
-            System.out.println("THIS SHOULD NOT HAPPEN!");
+            System.out.println(strValue + " <-- THIS SHOULD NOT HAPPEN!!!");
             this.intValue = null;
         }
         else
@@ -141,9 +141,9 @@ public class IPSNumber implements Comparable<IPSNumber> {
                 else if (this.fpValue == Double.NEGATIVE_INFINITY)
                     return new IPSNumber(b.getIntValue(), INT);
                 else if (b.getFpValue() == Double.NEGATIVE_INFINITY)
-                    return new IPSNumber(this.intValue, INT);
+                    return new IPSNumber(Objects.requireNonNull(this.intValue), INT);
                 else
-                    return new IPSNumber(this.intValue.max(b.getIntValue()), INT);
+                    return new IPSNumber(Objects.requireNonNull(this.intValue).max(b.getIntValue()), INT);
             case REAL:
                 return new IPSNumber(Double.max(this.fpValue, b.getFpValue()), REAL);
             default:
