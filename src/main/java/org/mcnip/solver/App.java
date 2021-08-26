@@ -113,50 +113,21 @@ public class App
                 ctx.intPrecision = t;
             }
         }
-        
-        if (solving(ctx)) {
+
+        if (ctx.solve()) {
             System.out.println("SAT");
-            ctx.assertedAtoms.stream().filter(a -> a instanceof Bool).forEach(System.out::println);
+          //ctx.assertedAtoms.stream().filter(Bool.class::isInstance).forEach(System.out::println);
             ctx.intervalAssignmentStack.peek().values().forEach(interval -> {
-                if (interval.getVarName().charAt(0) != '_' || verbosePrinting) System.out.println(interval);
+                if (verbosePrinting)
+                    System.out.println(interval.toString(true));
+                else if (interval.getVarName().charAt(0) != '_')
+                    System.out.println(interval);
             } );
-            if(cmd.hasOption("p")) System.out.println("Number of backtracks: " + ctx.backtracks);
         }
         else {
             System.out.println("UNSAT");
-            if(cmd.hasOption("p")) System.out.println("Number of backtracks: " + ctx.backtracks);
         }
-    }
-
-    private static boolean solving(Context ctx) {
-        boolean satisfiable;
-        do {
-            satisfiable = ctx.assertUnitClauses();
-            if (satisfiable) {
-                if(verbosePrinting) {
-                    System.out.println(ANSI_GREEN + "--- asserted unit clauses" + ANSI_RESET);
-                    for (Atom a : ctx.assertedAtoms) {
-                        System.out.println(a);
-                    }
-                }
-
-                satisfiable = ctx.narrowContractions();
-                if (satisfiable) {
-                    if(verbosePrinting) {
-                        System.out.println(ANSI_GREEN + "--- narrowed assignments" + ANSI_RESET);
-                        ctx.intervalAssignmentStack.peek().forEach((k, v) -> System.out.println(v));
-                        System.out.println(ANSI_GREEN + "--- asserted atoms" + ANSI_RESET);
-                        ctx.assertedAtoms.forEach(a -> System.out.println(a));
-                    }
-                    
-                    if (!ctx.splitVariableInterval()) return true;
-                    //return false;
-                }
-                else satisfiable = ctx.revertPreviousSplit();
-            }
-            else satisfiable = ctx.revertPreviousSplit();
-        } while (satisfiable);
-        return false;
+        if (cmd.hasOption("p")) System.out.println("Number of backtracks: " + ctx.backtracks);
     }
 
     /**

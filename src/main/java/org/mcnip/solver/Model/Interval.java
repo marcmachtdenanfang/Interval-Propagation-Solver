@@ -14,14 +14,19 @@ public class Interval {
     @Override
     public String toString()
     {
+        return this.toString(false);
+    }
+
+    public String toString(Boolean precise)
+    {
         if(isNumeric())
             return varName;
-        else if (this.containsMoreThanOneValue())
+        else if (lowerBound.equals(upperBound))
+            return varName + " := " + lowerBound;
+        else if (precise || this.containsMoreThanOneValue())
             return varName + " in [" + lowerBound + ", " + upperBound + "]";
-        else if (getType() != Type.INT)
-             return varName + " ~= " + this.getMidPoint(64);
         else
-             return varName + " := " + lowerBound;
+            return varName + " ~= " + this.getMidPoint(64);
     }
 
     public Interval(String name, Type t)

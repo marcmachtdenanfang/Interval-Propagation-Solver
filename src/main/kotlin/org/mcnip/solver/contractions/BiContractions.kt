@@ -27,7 +27,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
   companion object {
     @JvmStatic
     fun add(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
-      val newResult = Interval(resInterval, fstLowerBound + sndLowerBound, fstUpperBound + sndUpperBound)
+      val newResult = Interval(resInterval, fstLowerBound + sndLowerBound, fstUpperBound + sndUpperBound, true)
       filteredMapOf(result to newResult,
       fstArg to Interval(fstInterval, newResult.lowerBound - sndUpperBound, newResult.upperBound - sndLowerBound, true),
       sndArg to Interval(sndInterval, newResult.lowerBound - fstUpperBound, newResult.upperBound - fstLowerBound, true))
@@ -37,7 +37,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
     fun sub(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
       val newResult = Interval(resInterval, fstLowerBound - sndUpperBound, fstUpperBound - sndLowerBound, true)
       filteredMapOf(result to newResult,
-          fstArg to Interval(fstInterval, newResult.lowerBound + sndLowerBound, newResult.upperBound + sndUpperBound),
+          fstArg to Interval(fstInterval, newResult.lowerBound + sndLowerBound, newResult.upperBound + sndUpperBound, true),
           sndArg to Interval(sndInterval, fstLowerBound - newResult.upperBound, fstUpperBound - newResult.lowerBound, true))
     }
 
@@ -96,7 +96,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
     divisor.upperBound == ZERO_int ->
       withOp(IPSNumber::div, dividend, Interval(divisor.varName, divisor.lowerBound, NEG_ONE_int))
     else ->
-      Interval(withOp(IPSNumber::div, dividend, divisor), dividend.lowerBound.min(-dividend.upperBound), dividend.upperBound.max(-dividend.lowerBound))
+      Interval(withOp(IPSNumber::div, dividend, divisor), dividend.lowerBound.min(-dividend.upperBound), dividend.upperBound.max(-dividend.lowerBound), true)
   }
 
   private fun Interval.withOp(op: (IPSNumber, IPSNumber) -> IPSNumber, i0: Interval, i1: Interval) = Triple(op, i0, i1).let { Interval(this, it.min(), it.max(), true) }
@@ -121,7 +121,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
           else ->
             withOp(op, Interval(i0, ZERO_int, i0.upperBound), DotInterval(snd.varName, snd.lowerBound.intValue))
         }
-    }//.also { println("$it = $i0 $op $i1") }
+    }
   }
 
   private fun Triple<(IPSNumber, IPSNumber) -> IPSNumber, Interval, Interval>.min() = minmax(first, second, third, IPSNumber::min)

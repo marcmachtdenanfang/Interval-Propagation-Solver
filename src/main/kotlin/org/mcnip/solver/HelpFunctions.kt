@@ -6,7 +6,7 @@ import org.mcnip.solver.Contractors.Contractor
 import org.mcnip.solver.Model.*
 import org.mcnip.solver.Model.Pair as Dyad
 
-private fun <K> Map<K, Interval>.containsEmptyInterval() = values.fold(false) { acc, interval -> acc || interval.isEmpty }
+fun <K> Map<K, Interval>.containsEmptyInterval() = values.fold(false) { acc, interval -> acc || interval.isEmpty }
 
 private infix fun List<String>.from(assignment: Map<String, Interval>) = filter { !it[0].isDigit() && it[0] != '-' }.map { it to assignment.getValue(it) }.toMap()
 
@@ -19,7 +19,7 @@ fun findUnits(clauses: List<Clause>, map: Map<String, Interval>, assertedAtoms: 
         (assertedAtoms.find { (it is Bool) && it.name == constraint.name } as Bool?)?.run { isPolarity xor constraint.isPolarity }?:false
       else {
         val filteredMap = map.filter { it.key in constraint.variables }
-        if (/*constraint.variables.map { it in filteredMap }.reduce { acc, bool -> acc && bool } && */updateIntervals(filteredMap, constraint).map { it.value.isEmpty }.reduce { acc, bool -> acc || bool })
+        if (updateIntervals(filteredMap, constraint).map { it.value.isEmpty }.reduce { acc, bool -> acc || bool })
           true
         else
           false.also { newUnit = constraint }
@@ -36,12 +36,6 @@ fun List<Atom>.narrowContractors(currentAssignment: MutableMap<String, Interval>
   val bounds = mutableListOf<Bound>()
   forEach { atom ->
     if (atom !is Bool && !(atom is Bound && atom.isInfinite)) atom.update(currentAssignment).let { newIntervals ->
-      // if(atom is Bound) {
-      //   println("narrowContractors")
-      //   println(atom)
-      //   println(currentAssignment)
-      //   println(atom.update(currentAssignment))
-      // }
       if (newIntervals.containsEmptyInterval())
         return null
       currentAssignment += newIntervals

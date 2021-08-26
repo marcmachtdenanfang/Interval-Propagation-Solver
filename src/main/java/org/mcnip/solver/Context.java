@@ -22,8 +22,8 @@ import org.mcnip.solver.Contractors.BoundContractor.LessEqualsContractor;
 import org.mcnip.solver.Model.*;
 import org.mcnip.solver.SatSolver.Solver;
 
-import lombok.NoArgsConstructor;
-
+import static org.mcnip.solver.App.ANSI_GREEN;
+import static org.mcnip.solver.App.ANSI_RESET;
 import static org.mcnip.solver.HelpFunctionsKt.*;
 
 
@@ -170,6 +170,38 @@ public class Context {
      */
     int intPrecision = 128;
 
+    private void printUnits() {
+        if (verbosePrinting) {
+            System.out.println(ANSI_GREEN + "--- asserted unit clauses" + ANSI_RESET);
+            assertedAtoms.forEach(System.out::println);
+        }
+    }
+
+    private void printContractions() {
+        if (verbosePrinting) {
+            System.out.println(ANSI_GREEN + "--- narrowed assignments" + ANSI_RESET);
+            intervalAssignmentStack.peek().values().forEach(System.out::println);
+            System.out.println(ANSI_GREEN + "--- asserted atoms" + ANSI_RESET);
+            assertedAtoms.forEach(System.out::println);
+        }
+    }
+
+    public boolean solve() {
+        while (true) {
+            if (assertUnitClauses()) {
+                printUnits();
+                if (narrowContractions()) {
+                    printContractions();
+                    if (splitVariableInterval())
+                        return true;
+                }
+                else if (revertPreviousSplit())
+                    return false;
+            }
+            else if (revertPreviousSplit())
+                return false;
+        }
+    }
 
     /**
      * According to the paper, auxiliary variables introduced by rewriting code into 
@@ -218,29 +250,21 @@ public class Context {
     }*/
 
     /**
-     * Step 2 from the paper
-     * @return
+     * Step 2 from the paper.
+     * @return Satisfiability of formula under newly assertedAtoms.
      */
     public boolean assertUnitClauses()
     {
-        // System.out.println("huhu bei assertunitclauses");
-        //     intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
-        //     System.out.println("abcdefghijklmnopqrstuvwxyz");
-
-        List<Constraint> newAtoms = findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream()
-                            .filter(a ->
-                                    !(a instanceof Marker)
-                                      )
-                            .collect(Collectors.toList()));
+        List<Constraint> newAtoms = findUnits(formula.getClauses(), intervalAssignmentStack.peek(), assertedAtoms.stream().filter(a -> !(a instanceof Marker)).collect(Collectors.toList()));
         if (newAtoms == null)
             return false;
-        newAtoms = newAtoms.stream().filter(atom -> !assertedAtoms.contains(atom)).collect(Collectors.toList());
-        newAtoms.forEach(assertedAtoms::push);
+        newAtoms.stream().filter(atom -> !assertedAtoms.contains(atom)).collect(Collectors.toList()).forEach(assertedAtoms::push);
         return true;
     }
 
     /**
-     * Step 3 from the paper
+     * Step 3 from the paper with loop back to step 2 as long as it produces new unit clauses.
+     * @return Satisfiability of formula under narrowed intervals and additionally assertedAtoms.
      */
     public boolean narrowContractions()
     {
@@ -320,7 +344,8 @@ public class Context {
     }
 
     /**
-     * Step 4 ideas
+     * Step 4 from the paper.
+     * @return True if no more variable can be split. False otherwise.
      */
     public boolean splitVariableInterval()
     {
@@ -346,7 +371,7 @@ public class Context {
                         problemVars.add(k);
                 }
             );
-        if (problemVars.isEmpty()) return false;
+        if (problemVars.isEmpty()) return true;
 
         int counter = getRandomInt(problemVars.size());
         String variableToSplit = problemVars.get(counter);
@@ -374,11 +399,12 @@ public class Context {
         intervalAssignmentStack.push(tempMap);
 
         backtracks += 1;
-        return true;
+        return false;
     }
 
     /**
-     * Step 5 from the paper
+     * Step 5 from the paper.
+     * @return True if backtracking is impossible. False otherwise.
      */
     public boolean revertPreviousSplit()
     {
@@ -393,13 +419,13 @@ public class Context {
         // intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
         // System.out.println("end backtrack printing");
         Atom guiltyAtom;
-        if (assertedAtoms.size() == 0)
-            return false;
+        if (assertedAtoms.size() < 1)
+            return true;
         Atom marker = assertedAtoms.pop();
         do {
             guiltyAtom = marker;
-            if (assertedAtoms.size() == 0)
-                return false;
+            if (assertedAtoms.size() < 1)
+                return true;
             marker = assertedAtoms.pop();
         } while (!(marker instanceof Marker));
         guiltyAtom = invert(guiltyAtom);
@@ -413,7 +439,7 @@ public class Context {
         // System.out.println("step5 after all");    
         // intervalAssignmentStack.peek().forEach((k,v) -> System.out.println(v));
         // System.out.println("step5 printing done");
-        return true;
+        return false;
     }
 
     /*

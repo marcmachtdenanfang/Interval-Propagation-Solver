@@ -59,7 +59,7 @@ class Parser(filePath: String) : IParser {
     var readDecl = false
     var readExpr = false
     java.io.File(filePath).inputStream().bufferedReader().forEachLine { line ->
-      line.split("--")[0].trim().removeSuffix(";").takeUnless { it.isEmpty() }?.let { importantLine ->
+      line.split("--")[0].trim().removeSuffix(";").takeUnless(String::isEmpty)?.let { importantLine ->
         when {
           importantLine == "DECL" -> readDecl = true
           importantLine == "EXPR" -> readExpr = true
@@ -68,72 +68,26 @@ class Parser(filePath: String) : IParser {
         }
       }
     }
-    declare(declarations)
-    express(expressions)
+    declarations.declare()
+    expressions.express()
   }
 
-  init {
-    constants.forEach {
-      intervals[it.key] = DotInterval(it.key, it.value)
-    }
-    variables.forEach {
-      intervals[it.key] = Interval(it.key, it.value.first, it.value.second)
-    }
-    boundList.forEach { (fst, snd, trd) ->
-      bounds += (
-          if (snd.isNumber())
-            Triple(fst.replace('<', '#').replace('>', '<').replace('#', '>'), trd, snd)
-          else
-            Triple(fst, snd, trd)
-          ).let { (relType, leftArg, rightArg) ->
-            Bound(leftArg, getInterval(rightArg), when (relType) {
-              relOps[0] -> GreaterEqualsContractor()
-              relOps[1] -> LessEqualsContractor()
-              relOps[2] -> NotEqualsContractor()
-              relOps[3] -> EqualsContractor()
-              relOps[4] -> GreaterContractor()
-              else -> LessContractor()
-            })
-          }
-    }
-    clauseList.forEach { clause ->
-      val variables = mutableSetOf<String>()
-      clause.map { lit ->
-        var str = when {
-          lit.startsWith("_bra") -> brackets[lit.drop(4).toInt()]
-          lit.startsWith("!_bra") -> "!${brackets[lit.drop(5).toInt()]}".removePrefix("!!")
-          else -> lit
+  private fun MutableList<String>.declare() = forEach { decl ->
+    when {
+      decl[0] == 'd' ->
+        decl.drop(7).splitTrim('=').toPair().run {
+          constants[first] = second
         }
-        if (str.startsWith("_bnd")) {
-          bounds[str.drop(4).toInt()]
+      decl[0] == 'b' -> {
+        decl.drop(6).splitTrim(',').forEach { bool ->
+          variables[bool] = "0" to "1"
         }
-        else {
-          (if (str[0] != '!') {
-            // Bool(str)
-            Bound(str, DotInterval("1", 1), GreaterEqualsContractor())
-          }
-          else {
-            str = str.drop(1)
-            //Bool(str, false)
-            Bound(str, DotInterval("0", 0), LessEqualsContractor())
-          })}.also { variables += str }
-      }.let { clauses += Clause(variables, it) }
+      }
+      else ->
+        decl.removePrefix("fl").drop(5).boundVariables().map { (variable, bound) ->
+          variables[variable] = bound.toPair()
+        }
     }
-    negations.operateUn("neg", NegContractor())
-    multiplications.operateBi("mul", MulContractor())
-    divisions.operateBi("div", DivContractor())
-    additions.operateBi("add", AddContractor())
-    subtractions.operateBi("sub", SubContractor())
-    absolutes.operateUn("abs", AbsContractor())
-    minimums.operateBi("min", MinContractor())
-    maximums.operateBi("max", MaxContractor())
-    exponents.operateUn("exp", ExpContractor())
-    sines.operateUn("sin", SinContractor())
-    cosines.operateUn("cos", CosContractor())
-    powers.operateBi("pow", PowContractor())
-    roots.operateBi("nrt", NrtContractor())
-    typecasting()
-    formula = Formula(clauses)
   }
 
   private fun String.boundVariables() = this.split("] ").map { it.splitTrim(',') }.toPair().run {
@@ -151,23 +105,55 @@ class Parser(filePath: String) : IParser {
     }
   }
 
-  private fun declare(declarations: MutableList<String>) {
-    declarations.forEach { decl ->
-      when {
-        decl[0] == 'd' ->
-          decl.drop(7).splitTrim('=').toPair().run {
-            constants[first] = second
+  private fun MutableList<String>.express() {
+    var i = 0
+    var bracketCount = 0
+    val bracketOpsCount = braOps.associateWith { 0 } as MutableMap<String, Int>
+    while (i < size) {
+      var expr = get(i).replace('{', '(').replace('[', '(').replace(']', ')').replace('}', ')')
+      while ('(' in expr) {
+        expr.innerBrackets().let { (braOpen, braClose) ->
+          if (braOpen > 2 && expr.substring(braOpen - 3, braOpen) in braOps) {
+            val braOp = expr.substring(braOpen - 3, braOpen)
+            val idx = bracketOpsCount.getValue(braOp)
+            this += ".$braOp°${expr.substring(braOpen + 1, braClose)}"
+            expr = "${expr.substring(0, braOpen - 3)}_$braOp$idx${expr.substring(braClose + 1)}"
+            bracketOpsCount[braOp] = idx + 1
           }
-        decl[0] == 'b' -> {
-          decl.drop(6).splitTrim(',').forEach { bool ->
-            variables[bool] = "0" to "1"
+          else {
+            val inner = expr.substring(braOpen + 1, braClose)
+            if (" or " in inner || " and " in inner)
+              expr = "${expr.substring(0, braOpen)}$inner${expr.substring(braClose + 1)}"
+            else {
+              this += ".bra°$inner"
+              expr = "${expr.substring(0, braOpen)}_bra${bracketCount++}${expr.substring(braClose + 1)}"
+            }
           }
         }
-        else ->
-          decl.removePrefix("fl").drop(5).boundVariables().map { (variable, bound) ->
-            variables[variable] = bound.toPair()
-          }
       }
+
+      subReg.findAll(expr).forEach { match ->
+        if (match.value != "or -")
+          expr = expr.replaceRange(match.range.last, match.range.last + 1, "~")
+      }
+
+      cleanUp(
+        bound(
+          subtractions.addAllFrom(
+            additions.addAllFrom(
+              divisions.addAllFrom(
+                multiplications.addAllFrom(
+                  powers.addAllFrom(
+                    expr.replace("not ", "!"), '^'
+                  ), '*'
+                ), '/'
+              ), '+'
+            ), '~'
+          )
+        )
+      )
+
+      i++
     }
   }
 
@@ -182,58 +168,6 @@ class Parser(filePath: String) : IParser {
     return -1 to -1
   }
 
-  private fun express(expressions: MutableList<String>) {
-    var i = 0
-    var bracketCount = 0
-    val bracketOpsCount = braOps.associateWith { 0 } as MutableMap<String, Int>
-    while (i < expressions.size) {
-      var expr = expressions[i].replace('{', '(').replace('[', '(').replace(']', ')').replace('}', ')')
-
-      while ('(' in expr) {
-        expr.innerBrackets().let { (braOpen, braClose) ->
-          if (braOpen > 2 && expr.substring(braOpen - 3, braOpen) in braOps) {
-            val braOp = expr.substring(braOpen - 3, braOpen)
-            val idx = bracketOpsCount.getValue(braOp)
-            expressions += ".$braOp°${expr.substring(braOpen + 1, braClose)}"
-            expr = "${expr.substring(0, braOpen - 3)}_$braOp$idx${expr.substring(braClose + 1)}"
-            bracketOpsCount[braOp] = idx + 1
-          }
-          else {
-            val inner = expr.substring(braOpen + 1, braClose)
-            if (" or " in inner || " and " in inner)
-              expr = "${expr.substring(0, braOpen)}$inner${expr.substring(braClose + 1)}"
-            else {
-              expressions += ".bra°$inner"
-              expr = "${expr.substring(0, braOpen)}_bra${bracketCount++}${expr.substring(braClose + 1)}"
-            }
-          }
-        }
-      }
-
-      subReg.findAll(expr).forEach { match ->
-        expr = expr.replaceRange(match.range.last, match.range.last + 1, "~")
-      }
-
-      expr = expr.replace("! ", "!").replace("not ", "!")
-
-      expr = powers.addAllFrom(expr, '^')
-
-      expr = multiplications.addAllFrom(expr, '*')
-
-      expr = divisions.addAllFrom(expr, '/')
-
-      expr = additions.addAllFrom(expr, '+')
-
-      expr = subtractions.addAllFrom(expr, '~')
-
-      expr = bound(expr)
-
-      cleanUp(expr)
-
-      i++
-    }
-  }
-
   private fun BinaryOperations.addAllFrom(str: String, op: Char): String {
     var expr = str
     while (op in expr) {
@@ -241,7 +175,7 @@ class Parser(filePath: String) : IParser {
       val opName = opMap.getValue(op)
       val fstMatch = atomEndReg.find(expr.substring(0, idx))!!
       val sndMatch = atomReg.find(expr, idx)!!
-      expr = "${expr.substring(0, fstMatch.range.first)}_$opName${size}${expr.substring(sndMatch.range.last + 1)}"
+      expr = "${expr.substring(0, fstMatch.range.first)}_$opName$size${expr.substring(sndMatch.range.last + 1)}"
       this += Pair(fstMatch.value.trimEnd(), sndMatch.value)
     }
     return expr
@@ -282,6 +216,71 @@ class Parser(filePath: String) : IParser {
     }
   }
 
+  init {
+    constants.forEach {
+      intervals[it.key] = DotInterval(it.key, it.value)
+    }
+    variables.forEach {
+      intervals[it.key] = Interval(it.key, it.value.first, it.value.second)
+    }
+    boundList.forEach {
+      bounds += it.run {
+        if (second.isNumber())
+          Triple(first.replace('<', '#').replace('>', '<').replace('#', '>'), third, second)
+        else
+          it
+      }.let { (relType, leftArg, rightArg) ->
+        Bound(leftArg, getInterval(rightArg), when (relType) {
+          relOps[0] -> GreaterEqualsContractor()
+          relOps[1] -> LessEqualsContractor()
+          relOps[2] -> NotEqualsContractor()
+          relOps[3] -> EqualsContractor()
+          relOps[4] -> GreaterContractor()
+          else -> LessContractor()
+        })
+      }
+    }
+    clauseList.forEach { clause ->
+      val variables = mutableSetOf<String>()
+      clause.map { lit ->
+        var str = when {
+          lit.startsWith("_bra") -> brackets[lit.drop(4).toInt()]
+          lit.startsWith("!_bra") -> "!${brackets[lit.drop(5).toInt()]}".removePrefix("!!")
+          else -> lit
+        }
+        if (str.startsWith("_bnd"))
+          bounds[str.drop(4).toInt()].apply {
+            variables += varName
+            if (!bound.varName[0].isDigit()) variables += bound.varName
+          }
+        else
+          (if (str[0] != '!')
+            Bound(str, DotInterval("1", 1), GreaterEqualsContractor())
+          else {
+            str = str.drop(1)
+            Bound(str, DotInterval("0", 0), LessEqualsContractor())
+          }).also { variables += str }
+      }.let { clauses += Clause(variables, it) }
+    }
+    negations.operateUn("neg", NegContractor())
+    multiplications.operateBi("mul", MulContractor())
+    divisions.operateBi("div", DivContractor())
+    additions.operateBi("add", AddContractor())
+    subtractions.operateBi("sub", SubContractor())
+    absolutes.operateUn("abs", AbsContractor())
+    minimums.operateBi("min", MinContractor())
+    maximums.operateBi("max", MaxContractor())
+    exponents.operateUn("exp", ExpContractor())
+    sines.operateUn("sin", SinContractor())
+    cosines.operateUn("cos", CosContractor())
+    powers.operateBi("pow", PowContractor())
+    roots.operateBi("nrt", NrtContractor())
+    typecasting()
+    formula = Formula(clauses)
+  }
+
+  private fun String.isNumber() = removePrefix("-")[0].isDigit()
+
   private fun BinaryOperations.operateBi(str: String, contractor: Contractor) = forEachIndexed { idx, (left, right) ->
     val leftArg = getInterval(left)
     val rightArg = getInterval(right)
@@ -293,11 +292,6 @@ class Parser(filePath: String) : IParser {
     val arg = getInterval(name)
     val result = Interval("_$str$idx", arg.type)
     addIntervalAndClause(result, setOf(result.varName, arg.varName), Dyad(result, arg, contractor))
-  }
-
-  private fun addIntervalAndClause(result: Interval, set: Set<String>, constraint: Constraint) {
-    intervals[result.varName] = result
-    clauses += Clause(set, listOf(constraint))
   }
 
   private fun getInterval(str: String) = when {
@@ -319,7 +313,10 @@ class Parser(filePath: String) : IParser {
     }}".let { name -> intervals.getOrPut(name, { Interval(name, null) }) }
   }
 
-  private fun String.isNumber() = removePrefix("-")[0].isDigit()
+  private fun addIntervalAndClause(result: Interval, set: Set<String>, constraint: Constraint) {
+    intervals[result.varName] = result
+    clauses += Clause(set, listOf(constraint))
+  }
 
   private fun typecasting() {
     bounds.forEach {

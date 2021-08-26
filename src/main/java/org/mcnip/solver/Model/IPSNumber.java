@@ -99,7 +99,8 @@ public class IPSNumber implements Comparable<IPSNumber> {
         }
         else
             this.intValue = new BigInteger(strValue.replaceFirst("\\..*$", ""));
-        this.fpValue = roundUpOrDown ? Math.nextUp(Double.parseDouble(strValue)) : Math.nextDown(Double.parseDouble(strValue));
+        double value = Double.parseDouble(strValue);
+        this.fpValue = strValue.equals(Double.toString(value))? value : roundUpOrDown ? Math.nextUp(value) : Math.nextDown(value);
     }
 
     public IPSNumber(Number value, Type t) {
@@ -490,7 +491,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
                 if(this.getIntValue() == null) {
                     return new IPSNumber(this.fpValue, INT);
                 }
-                return new IPSNumber(this.intValue, INT);
+                return this;
             case REAL:
                 return new IPSNumber(roundUpOrDown ? Math.nextUp(this.fpValue) : Math.nextDown(this.fpValue), REAL);
             default:
@@ -505,10 +506,6 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     public IPSNumber padDown() {
         return this.floatRound(false);
-    }
-
-    public Boolean isZeroOrInfinite() {
-        return this.fpValue == (double) 0 || this.getFpValue().isInfinite();
     }
 
     public Boolean isInfinite() {

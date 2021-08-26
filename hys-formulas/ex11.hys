@@ -1,0 +1,7 @@
+DECL
+  float [0.0, 100.0] x;
+  declare a = 2.0;
+
+EXPR
+  nrt(x^2.0, 2.0) > nrt(a, 2.0);
+  x*x = 2.0;
