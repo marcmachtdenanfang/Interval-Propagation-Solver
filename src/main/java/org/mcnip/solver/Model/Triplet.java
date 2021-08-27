@@ -2,12 +2,11 @@ package org.mcnip.solver.Model;
 
 import org.mcnip.solver.Contractors.Contractor;
 
-public class Triplet extends Constraint
-{
-    
-    private Interval result;
-    private Interval leftArg;
-    private Interval rightArg;
+public class Triplet extends Constraint {
+
+    private final Interval result;
+    private final Interval leftArg;
+    private final Interval rightArg;
 
     public Triplet(Interval result, Interval leftArg, Interval rightArg, Contractor contractor)
     {
@@ -29,12 +28,12 @@ public class Triplet extends Constraint
     @Override
     public String toString()
     {
-        return "{Triple: " + result.getVarName() 
-                + " == " + this.getContractor() 
-                + "(" + leftArg.getVarName() 
-                + ", " + rightArg.getVarName() 
-                + "), " + result 
-                + ", " + leftArg 
+        return "{Triple: " + result.getVarName()
+                + " == " + this.getContractor()
+                + "(" + leftArg.getVarName()
+                + ", " + rightArg.getVarName()
+                + "), " + result
+                + ", " + leftArg
                 + ", " + rightArg + "}";
     }
 
@@ -49,4 +48,5 @@ public class Triplet extends Constraint
     public Interval getRightArg() {
         return rightArg;
     }
+
 }

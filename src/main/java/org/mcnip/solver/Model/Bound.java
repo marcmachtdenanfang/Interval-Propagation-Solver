@@ -4,8 +4,8 @@ import org.mcnip.solver.Contractors.Contractor;
 
 public class Bound extends Constraint {
 
-    private String varName;
-    private Interval bound;
+    private final String varName;
+    private final Interval bound;
 
     /**
      * Bounds for our variables.
@@ -14,7 +14,7 @@ public class Bound extends Constraint {
      * during contraction as we can just avoid calling contraction on boolean bounds.
      * 
      * @param varName Name of the variable.
-     * @param bound A rational number, represnted via a DotInterval or Interval.
+     * @param bound A rational number, represented via a DotInterval or Interval.
      * @param contractor The relation (<, <=, =, >, >=).
      */
     public Bound(String varName, Interval bound, Contractor contractor)
@@ -32,7 +32,7 @@ public class Bound extends Constraint {
     @Override
     public String toString()
     {
-        return "{Bound: " + varName + " "+ this.getContractor() + " " + bound.getVarName()+ ", " + bound + "}";
+        return "{Bound: " + varName + " " + this.getContractor() + " " + bound.getVarName()+ ", " + bound + "}";
     }
 
     public String getVarName() {

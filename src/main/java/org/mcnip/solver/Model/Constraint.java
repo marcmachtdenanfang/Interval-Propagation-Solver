@@ -6,7 +6,7 @@ import org.mcnip.solver.Contractors.Contractor;
 
 public abstract class Constraint implements Atom {
     
-    private Contractor contractor;
+    private final Contractor contractor;
 
     public Constraint(Contractor contractor)
     {
@@ -15,7 +15,7 @@ public abstract class Constraint implements Atom {
 
     /**
      * Order of arguments is important!
-     * @return
+     * @return variables
      */
     public abstract String[] getVariables();
 

@@ -1,14 +1,13 @@
 package org.mcnip.solver.Model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 public class Clause {
 
-    private Set<String> variables;
-    private List<Constraint> constraints;
+    private final Set<String> variables;
+    private final List<Constraint> constraints;
 
     public Clause(Set<String> variables, List<Constraint> constraints)
     {
@@ -19,8 +18,7 @@ public class Clause {
     @Override
     public String toString()
     {
-        return ""+this.constraints.stream().collect(Collectors.toList());
-        //return "variables: " + this.variables.stream().collect(Collectors.joining(","));
+        return "" + new ArrayList<>(this.constraints);
     }
 
     public Set<String> getVariables() {
@@ -31,8 +29,4 @@ public class Clause {
         return constraints;
     }
 
-    public Constraint getConstraint(int n)
-    {
-        return this.constraints.get(n);
-    }
 }

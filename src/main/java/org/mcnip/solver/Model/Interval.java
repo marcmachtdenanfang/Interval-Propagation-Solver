@@ -19,7 +19,7 @@ public class Interval {
 
     public String toString(Boolean precise)
     {
-        if(isNumeric())
+        if (isNumeric())
             return varName;
         else if (lowerBound.equals(upperBound))
             return varName + " := " + lowerBound;
@@ -83,14 +83,8 @@ public class Interval {
         Boolean doPadding)
     {
         this.varName = result.varName;
-        /*if (result.lowerBound.gt(altUpperBound) || result.upperBound.lt(altLowerBound)) {
-            this.lowerBound = IPSNumber.ONE;
-            this.upperBound = IPSNumber.ZERO;
-        }
-        else {*/
-            this.lowerBound = result.lowerBound.max(doPadding ? altLowerBound.padDown() : altLowerBound);
-            this.upperBound = result.upperBound.min(doPadding ? altUpperBound.padUp() : altUpperBound);
-        //}
+        this.lowerBound = result.lowerBound.max(doPadding ? altLowerBound.padDown() : altLowerBound);
+        this.upperBound = result.upperBound.min(doPadding ? altUpperBound.padUp() : altUpperBound);
     }
 
     public Interval(
@@ -99,14 +93,8 @@ public class Interval {
         IPSNumber altUpperBound)
     {
         this.varName = result.varName;
-        /*if (result.lowerBound.gt(altUpperBound) || result.upperBound.lt(altLowerBound)) {
-            this.lowerBound = IPSNumber.ONE;
-            this.upperBound = IPSNumber.ZERO;
-        }
-        else {*/
-            this.lowerBound = result.lowerBound.max(altLowerBound);
-            this.upperBound = result.upperBound.min(altUpperBound);
-        //}
+        this.lowerBound = result.lowerBound.max(altLowerBound);
+        this.upperBound = result.upperBound.min(altUpperBound);
     }
 
     public Interval(
@@ -115,14 +103,8 @@ public class Interval {
         Double altUpperBound)
     {
         this.varName = result.varName;
-        /*if (result.lowerBound.getFpValue() > altUpperBound || result.upperBound.getFpValue() < altLowerBound) {
-            this.lowerBound = IPSNumber.ONE;
-            this.upperBound = IPSNumber.ZERO;
-        }
-        else {*/
-            this.lowerBound = result.lowerBound.max(new IPSNumber(altLowerBound, Type.REAL));
-            this.upperBound = result.upperBound.min(new IPSNumber(altUpperBound, Type.REAL));
-        //}
+        this.lowerBound = result.lowerBound.max(new IPSNumber(altLowerBound, Type.REAL));
+        this.upperBound = result.upperBound.min(new IPSNumber(altUpperBound, Type.REAL));
     }
 
     public Interval(
@@ -162,11 +144,7 @@ public class Interval {
     }
 
     private static String genBitString(int length) {
-        String ret = "";
-        for(int i = 0; i < length; i++) {
-            ret += "1";
-        }
-        return ret;
+        return "1".repeat(length);
     }
 
     public IPSNumber getMidPoint(int bitPrecision) {
@@ -219,9 +197,6 @@ public class Interval {
      */
     public boolean isEmpty()
     {
-        // if(this.lowerBound.getType().equals(Type.REAL) && this.lowerBound.nextUp().nextUp().equals(upperBound)) {
-        //     return true;
-        // }
         return this.lowerBound.gt(this.upperBound);
     }
 
@@ -230,13 +205,11 @@ public class Interval {
         if(lowerBound.equals(upperBound)) return false;
         // additional padding should be used for floats since they might not be exact
         else return this.getType() == Type.INT || lowerBound.nextUp().nextUp().nextUp().lt(upperBound);
-        // || (upperBound.getFpValue() < -999999999999999999.0) || (lowerBound.getFpValue() > 999999999999999999.0);
     }
 
     public boolean isDotInfinite() {
-        if(this.lowerBound.equals(this.upperBound)) {
+        if (this.lowerBound.equals(this.upperBound))
             return this.lowerBound.isInfinite();
-        }
         return false;
     }
 

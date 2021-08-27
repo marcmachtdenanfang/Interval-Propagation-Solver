@@ -4,8 +4,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Objects;
 
-import lombok.Getter;
-import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 import static org.mcnip.solver.Model.Type.*;
@@ -26,7 +24,6 @@ public class IPSNumber implements Comparable<IPSNumber> {
 
     public static final IPSNumber ZERO = new IPSNumber(0.0, REAL);
     public static final IPSNumber ONE = new IPSNumber(1.0, REAL);
-    public static final IPSNumber TEN = new IPSNumber(10.0, REAL);
     public static final IPSNumber POS_INF = new IPSNumber(Double.POSITIVE_INFINITY, REAL);
     public static final IPSNumber NEG_INF = new IPSNumber(Double.NEGATIVE_INFINITY, REAL);
 
@@ -38,9 +35,8 @@ public class IPSNumber implements Comparable<IPSNumber> {
     @Override
     public String toString()
     {
-        if(intValue == null || type == REAL){
+        if (intValue == null || type == REAL)
             return "" + fpValue;
-        }
         return intValue.toString();
     }
 
@@ -65,17 +61,16 @@ public class IPSNumber implements Comparable<IPSNumber> {
     {
         this.type = t;
         this.fpValue = value;
-        if(value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY) {
+        if(value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY)
             this.intValue = null;
-        } else {
+        else
             this.intValue = new BigInteger(String.valueOf(Math.round(value)));
-        }
     }
 
     public IPSNumber(int intValue, Type t)
     {
         this.type = t;
-        this.fpValue = (double) intValue;
+        this.fpValue = intValue;
         this.intValue = new BigInteger(String.valueOf(intValue));
     }
 
@@ -110,11 +105,10 @@ public class IPSNumber implements Comparable<IPSNumber> {
             this.fpValue = value.doubleValue();
         }
         else {
-            if ((double) value == Double.POSITIVE_INFINITY || (double) value == Double.NEGATIVE_INFINITY) {
+            if ((double) value == Double.POSITIVE_INFINITY || (double) value == Double.NEGATIVE_INFINITY)
                 this.intValue = null;
-            } else {
+            else
                 this.intValue = new BigInteger(String.valueOf(Math.round((double) value)));
-            }
             this.fpValue = (double) value;
         }
     }
@@ -135,7 +129,7 @@ public class IPSNumber implements Comparable<IPSNumber> {
         this.type = type;
     }
 
-    public IPSNumber max(IPSNumber b) // throws Exception
+    public IPSNumber max(IPSNumber b)
     {
         switch (this.type) 
         {
@@ -153,105 +147,26 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return new IPSNumber(Double.max(this.fpValue, b.getFpValue()), REAL);
             default:
-                return null; // break;
+                return null;
         }
-        // throw new Exception("unexpected NumberType enum in Max comparison.");
     }
 
-    /**
-     * This is greater than b.
-     * @param b
-     * @return
-     */
     public boolean gt(IPSNumber b)
     {
-        switch (this.type)
-        {
-            case INT:
-                if(this.intValue == null || b.getIntValue() == null)
-                    return this.fpValue > b.getFpValue();
-                return this.intValue.compareTo(b.getIntValue()) == 1;
-            case REAL:
-                return this.fpValue > b.getFpValue();
-        }
-        return false;
+        return this.compareTo(b) > 0;
     }
 
-    /**
-     * this is less than b method.
-     * @param b
-     * @return
-     */
     public boolean lt(IPSNumber b)
     {
-        switch (this.type)
-        {
-            case INT:
-                if(this.intValue == null || b.getIntValue() == null)
-                    return this.fpValue < b.getFpValue();
-                return this.intValue.compareTo(b.getIntValue()) == -1;
-            case REAL:
-                return this.fpValue < b.getFpValue();
-        }
-        return false;
-    }
-
-    /**
-     * This is greater than or equal b.
-     * @param b
-     * @return
-     */
-    public boolean ge(IPSNumber b)
-    {
-        switch (this.type)
-        {
-            case INT:
-                if(this.intValue == null || b.getIntValue() == null)
-                    return this.fpValue >= b.getFpValue();
-                return (this.intValue.compareTo(b.getIntValue()) == 1) || (this.intValue.compareTo(b.getIntValue()) == 0);
-            case REAL:
-                return this.fpValue >= b.getFpValue();
-        }
-        return false;
-    }
-
-    /**
-     * this is less than or equal b method.
-     * @param b
-     * @return
-     */
-    public boolean le(IPSNumber b)
-    {
-        switch (this.type)
-        {
-            case INT:
-                if(this.intValue == null || b.getIntValue() == null)
-                    return this.fpValue <= b.getFpValue();
-                return this.intValue.compareTo(b.getIntValue()) == -1 || this.intValue.compareTo(b.getIntValue()) == 0;
-            case REAL:
-                return this.fpValue <= b.getFpValue();
-        }
-        return false;
+        return this.compareTo(b) < 0;
     }
 
     public boolean equals(IPSNumber b)
     {
-        switch (this.type)
-        {
-            case INT:
-                if(this.intValue == null || b.getIntValue() == null)
-                    return this.fpValue == b.getFpValue();
-                return this.intValue.compareTo(b.getIntValue()) == 0;
-            case REAL:
-                return this.fpValue == b.getFpValue();
-        }
-        return false;
+        return this.compareTo(b) == 0;
     }
 
-
-
-
-    public IPSNumber min(IPSNumber b) // throws Exception
+    public IPSNumber min(IPSNumber b)
     {
         switch (this.type) 
         {
@@ -269,23 +184,14 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return new IPSNumber(Double.min(this.fpValue, b.getFpValue()), REAL);
             default:
-                return null; // break;
+                return null;
         }
-        // throw new Exception("unexpected NumberType enum in min comparison.");
     }
 
-    /**
-     * example call, a an IPSNUmber, b an IPSNumber
-     * 
-     * c = a.add(b),
-     * 
-     * @return
-     */
-    public IPSNumber add(IPSNumber b) // throws Exception
+    public IPSNumber add(IPSNumber b)
     {
         switch (this.type) 
         {
-            // For now we assume that arithmetic operations always have equal type.
             case INT:
                 if(this.getIntValue() == null || b.getIntValue() == null) {
                     return new IPSNumber(this.fpValue + b.getFpValue(), INT);
@@ -294,17 +200,15 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return new IPSNumber(this.fpValue + b.getFpValue(), REAL);
             default:
-                return null; // break;
+                return null;
         }
-        // throw new Exception("unexpected NumberType enum in Addition.");
-
     }
 
     public IPSNumber plus(@NotNull IPSNumber number) {
         return this.add(number);
     }
 
-    public IPSNumber sub(IPSNumber b) // throws Exception
+    public IPSNumber sub(IPSNumber b)
     {
         switch (this.type) 
         {
@@ -316,9 +220,8 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return new IPSNumber(this.fpValue - b.getFpValue(), REAL);
             default:
-                return null; // break;
+                return null;
         }
-        // throw new Exception("unexpected NumberType enum in Subtraction.");
     }
 
     public IPSNumber minus(@NotNull IPSNumber number) {
@@ -333,11 +236,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return ZERO.sub(this);
             default:
-                return null; // break;
+                return null;
         }
     }
 
-    public IPSNumber mul(IPSNumber b) // throws Exception
+    public IPSNumber mul(IPSNumber b)
     {
         switch (this.type) 
         {
@@ -349,18 +252,15 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return new IPSNumber(this.fpValue * b.getFpValue(), REAL);
             default:
-                return null; // break;
+                return null;
         }
-        // throw new Exception("unexpected NumberType enum in Multiplication.");
     }
 
-    public IPSNumber div(IPSNumber b) // throws Exception
+    public IPSNumber div(IPSNumber b)
     {
         switch (this.type) 
         {
             case INT:
-                // This must certainly be changed in the future.
-                // infinity/infinity == NaN!
                 if(this.getIntValue() == null || b.getIntValue() == null) {
                     return new IPSNumber(this.fpValue / b.getFpValue(), INT);
                 }
@@ -368,37 +268,17 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return new IPSNumber(this.fpValue / b.getFpValue(), REAL);
             default:
-                return null; // break;
+                return null;
         }
-        // throw new Exception("unexpected NumberType enum in Multiplication.");
-
     }
 
-
-    public IPSNumber sqrt() // throws Exception
-    {
-        switch(this.type) 
-        {
-            case INT:
-                if(this.getIntValue() == null) {
-                    return new IPSNumber(Math.sqrt(this.fpValue), INT);
-                }
-                return new IPSNumber(this.intValue.sqrt(), INT);
-            case REAL:
-                return new IPSNumber(Math.sqrt(this.fpValue), REAL);
-            default:
-                return null; // break;
-        }
-        // throw new Exception("unexpected NumberType enum in Squareroot.");
-    }
-
-    public IPSNumber nrt(IPSNumber b) // throws Exception
+    public IPSNumber nrt(IPSNumber b)
     {
         double fac = (this.fpValue < 0) ? -1.0 : 1.0;
         return (this.intValue != null) ? new IPSNumber(Math.pow(this.fpValue * fac, 1.0 / b.fpValue) * fac, this.type) : this;
     }
 
-    public IPSNumber exp(int constant) // throws Exception
+    public IPSNumber exp(int constant)
     {
         switch(this.type)
         {
@@ -410,12 +290,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return new IPSNumber(Math.pow(this.fpValue, constant), REAL);
             default:
-                return null; // break;
+                return null;
         }
-        // throw new Exception("unexpected NumberType enum in Exponentiation.");
     }
 
-    public IPSNumber pow(IPSNumber b) // throws Exception
+    public IPSNumber pow(IPSNumber b)
     {
         switch(this.type)
         {
@@ -427,12 +306,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return new IPSNumber(Math.pow(this.fpValue, b.fpValue), REAL);
             default:
-                return null; // break;
+                return null;
         }
-        // throw new Exception("unexpected NumberType enum in Exponentiation.");
     }
 
-    public IPSNumber neg() // throws Exception
+    public IPSNumber neg()
     {
         switch(this.type)
         {
@@ -444,12 +322,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return new IPSNumber(-1*this.fpValue, REAL);
             default:
-                return null; // break;
+                return null;
         }
-        // throw new Exception("unexpected NumberType enum in Negation.");
     }
 
-    public IPSNumber nextUp() // throws Exception
+    public IPSNumber nextUp()
     {
         switch(this.type)
         {
@@ -461,12 +338,11 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return new IPSNumber(Math.nextUp(this.fpValue), REAL);
             default:
-                return null; // break;
+                return null;
         }
-        // throw new Exception("unexpected NumberType enum in Negation.");
     }
 
-    public IPSNumber nextDown() // throws Exception
+    public IPSNumber nextDown()
     {
         switch(this.type)
         {
@@ -478,9 +354,8 @@ public class IPSNumber implements Comparable<IPSNumber> {
             case REAL:
                 return new IPSNumber(Math.nextDown(this.fpValue), REAL);
             default:
-                return null; // break;
+                return null;
         }
-        // throw new Exception("unexpected NumberType enum in Negation.");
     }
 
     private IPSNumber floatRound(Boolean roundUpOrDown)
@@ -511,4 +386,5 @@ public class IPSNumber implements Comparable<IPSNumber> {
     public Boolean isInfinite() {
         return this.getFpValue().isInfinite();
     }
+
 }

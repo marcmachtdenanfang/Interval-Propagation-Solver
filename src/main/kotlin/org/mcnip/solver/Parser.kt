@@ -12,10 +12,9 @@ typealias UnaryOperations = MutableList<String>
 typealias BinaryOperations = MutableList<Pair<String, String>>
 typealias BoundTriple = Triple<String, String, String>
 
-class Parser(filePath: String) : IParser {
+class Parser(filePath: String) {
 
-  /* private for Formula is necessary, due to: see below getFormula implementation. */
-  private val formula: Formula 
+  val formula: Formula
   private val constants = mutableMapOf<String, String>()
   private val variables = mutableMapOf<String, Pair<String, String>>()
   private val booleans = mutableListOf<String>()
@@ -35,7 +34,7 @@ class Parser(filePath: String) : IParser {
   private val cosines: UnaryOperations = mutableListOf()
   private val powers: BinaryOperations = mutableListOf()
   private val roots: BinaryOperations = mutableListOf()
-  private val intervals = mutableMapOf<String, Interval>()
+  val intervals = mutableMapOf<String, Interval>()
   private val bounds = mutableListOf<Bound>()
   private val clauses = mutableListOf<Clause>()
   private val unBraOps = listOf("neg", "abs", "exp", "sin", "cos")
@@ -376,12 +375,5 @@ class Parser(filePath: String) : IParser {
       cosines.mapIndexed { idx, it -> "_cos$idx = cos($it) and " }.joinToString("") +
       powers.mapIndexed { idx, it -> "_pow$idx = pow(${it.first}, ${it.second}) and " }.joinToString("") +
       roots.mapIndexed { idx, it -> "_nrt$idx = nrt(${it.first}, ${it.second}) and " }.joinToString("")).dropLast(5)
-
-  /**
-   * For implementing the IParser interface, since it is written in Java.
-   * Necessary due to: https://youtrack.jetbrains.com/issue/KT-6653
-   */
-  override fun getFormula() = formula
-  override fun getIntervals() = intervals
 
 }

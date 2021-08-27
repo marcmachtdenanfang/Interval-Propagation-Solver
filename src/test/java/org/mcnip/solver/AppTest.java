@@ -1,38 +1,28 @@
 package org.mcnip.solver;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.mcnip.solver.Contractors.BinContractor.AddContractor;
+import org.mcnip.solver.Contractors.BinContractor.MulContractor;
+import org.mcnip.solver.Contractors.BoundContractor.GreaterEqualsContractor;
+import org.mcnip.solver.Contractors.BoundContractor.LessEqualsContractor;
+import org.mcnip.solver.Contractors.Contractor;
+import org.mcnip.solver.Model.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
-import org.mcnip.solver.Contractors.Contractor;
-import org.mcnip.solver.Contractors.BinContractor.AddContractor;
-import org.mcnip.solver.Contractors.BinContractor.MulContractor;
-import org.mcnip.solver.Contractors.BoundContractor.GreaterEqualsContractor;
-import org.mcnip.solver.Contractors.BoundContractor.LessEqualsContractor;
-import org.mcnip.solver.Model.Bound;
-import org.mcnip.solver.Model.Constraint;
-import org.mcnip.solver.Model.DotInterval;
-import org.mcnip.solver.Model.Formula;
-import org.mcnip.solver.Model.IPSNumber;
-import org.mcnip.solver.Model.Interval;
-import org.mcnip.solver.Model.Type;
-import org.mcnip.solver.Model.Triplet;
-import org.mcnip.solver.SatSolver.Solver;
-
-import org.mockito.Mockito;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mcnip.solver.HelpFunctionsKt.updateIntervals;
+import static org.mcnip.solver.HelpFunctionsKt.containsEmptyInterval;
 
 /**
  * Unit test for simple App.
  */
-public class AppTest 
-{
+@SuppressWarnings("SuspiciousNameCombination")
+public class AppTest {
+
     /**
      * Rigorous Test :-)
      */
@@ -60,10 +50,6 @@ public class AppTest
 
         Contractor addContractor = new AddContractor(); 
         Constraint triple = new Triplet(z,x,y,addContractor);
-
-        Solver mockedSolver = Mockito.mock(Solver.class);
-
-        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
         
         // simulate behaviour of ctx.update() method.
         HashMap<String, Interval> intervals = new HashMap<>();
@@ -72,7 +58,7 @@ public class AppTest
             intervals.put(id, in.get(id));
         }
 
-        Map<String, Interval> tempMap = ctx.updateIntervals(intervals, triple);
+        Map<String, Interval> tempMap = updateIntervals(intervals, triple);
         
         assertTrue(tempMap.get("x").getLowerBound().equals(IPSNumber.ZERO_int));
         assertTrue(tempMap.get("y").getLowerBound().equals(new IPSNumber(9, Type.INT)));
@@ -105,13 +91,11 @@ public class AppTest
         Contractor addContractor = new AddContractor(); 
         Constraint triple = new Triplet(z,x,y,addContractor);
 
-        Context ctx = new Context(Mockito.mock(IParser.class), in, Mockito.mock(Solver.class));
-
         // Method that actually gets tested.
-        Map<String, Interval> tempMap = ctx.updateIntervals(in, triple);        
+        Map<String, Interval> tempMap = updateIntervals(in, triple);
 
         // Check results for Correctness.
-        assertTrue(ctx.checkForEmptyInterval(tempMap));
+        assertTrue(containsEmptyInterval(tempMap));
     }
 
     @Test
@@ -130,13 +114,11 @@ public class AppTest
         Contractor addContractor = new AddContractor(); 
         Constraint triple = new Triplet(z,x,y,addContractor);
 
-        Context ctx = new Context(Mockito.mock(IParser.class), in, Mockito.mock(Solver.class));
-
         // Method that actually gets tested.
-        Map<String, Interval> tempMap = ctx.updateIntervals(in, triple);        
+        Map<String, Interval> tempMap = updateIntervals(in, triple);
 
-        // Check results for Correctness.        
-        assertTrue(ctx.checkForEmptyInterval(tempMap));
+        // Check results for Correctness.
+        assertTrue(containsEmptyInterval(tempMap));
     }
 
     @Test
@@ -157,10 +139,8 @@ public class AppTest
 
         // Mocking the "solver.solve(formula)" method call.
 
-        Context ctx = new Context(Mockito.mock(IParser.class), in, Mockito.mock(Solver.class));
-
         // Method that actually gets tested.
-        Map<String, Interval> tempMap = ctx.updateIntervals(in, triple);
+        Map<String, Interval> tempMap = updateIntervals(in, triple);
         System.out.println(tempMap.get("x"));
         System.out.println(tempMap.get("y"));
         System.out.println(tempMap.get("z"));
@@ -195,10 +175,8 @@ public class AppTest
         Contractor addContractor = new AddContractor(); 
         Constraint triple = new Triplet(z,x,x,addContractor);
 
-        Context ctx = new Context(Mockito.mock(IParser.class), in, Mockito.mock(Solver.class));
-
         // Method that actually gets tested.
-        Map<String, Interval> tempMap = ctx.updateIntervals(in, triple);
+        Map<String, Interval> tempMap = updateIntervals(in, triple);
         System.out.println(tempMap.get("x"));
         System.out.println(tempMap.get("z"));
 
@@ -216,11 +194,10 @@ public class AppTest
     public void extractBoundsTest()
     {
         Interval x = new Interval("x", new IPSNumber(-20, Type.INT), IPSNumber.ONE_int);
-        Context ctx = new Context(Mockito.mock(IParser.class), new HashMap<>(), Mockito.mock(Solver.class));
 
         Map<String, Interval> map = new HashMap<>();
         map.put(x.getVarName(), x);
-        List<Bound> newBounds = ctx.extractBounds(map);
+        List<Bound> newBounds = Context.extractBounds(map);
 
         for(Bound b : newBounds)
         {
@@ -260,15 +237,8 @@ public class AppTest
         Contractor c = new MulContractor();
         Constraint triple = new Triplet(z,x,y,c);
 
-        // Mocking the "solver.solve(formula)" method call.
-        List<Constraint> list = List.of(triple);
-        Solver mockedSolver = Mockito.mock(Solver.class);
-        when(mockedSolver.solve(any())).thenReturn(list);
-
-        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
-
         // Method that actually gets tested.
-        var res = ctx.updateIntervals(in, triple);
+        var res = updateIntervals(in, triple);
         var x1 = res.get("x");
         var y1 = res.get("y");
         var z1 = res.get("z");
@@ -301,15 +271,8 @@ public class AppTest
         Contractor c = new MulContractor();
         Constraint triple = new Triplet(z,x,y,c);
 
-        // Mocking the "solver.solve(formula)" method call.
-        List<Constraint> list = List.of(triple);
-        Solver mockedSolver = Mockito.mock(Solver.class);
-        when(mockedSolver.solve(any())).thenReturn(list);
-
-        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
-
         // Method that actually gets tested.
-        var res = ctx.updateIntervals(in, triple);
+        var res = updateIntervals(in, triple);
         var x1 = res.get("x");
         var y1 = res.get("y");
         var z1 = res.get("z");
@@ -318,10 +281,43 @@ public class AppTest
         System.out.println(y1);
         System.out.println(z1);
 
-        assertTrue(ctx.checkForEmptyInterval(res));
+        assertTrue(containsEmptyInterval(res));
     }
 
-    
+    @Test
+    public void mulContractionTest3UpdateMethod()
+    {
+        // Setup.
+        Interval x = new Interval("x", 0, 1, true, true);
+        Interval y = new Interval("y", -1000, 1000, true, true);
+        Interval z = new DotInterval("z", 100);
+
+        HashMap<String, Interval> in = new HashMap<>();
+        in.put(x.getVarName(), x);
+        in.put(y.getVarName(), y);
+        in.put(z.getVarName(), z);
+
+        Contractor c = new MulContractor();
+        Constraint triple = new Triplet(z,x,y,c);
+
+        // Method that actually gets tested.
+        var res = HelpFunctionsKt.updateIntervals(in, triple);
+        var x1 = res.get("x");
+        var y1 = res.get("y");
+        var z1 = res.get("z");
+        System.out.println("mulContractionTest3UpdateMethod");
+
+        System.out.println(x1);
+        System.out.println(y1);
+        System.out.println(y1.getVarName());
+        System.out.println(z1);
+
+        assertFalse(HelpFunctionsKt.containsEmptyInterval(Map.of("x",x1, "y",y1, "z",z1)));
+        assertEquals("x", x1.getVarName());
+        assertEquals("y", y1.getVarName());
+        assertEquals("z", z1.getVarName());
+    }
+
     @Test
     public void addContractionTestWeird01()
     {
@@ -338,23 +334,17 @@ public class AppTest
         Contractor addContractor = new AddContractor();
         Constraint triple = new Triplet(z,x,y,addContractor);
 
-        // Mocking the "solver.solve(formula)" method call.
-        List<Constraint> list = List.of(triple);
-        Solver mockedSolver = Mockito.mock(Solver.class);
-        when(mockedSolver.solve(any())).thenReturn(list);
-
-        Context ctx = new Context(Mockito.mock(IParser.class), in, mockedSolver);
-
         // Method that actually gets tested.
-        var res = ctx.updateIntervals(in, triple);
+        var res = updateIntervals(in, triple);
         var x1 = res.get("x");
         var y1 = res.get("y");
         var z1 = res.get("z");
-        System.out.println("huhu");
+        System.out.println("addContractionTestWeird01");
         System.out.println(x1);
         System.out.println(y1);
         System.out.println(z1);
 
         assertTrue("at least one of them should be empty.", x1.isEmpty() || y1.isEmpty() || z1.isEmpty());
     }
+
 }

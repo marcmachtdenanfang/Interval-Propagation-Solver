@@ -1,24 +1,15 @@
 package org.mcnip.solver;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
 public class ParserTest {
 
-    @Test
-    public void ParserTest1()
-    {
-        //Parser parser = new Parser("abc");
-        assertTrue(true);
-    }
-
     @Test(expected = FileNotFoundException.class)
     public void KotlinFileNotFoundTest()
     {
-        Parser p = new Parser("abcd");
+        new Parser("abc");
     }
 
     @Test

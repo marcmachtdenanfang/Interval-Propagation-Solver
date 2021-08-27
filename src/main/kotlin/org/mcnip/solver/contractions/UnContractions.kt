@@ -75,4 +75,5 @@ class UnContractions(intervals: Map<String, Interval>, names: Array<String>) {
       filteredMapOf(result to Interval(resInterval, newLower, newUpper), argument to argInterval)
     }
   }
+
 }

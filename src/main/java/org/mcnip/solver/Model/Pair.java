@@ -6,11 +6,10 @@ import org.mcnip.solver.Contractors.Contractor;
  * Pairs and Triplets are always equalities. 
  * They are never any other relation.
  */
-public class Pair extends Constraint
-{
-   
-    private Interval result;
-    private Interval origin;
+public class Pair extends Constraint {
+
+    private final Interval result;
+    private final Interval origin;
 
     /**
      * @param result Value or variable that expression results in.
@@ -44,4 +43,5 @@ public class Pair extends Constraint
     public Interval getOrigin() {
         return origin;
     }
+
 }

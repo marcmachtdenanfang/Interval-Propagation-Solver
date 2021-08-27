@@ -4,8 +4,8 @@ import lombok.Getter;
 
 public class Variable {
     
-    @Getter private String name;
-    @Getter private Type type;
+    @Getter private final String name;
+    @Getter private final Type type;
 
     /**
      * Used to manage variables and their types only.
