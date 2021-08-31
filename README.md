@@ -2,70 +2,16 @@
 
 # Interval-Propagation-Solver
 
-## TODO
- - replace maven with gradle.
+For documentation: Please go to https://marcmachtdenanfang.github.io/Interval-Propagation-Solver/
 
 *To build the solver:*
 
 mvn package
 
-*To run the solver:* (not much functionality yet)
+*To run the solver:* 
 
 Right now `mvn package` creates a fat jar, so you can use the next command to run the solver.
 
     java -cp target/Interval-Propagation-Solver-0.1-ALPHA-jar-with-dependencies.jar org.mcnip.solver.App -i hys-formulas/ex0.hys
 
 
-A slim jar is also generated:
-
-    java -cp target/Interval-Propagation-Solver-0.1-ALPHA.jar:/path/to/kotlin-stdlib-1.5.0.jar:/path/to/ org.mcnip.solver.App -i /path/to/hysat/input_file.hys
-
-A javadoc documentation can be generated with:
-    
-    mvn javadoc:javadoc
-We still need to find a way to incorporate documentation for our kotlin source files (Maybe just let kotlin source files implement a Jav)
-
-We need a mechanism to call an error when a contraction fails.
-Then we know, that some of these clauses lead to a conflict.
-So first of all we then want to *immediately* halt this iteration.
-How do we find the clauses that were the origin of the conflict?
-Do we need identifiers for the clauses?
-
-
-Regarding the Classes:
-
-SatSolver and below: 
-only dummy implementation yet.
-
-Parser and below: 
-only AST model Classes to get a feeling on how to work with a Parser.
-Basis for writing our own Parser.
-Tools like Antlr4 probably generate their own way of dealing with this.
-
-Model:
-General idea on what we generate based on our parser output.
-Needs to be extended so that we can have both variables as well as numbers everywhere.
-Pair, Triplet and Bound all share the trait, that they are Constraints!
-Bound needs to be implemented.
-
-Contractor:
-Idea: 
-we have a Contractor interface, and pass all necessary data to the contract method.
-That way using polymorphism we save a lot of implementation effort, as we just have to call contract.
-AddContractor does not yet deal with open/closed intervals.
-
-Problem:
-How to nicely handle issues like: which value is supposed to be subtracted from which?
-Rudimentary solution:
-String[] names as an argument with fixed order,
-i.e. for binary operations: String[0] is the result, String[1] is the argument left of the operator, and String[2] is on the right of the operator.
-
-x = y-z
-x = String[0]
-y = String[1]
-z = String[2]
-
-
-
-@Getter/@Setter:
-I added the Lombok Plugin to easily add Getter/Setter methods where necessary.
