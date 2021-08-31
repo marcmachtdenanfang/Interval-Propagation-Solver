@@ -31,6 +31,9 @@ body {
   margin: auto;
   counter-reset: chapternum;
 }
+pre {
+  overflow: auto;
+}
 h1, h2, h3 {
   color: var(--c);
 }
