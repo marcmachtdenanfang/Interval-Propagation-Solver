@@ -19,7 +19,7 @@
   In Abschnitt 4.2 des Papers wird die Logik des Verfahrens beschrieben. Diese haben wir nachgebaut. In Abschnitt 4.3 werden Erweiterungen vorgestellt, die wir nicht eingebaut haben.
 
   <br><br>
-  Unsere Software besteht aus den folgenden Kernbestandteilen:
+  Unsere Software besteht aus den folgenden Kernbestandteilen:</p>
   <dl>
     <dt><a href="#parser">Parser</a></dt>
     <dd>Modul, das die Eingabe <u>parst</u>.</dd>
@@ -33,7 +33,7 @@
     <dd>Modul, das die Umsetzung der <u>Intervallpropagierung</u> darstellt.</dd>
   </dl>
 
-  <br>//Einschränkungen, Unterschiede, genereller Überblick...</p>
+  <p>Insgesamt funktioniert die Software. Dadurch dass wir die Erweiterungen aus Abschnitt 4.3 nicht eingbaut haben, kann es sein, dass in manchen Fällen die Performance unserer Software nicht die Beste ist (Benchmark ex1.hys aus unseren hys-formulas braucht 50.000+ Backtracks). In anderen Fällen kann es sein, dass sich unsere Software in schlechten Abzweigungen verirrt und nicht zu einer Lösung findet, bzw. nicht in akzeptabler Zeit eine Lösung findet, selbst wenn es in anderen Läufen durchaus sofort eine Lösung findet.</p>
 
 
 <h2 id="parser">Parser</h2>
@@ -78,7 +78,7 @@ Unser Programm erlaubt die Spezifizierung von Optionen vor Aufruf des Programms.
   <dt>-m,--minimize &ltarg&gt</dt>
   <dd>Minimierung einer bestimmten Variable der Eingabeformel.</dd>
   <dt>-b,--intPrecision &ltarg&gt</dt>
-  <dd>Änderung der Bitbreite der Integer Variablen (siehe <a href=#splitvariableinterval><code>splitVariableInterval</code></a> und <a href=#IPSNumber><code>IPSNumber</code></a>). Der Standard ist 128 bit.</dd>
+  <dd>Änderung der Bitbreite der Integer Variablen (siehe <a href=#splitvariableinterval><code>splitVariableInterval</code></a> und <a href=#ipsnumber><code>IPSNumber</code></a>). Der Standard ist 128 bit.</dd>
 </dl>
 
 <p>Ein kompletter Aufruf sähe also zum Beispiel so aus:</p>
@@ -126,10 +126,10 @@ Wir benutzen einiges an Polymorphie um unseren Code einfacher zu gestalten.</p>
 <h3 id="Atom">Atom</h3>
 <p>Wir haben das <code>Atom</code>-Interface. Dieses wird von <code>Constraint</code> und <code>Marker</code> implementiert. <code>Marker</code> werden nur für die Stapel in der <code>Context</code>-Klasse verwendet. <code>Constraints</code> werden von <code>Pair</code>, <code>Triple</code> und <code>Bound</code> erweitert. <code>Constraints</code> enthalten gezwungenermaßen einen <code>Contractor</code>, der die arithmetische/logische Operation spezifiziert. <code>Pair</code>, <code>Triple</code> und <code>Bound</code> folgen der Definition des Papers. Sie enthalten jeweils die Intervalle, die die Bestandteile der Operation sind. Ein Pair wie <code>x=-y</code> besteht also aus dem <code>Negierungscontractor</code>, und den Intervallen <code>x</code> und <code>y</code>.</p>
 
-<h3 id="intervall">IPSNumber & Interval</h3>
+<h3 id="ipsnumber">IPSNumber & Interval</h3>
 <p>Unsere Basisdatentypen für die Repräsentation von Zahlen und Intervallen sind die <code>IPSNumber</code>- und <code>Interval</code>-Klassen. <code>IPSNumber</code> ist eine Wrapperklasse um sowohl Integer als auch Fließkommazahlen in einem zu verarbeiten. Integer werden mit der <code>BigInteger</code>-Klasse repräsentiert. 
 Um symbolische Unendlichkeit bei Integern zu erreichen, wird in den Fließkommazahlwerten der IPSNumber die jeweilige Unendlichkeit gespeichert. <code>IPSNumber</code>s erlauben alle arithmetischen Operationen zwischeneinander. Ob eine <code>IPSNumber</code> als INT oder als REAL geparst wurde, ist im Typen der <code>IPSNumber</code> eingespeichert. 
-<code>Interval</code>s enthalten den Namen der Variable, sowie die Intervalgrenzen. Außerdem wird hier die Methode zur Berechnung des Mittelpunkts bereitgestellt.
+<code>Interval</code>s enthalten den Namen der Variable, sowie die Intervalgrenzen. Außerdem wird hier die Methode zur Berechnung des Mittelpunkts bereitgestellt. Da es bei Bigintegern mit einseitig unendlicher Grenze nicht möglich ist einen Mittelpunkt zu finden, wird eine gewisse Bitbreite als Maximum angenommen. Diese liegt standardmäßig bei 128 bit, lässt sich mithilfe von Eingabeoption <a href="#execution">--intPrecision</a> vergrößern.
 Durch die Vereinheitlichung des Zahlendatentyps, wird im Allgemeinen die Codekomplexität außerhalb dieser beiden Klassen massiv vereinfacht.</p>
 
 <h3 id="formula">Formula & Clause</h3>
