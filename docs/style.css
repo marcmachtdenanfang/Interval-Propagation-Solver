@@ -33,6 +33,25 @@ body {
 }
 pre {
   overflow: auto;
+  font-size: 1rem;
+  line-height: 1.68rem;
+  max-width: 38rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.2rem;
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
+  
+}
+dl {
+  font-size: 1rem;
+  line-height: 1.68rem;
+  max-width: 38rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.2rem;
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
 }
 h1, h2, h3 {
   color: var(--c);
@@ -70,6 +89,16 @@ h3 {
 }
 h3:before {
   content: counter(chapternum) "." counter(subnum) ". ";
+}
+p {
+  font-size: 1rem;
+  line-height: 1.68rem;
+  max-width: 38rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.2rem;
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
 }
 p {
   font-size: 1rem;

@@ -54,16 +54,16 @@
 
 
 <h2 id="app">App</h2>
-<p>Die <code>App</code>-Klasse enthält unsere <code>main</code>-Funktion, die zum Aufruf des Programms verwendet wird.
+<p>Die <code>App</code>-Klasse enthält unsere <code>main</code>-Funktion, die zum Aufruf des Programms verwendet wird.</p>
 
 <h3 id="execution">Kompilierung & Ausführung</h3>
-Wir verwenden das Tool <code>Maven</code> zur Kompilierung und Verwaltung der Softwarekomponenten. Eine Installation von <code>Maven</code> ist daher notwendig. Zur Ausführung wird eine Installation der Java VM (getestet mit Version 11) benötigt.
+<p>Wir verwenden das Tool <code>Maven</code> zur Kompilierung und Verwaltung der Softwarekomponenten. Eine Installation von <code>Maven</code> ist daher notwendig. Zur Ausführung wird eine Installation der Java VM (getestet mit Version 11) benötigt.</p>
 <pre><code>
   mvn package # Kompilierung mithilfe von Maven
   java -cp target/Interval-Propagation-Solver-0.1-ALPHA-jar-with-dependencies.jar org.mcnip.solver.App # Ausführung
 </code></pre>
-
-Unser Programm erlaubt die Spezifizierung von Optionen vor Aufruf des Programms. Folgende Optionen existieren
+<p>
+Unser Programm erlaubt die Spezifizierung von Optionen vor Aufruf des Programms. Folgende Optionen existieren:</p>
 <dl>
   <dt>-h, --help</dt>
   <dd>Aufruf der folgenden Optionen und sofortige Terminierung des Programms.</dd>
@@ -81,7 +81,7 @@ Unser Programm erlaubt die Spezifizierung von Optionen vor Aufruf des Programms.
   <dd>Änderung der Bitbreite der Integer Variablen (siehe <a href=#splitvariableinterval><code>splitVariableInterval</code></a> und <a href=#IPSNumber><code>IPSNumber</code></a>). Der Standard ist 128 bit.</dd>
 </dl>
 
-Ein kompletter Aufruf sähe also zum Beispiel so aus:
+<p>Ein kompletter Aufruf sähe also zum Beispiel so aus:</p>
 <pre>
   <code>
     java -cp target/Interval-Propagation-Solver-0.1-ALPHA-jar-with-dependencies.jar org.mcnip.solver.App -i hys-formulas/ex1.hys -p
@@ -89,7 +89,7 @@ Ein kompletter Aufruf sähe also zum Beispiel so aus:
   </code>
 </pre>
 
-<br>Mit hilfe der Aufrufparameter wird eine Instanz <code>ctx</code> der <code><a href="#context">Context-Klasse</a></code> initialisiert. Auf <code>ctx</code> wird die Methode <code>solve()</code> aufgerufen. Bei einer erfüllbaren Formel ergibt sich hier die Ausgabe <code>"SAT"</code>, sowie die Werte der Variablen. Andernfalls wird <code>"UNSAT"</code> ausgegeben. Die App-Klasse enthält somit nur die Funktionalität zur Ausführung des Programms, die Logik befindet sich in der <code><a href="#context">Context-Klasse</a></code> und den weiteren Unterklassen.</p>
+<p>Mit hilfe der Aufrufparameter wird eine Instanz <code>ctx</code> der <code><a href="#context">Context-Klasse</a></code> initialisiert. Auf <code>ctx</code> wird die Methode <code>solve()</code> aufgerufen. Bei einer erfüllbaren Formel ergibt sich hier die Ausgabe <code>"SAT"</code>, sowie die Werte der Variablen. Andernfalls wird <code>"UNSAT"</code> ausgegeben. Die App-Klasse enthält somit nur die Funktionalität zur Ausführung des Programms, die Logik befindet sich in der <code><a href="#context">Context-Klasse</a></code> und den weiteren Unterklassen.</p>
 
 
 <h2 id="context">Context</h2>
@@ -120,23 +120,26 @@ Die Zufälligkeit der Wahl der Variable, die wir splitten, sowie die Zufälligke
 
 
 <h2 id="model">Model</h2>
-In dem <code>Model</code>-Ordner sind die Klassen, die unsere Modelle ausmachen spezifiziert.
-Wir benutzen einiges an Polymorphie um unseren Code einfacher zu gestalten.
+<p>In dem <code>Model</code>-Ordner sind die Klassen, die unsere Modelle ausmachen spezifiziert.
+Wir benutzen einiges an Polymorphie um unseren Code einfacher zu gestalten.</p>
 
 <h3 id="Atom">Atom</h3>
-Wir haben das <code>Atom</code>-Interface. Dieses wird von <code>Constraint</code> und <code>Marker</code> implementiert. <code>Marker</code> werden nur für die Stapel in der <code>Context</code>-Klasse verwendet. <code>Constraints</code> werden von <code>Pair</code>, <code>Triple</code> und <code>Bound</code> erweitert. <code>Constraints</code> enthalten gezwungenermaßen einen <code>Contractor</code>, der die arithmetische/logische Operation spezifiziert. <code>Pair</code>, <code>Triple</code> und <code>Bound</code> folgen der Definition des Papers. Sie enthalten jeweils die Intervalle, die die Bestandteile der Operation sind. Ein Pair wie <code>x=-y</code> besteht also aus dem <code>Negierungscontractor</code>, und den Intervallen <code>x</code> und <code>y</code>.
+<p>Wir haben das <code>Atom</code>-Interface. Dieses wird von <code>Constraint</code> und <code>Marker</code> implementiert. <code>Marker</code> werden nur für die Stapel in der <code>Context</code>-Klasse verwendet. <code>Constraints</code> werden von <code>Pair</code>, <code>Triple</code> und <code>Bound</code> erweitert. <code>Constraints</code> enthalten gezwungenermaßen einen <code>Contractor</code>, der die arithmetische/logische Operation spezifiziert. <code>Pair</code>, <code>Triple</code> und <code>Bound</code> folgen der Definition des Papers. Sie enthalten jeweils die Intervalle, die die Bestandteile der Operation sind. Ein Pair wie <code>x=-y</code> besteht also aus dem <code>Negierungscontractor</code>, und den Intervallen <code>x</code> und <code>y</code>.</p>
 
 <h3 id="intervall">IPSNumber & Interval</h3>
-Unsere Basisdatentypen für die Repräsentation von Zahlen und Intervallen sind die <code>IPSNumber</code>- und <code>Interval</code>-Klassen. <code>IPSNumber</code> ist eine Wrapperklasse um sowohl Integer als auch Fließkommazahlen in einem zu verarbeiten. Integer werden mit der <code>BigInteger</code>-Klasse repräsentiert. 
+<p>Unsere Basisdatentypen für die Repräsentation von Zahlen und Intervallen sind die <code>IPSNumber</code>- und <code>Interval</code>-Klassen. <code>IPSNumber</code> ist eine Wrapperklasse um sowohl Integer als auch Fließkommazahlen in einem zu verarbeiten. Integer werden mit der <code>BigInteger</code>-Klasse repräsentiert. 
 Um symbolische Unendlichkeit bei Integern zu erreichen, wird in den Fließkommazahlwerten der IPSNumber die jeweilige Unendlichkeit gespeichert. <code>IPSNumber</code>s erlauben alle arithmetischen Operationen zwischeneinander. Ob eine <code>IPSNumber</code> als INT oder als REAL geparst wurde, ist im Typen der <code>IPSNumber</code> eingespeichert. 
 <code>Interval</code>s enthalten den Namen der Variable, sowie die Intervalgrenzen. Außerdem wird hier die Methode zur Berechnung des Mittelpunkts bereitgestellt.
-Durch die Vereinheitlichung des Zahlendatentyps, wird im Allgemeinen die Codekomplexität außerhalb dieser beiden Klassen massiv vereinfacht.
+Durch die Vereinheitlichung des Zahlendatentyps, wird im Allgemeinen die Codekomplexität außerhalb dieser beiden Klassen massiv vereinfacht.</p>
 
 <h3 id="formula">Formula & Clause</h3>
-Eine <code>Formula</code> ist eine Liste voller <code>Clause</code>s. Eine <code>Clause</code> ist eine Liste voller Constraints. Beides hilft zur einfacheren Verwaltung unseres Systems.
+<p>Eine <code>Formula</code> ist eine Liste voller <code>Clause</code>s. Eine <code>Clause</code> ist eine Liste voller Constraints. Beides hilft zur einfacheren Verwaltung unseres Systems.</p>
+
+<h3 id="bools">Bools</h3>
+<p>Bools sind nicht als eigene Klasse aufzufinden, sie sind allerdings Teil der Eingabespezifikation. Der Einfachheit halber, werden boolsche Ausdrücke (also a, !a) als Bounds implementiert. Sei a eine boolsche Variable, dann entspricht <code>a</code> dem Ausdruck <code>a &gt= 1</code>, und <code>!a</code> entspricht <code>a &lt= 0</code>. Diese Umwandlung geschieht bereits beim Parsing.</p>
 
 <h2 id="contractors">Contractors</h2>
-Für die <code>Contractor</code>s verwenden wir erneut Polymorphie, um den Code einfacher zu gestalten. Alle <code>Condtractor</code>s implementieren eine arithmetisch/logische Operation. Die konkrete Implementierung erfolgt im Kotlincode. Wir unterscheiden zwischen drei unterschiedlichen Typen an <code>Contractor</code>s:
+<p>Für die <code>Contractor</code>s verwenden wir erneut Polymorphie, um den Code einfacher zu gestalten. Alle <code>Condtractor</code>s implementieren eine arithmetisch/logische Operation. Die konkrete Implementierung erfolgt im Kotlincode. Wir unterscheiden zwischen drei unterschiedlichen Typen an <code>Contractor</code>s:</p>
 
 <dl>
   <dt><code>BinContractors</code></dt>
