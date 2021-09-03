@@ -1,21 +1,21 @@
-package org.mcnip.solver.Contractors.BinContractor;
+package org.mcnip.solver.Contractors.BinContractors;
 
 import java.util.Map;
 
 import org.mcnip.solver.Contractors.Contractor;
 import org.mcnip.solver.Model.Interval;
 
-public class PowContractor implements Contractor {
-
-    public PowContractor() {}
+public class MulContractor implements Contractor {
+    
+    public MulContractor() {}
 
     public Map<String, Interval> contract(Map<String, Interval> in, String[] names)
     {
-        return org.mcnip.solver.contractions.BiContractions.pow(in, names);
+        return org.mcnip.solver.contractions.BiContractions.mul(in, names);
     }
-
+    
     @Override
     public String toString() {
-        return "pow";
+        return "mul";
     }
 }

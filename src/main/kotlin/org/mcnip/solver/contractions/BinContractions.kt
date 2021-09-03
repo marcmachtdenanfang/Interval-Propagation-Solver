@@ -9,7 +9,7 @@ import org.mcnip.solver.filteredMapOf
 import kotlin.math.nextDown
 import kotlin.math.nextUp
 
-class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
+class BinContractions(intervals: Map<String, Interval>, names: Array<String>) {
   private val result = names[0]
   private val fstArg = names[1]
   private val sndArg = names[2]
@@ -26,7 +26,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
 
   companion object {
     @JvmStatic
-    fun add(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
+    fun add(intervals: Map<String, Interval>, names: Array<String>) = BinContractions(intervals, names).run {
       val newResult = Interval(resInterval, fstLowerBound + sndLowerBound, fstUpperBound + sndUpperBound, true)
       filteredMapOf(result to newResult,
       fstArg to Interval(fstInterval, newResult.lowerBound - sndUpperBound, newResult.upperBound - sndLowerBound, true),
@@ -34,7 +34,7 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
     }
 
     @JvmStatic
-    fun sub(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
+    fun sub(intervals: Map<String, Interval>, names: Array<String>) = BinContractions(intervals, names).run {
       val newResult = Interval(resInterval, fstLowerBound - sndUpperBound, fstUpperBound - sndLowerBound, true)
       filteredMapOf(result to newResult,
           fstArg to Interval(fstInterval, newResult.lowerBound + sndLowerBound, newResult.upperBound + sndUpperBound, true),
@@ -42,37 +42,37 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
     }
 
     @JvmStatic
-    fun mul(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
+    fun mul(intervals: Map<String, Interval>, names: Array<String>) = BinContractions(intervals, names).run {
       val newResult = resInterval.withMul(fstInterval, sndInterval)
       filteredMapOf(result to newResult, fstArg to fstInterval.withDiv(newResult, sndInterval), sndArg to sndInterval.withDiv(newResult, fstInterval))
     }
 
     @JvmStatic
-    fun div(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
+    fun div(intervals: Map<String, Interval>, names: Array<String>) = BinContractions(intervals, names).run {
       val newResult = resInterval.withDiv(fstInterval, sndInterval)
       filteredMapOf(result to newResult, fstArg to fstInterval.withMul(newResult, sndInterval), sndArg to sndInterval.withDiv(fstInterval, newResult))
     }
 
     @JvmStatic
-    fun pow(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
+    fun pow(intervals: Map<String, Interval>, names: Array<String>) = BinContractions(intervals, names).run {
       val newResult = resInterval.withPow(fstInterval, sndInterval)
       filteredMapOf(result to newResult, fstArg to (if (type != INT) fstInterval else fstInterval.withNrt(newResult, sndInterval)), sndArg to sndInterval)
     }
 
     @JvmStatic
-    fun nrt(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
+    fun nrt(intervals: Map<String, Interval>, names: Array<String>) = BinContractions(intervals, names).run {
       val newResult = resInterval.withNrt(fstInterval, sndInterval)
       filteredMapOf(result to newResult, fstArg to (if (type != INT) fstInterval else fstInterval.withPow(newResult, sndInterval)), sndArg to sndInterval)
     }
 
     @JvmStatic
-    fun min(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
+    fun min(intervals: Map<String, Interval>, names: Array<String>) = BinContractions(intervals, names).run {
       val newResult = Interval(resInterval, fstLowerBound.min(sndLowerBound), fstUpperBound.min(sndUpperBound))
       filteredMapOf(result to newResult, fstArg to Interval(fstInterval, resLowerBound, POS_INF), sndArg to Interval(sndInterval, resLowerBound, POS_INF))
     }
 
     @JvmStatic
-    fun max(intervals: Map<String, Interval>, names: Array<String>) = BiContractions(intervals, names).run {
+    fun max(intervals: Map<String, Interval>, names: Array<String>) = BinContractions(intervals, names).run {
       val newResult = Interval(resInterval, fstLowerBound.max(sndLowerBound), fstUpperBound.max(sndUpperBound))
       filteredMapOf(result to newResult, fstArg to Interval(fstInterval, NEG_INF, resUpperBound), sndArg to Interval(sndInterval, NEG_INF, resUpperBound))
     }
@@ -115,12 +115,8 @@ class BiContractions(intervals: Map<String, Interval>, names: Array<String>) {
         if (i0.upperBound < ZERO_int) this
         else withOp(op, Interval(i0, ZERO_int, i0.upperBound), DotInterval(snd.varName, snd.lowerBound.intValue))
       else ->
-        when {
-          i0.upperBound < ZERO_int ->
-            withOp(op, i0, DotInterval(snd.varName, snd.lowerBound.intValue))
-          else ->
-            withOp(op, Interval(i0, ZERO_int, i0.upperBound), DotInterval(snd.varName, snd.lowerBound.intValue))
-        }
+        if (i0.upperBound < ZERO_int) withOp(op, i0, DotInterval(snd.varName, snd.lowerBound.intValue))
+        else withOp(op, Interval(i0, ZERO_int, i0.upperBound), DotInterval(snd.varName, snd.lowerBound.intValue))
     }
   }
 

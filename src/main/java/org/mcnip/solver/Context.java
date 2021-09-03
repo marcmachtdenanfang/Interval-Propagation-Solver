@@ -1,8 +1,8 @@
 package org.mcnip.solver;
 
 import kotlin.Pair;
-import org.mcnip.solver.Contractors.BoundContractor.GreaterEqualsContractor;
-import org.mcnip.solver.Contractors.BoundContractor.LessEqualsContractor;
+import org.mcnip.solver.Contractors.BoundContractors.GreaterEqualsContractor;
+import org.mcnip.solver.Contractors.BoundContractors.LessEqualsContractor;
 import org.mcnip.solver.Model.*;
 
 import java.util.*;
@@ -105,7 +105,7 @@ public class Context {
     int intPrecision = 128;
 
     /**
-     * Name of variable to minimize.
+     * Name of variable to minimize locally.
      */
     String minimize;
 

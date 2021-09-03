@@ -97,7 +97,7 @@ public class App {
         Option verbose = new Option("v", "verbose", false, "Optional: Verbose printing of Output during solving.");
         Option likelihood = new Option("l", "likelihood", true, "Optional: Change likelihood of adding aux_variables into pool of variables eligible for splitting. Must at least be 1. Default is 5.");
         Option intPrecision = new Option("b", "intPrecision", true, "Optional: Desired number of bits representing integers during variable splitting. Default is 128.");
-        Option minimize = new Option("m", "minimize", true, "Optional: Name of variable to minimize.");
+        Option minimize = new Option("m", "minimize", true, "Optional: Name of variable to minimize locally.");
         Option input = 
               Option.builder("i")
                     .longOpt("input")

@@ -1,4 +1,4 @@
-package org.mcnip.solver.Contractors.BinContractor;
+package org.mcnip.solver.Contractors.BinContractors;
 
 import org.mcnip.solver.Contractors.Contractor;
 import org.mcnip.solver.Model.Interval;

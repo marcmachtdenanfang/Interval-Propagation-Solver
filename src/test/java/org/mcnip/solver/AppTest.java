@@ -1,10 +1,10 @@
 package org.mcnip.solver;
 
 import org.junit.Test;
-import org.mcnip.solver.Contractors.BinContractor.AddContractor;
-import org.mcnip.solver.Contractors.BinContractor.MulContractor;
-import org.mcnip.solver.Contractors.BoundContractor.GreaterEqualsContractor;
-import org.mcnip.solver.Contractors.BoundContractor.LessEqualsContractor;
+import org.mcnip.solver.Contractors.BinContractors.AddContractor;
+import org.mcnip.solver.Contractors.BinContractors.MulContractor;
+import org.mcnip.solver.Contractors.BoundContractors.GreaterEqualsContractor;
+import org.mcnip.solver.Contractors.BoundContractors.LessEqualsContractor;
 import org.mcnip.solver.Contractors.Contractor;
 import org.mcnip.solver.Model.*;
 

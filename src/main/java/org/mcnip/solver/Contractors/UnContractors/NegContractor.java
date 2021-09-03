@@ -1,22 +1,21 @@
-package org.mcnip.solver.Contractors.UnContractor;
+package org.mcnip.solver.Contractors.UnContractors;
 
 import java.util.Map;
 
 import org.mcnip.solver.Contractors.Contractor;
 import org.mcnip.solver.Model.Interval;
 
-public class ExpContractor implements Contractor {
-
-    public ExpContractor() {}
+public class NegContractor implements Contractor {
+    
+    public NegContractor() {}
 
     public Map<String, Interval> contract(Map<String, Interval> in, String[] names)
     {
-        return org.mcnip.solver.contractions.UnContractions.exp(in, names);
+        return org.mcnip.solver.contractions.UnContractions.neg(in, names);
     }
 
     @Override
     public String toString() {
-        return "e^";
+        return "neg";
     }
-    
 }

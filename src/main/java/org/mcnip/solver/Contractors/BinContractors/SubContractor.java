@@ -1,4 +1,4 @@
-package org.mcnip.solver.Contractors.BinContractor;
+package org.mcnip.solver.Contractors.BinContractors;
 
 import java.util.Map;
 

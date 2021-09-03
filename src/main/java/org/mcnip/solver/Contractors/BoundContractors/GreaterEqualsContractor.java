@@ -1,4 +1,4 @@
-package org.mcnip.solver.Contractors.BoundContractor;
+package org.mcnip.solver.Contractors.BoundContractors;
 
 import java.util.Map;
 
@@ -8,16 +8,16 @@ import org.mcnip.solver.Model.Interval;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class GreaterContractor implements Contractor {
+public class GreaterEqualsContractor implements Contractor {
 
     public Map<String, Interval> contract(Map<String, Interval> in, String[] names)
     {
-        return org.mcnip.solver.contractions.BoundContractions.greater(in, names);
+        return org.mcnip.solver.contractions.BoundContractions.greaterEquals(in, names);
     }
 
     @Override
     public String toString() {
-        return ">";
+        return ">=";
     }
 
 }
