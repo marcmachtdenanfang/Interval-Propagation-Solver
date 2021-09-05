@@ -5,25 +5,20 @@
 --  Author : Christian Herde
 --
 --  Last Modified : 
---		Tue Nov 17 16:20:17 CET 2009
+--		Tue Nov 17 16:10:01 CET 2009
 --
 --------------------------------------------------------------------------------
     
 
--- The function below (source: lecture `Validated Numerics' by Warwick Tucker, 
--- Uppsala University) has a sharp bend in the interval [0.48, 0.52] which 
--- contains the global minimum. Conventional methods for nonlinear optimization
--- might miss it. HySAT won't.
+-- Brahmagupta's Problem, described at
+-- http://mathworld.wolfram.com/BrahmaguptasProblem.html
 --
--- Call: hysat --minimize y optimization.hys
--- Optimal value: y approx. -0.05
+-- Call: hysat --minimize x brahmaguptas_problem.hys
+-- Optimal value: x = 1151
 
 
 DECL
-    define a = 200.0;
-    float [-a, a] x, y;
+    int [1, 10000] x, y;
 
 EXPR
---    y = x^2.0 - 0.3 * exp(neg(a*(x - 0.5))^2.0);
-    y = x^2.0 - 0.3 * pow(neg(a*(x - 0.5)),2.0);
-
+    x^2 - 92 * y^2 = 1;

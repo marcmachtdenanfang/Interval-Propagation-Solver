@@ -1,9 +1,0 @@
-DECL
-  -- The  range  of  each  variable has to be  bounded.
-  int [1, 100] a, b, c;
-
-EXPR
-  -- Constraint to be  solved.
-  a*b= c;
-
-

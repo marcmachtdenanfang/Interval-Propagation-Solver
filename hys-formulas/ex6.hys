@@ -1,6 +1,0 @@
-DECL
-  define a = 1.0;
-  float [-a, a] x, y;
-
-EXPR
-  x = 0.5;

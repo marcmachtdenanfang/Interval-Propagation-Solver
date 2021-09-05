@@ -1,14 +1,11 @@
--- 2.1.1 example
--- Optimal value: c = 5
--- edited
+-- 2.1.1 example with modifications
+-- Optimal value: c = 905
 
 DECL
   -- The  range  of  each  variable has to be  bounded.
-  int [2, 100] a, b, c;
-  boole d;
+  int [600, 1000] a, b, c;
 
 EXPR
   -- Constraint to be  solved.
-  a != 5;
-  a*a + b*b = c*c or a*a = abs(c) or d;
-  abs(b) = a or b = abs(a) or !d;
+  a*a + b*b = c*c;
+  c > 900;

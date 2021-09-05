@@ -1,0 +1,8 @@
+--correctly UNSAT since the same overapproximation happens for every nrt operation and the inline constant
+
+DECL
+  declare a = 2.0;
+  declare b = 2.0;
+
+EXPR
+  nrt(a,2.0) > nrt(b,2.0) or nrt(a,2.0) > 1.414213562373095049;

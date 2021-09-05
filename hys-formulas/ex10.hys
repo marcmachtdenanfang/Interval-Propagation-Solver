@@ -1,6 +1,0 @@
-DECL
-  declare a = 2.0;
-  declare b = 2.0;
-
-EXPR
-  nrt(a,2.0) > nrt(b,2.0) or nrt(a,2.0) > 1.4142135623730950488;

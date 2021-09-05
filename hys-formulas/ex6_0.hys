@@ -1,0 +1,10 @@
+--a solution is found because of outward rounding necessary to compensate for imprecision
+--the variable _pow0 (use -v) isn't exactly 2.0, thus squaring and then extracting a root is less precise than just extracting a root which leads to this (inevitable wrongly) satisfiable outcome
+
+DECL
+  float [0.0, 100.0] x;
+  declare a = 2.0;
+
+EXPR
+  nrt(x^2.0, 2.0) > nrt(a, 2.0);
+  x*x = 2.0;
