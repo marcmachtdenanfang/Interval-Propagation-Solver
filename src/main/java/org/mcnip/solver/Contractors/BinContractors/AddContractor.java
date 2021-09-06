@@ -15,7 +15,7 @@ public class AddContractor implements Contractor {
      */
     public Map<String, Interval> contract(Map<String, Interval> in, String[] names)
     {
-        return org.mcnip.solver.contractions.BiContractions.add(in, names);
+        return org.mcnip.solver.contractions.BinContractions.add(in, names);
     }
 
     @Override

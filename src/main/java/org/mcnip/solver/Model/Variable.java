@@ -1,4 +1,4 @@
-package org.mcnip.solver.Model;
+/*package org.mcnip.solver.Model;
 
 import lombok.Getter;
 
@@ -6,14 +6,14 @@ public class Variable {
     
     @Getter private final String name;
     @Getter private final Type type;
-
+*/
     /**
      * Used to manage variables and their types only.
      * Intervals store the name of their variable as well.
      * Booleans are only stored as empty variables and bounds associated via their names.
      * @param name Name of the variable.
      * @param type BOOL, INT or REAL.
-     */
+     */ /*
     public Variable(String name, Type type)
     {
         this.name = name;
@@ -21,3 +21,4 @@ public class Variable {
     }
 
 }
+*/

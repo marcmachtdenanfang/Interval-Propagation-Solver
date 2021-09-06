@@ -11,7 +11,7 @@ public class PowContractor implements Contractor {
 
     public Map<String, Interval> contract(Map<String, Interval> in, String[] names)
     {
-        return org.mcnip.solver.contractions.BiContractions.pow(in, names);
+        return org.mcnip.solver.contractions.BinContractions.pow(in, names);
     }
 
     @Override
