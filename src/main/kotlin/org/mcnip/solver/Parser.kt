@@ -1,9 +1,9 @@
 package org.mcnip.solver
 
-import org.mcnip.solver.Contractors.BinContractor.*
-import org.mcnip.solver.Contractors.BoundContractor.*
+import org.mcnip.solver.Contractors.BinContractors.*
+import org.mcnip.solver.Contractors.BoundContractors.*
 import org.mcnip.solver.Contractors.Contractor
-import org.mcnip.solver.Contractors.UnContractor.*
+import org.mcnip.solver.Contractors.UnContractors.*
 import org.mcnip.solver.Model.*
 import org.mcnip.solver.Model.Type.*
 import org.mcnip.solver.Model.Pair as Dyad
